@@ -139,7 +139,7 @@ class Form
     }
 
     /**
-     *
+     * @todo add recursive function to support <optgroup></optgroup>
      * Method to create select control
      * @access public
      * @param string $name
