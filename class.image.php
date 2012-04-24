@@ -1,122 +1,56 @@
 <?php
 
-/**
- *
- * Class for handling inmage creation
- * @author Joddy
- */
+# ========================================================================#
+#
+#  Author   : Slier
+#  Version  : 1.0
+#  Date     : 17-Jan-10
+#  Purpose  :  Resizes and saves image
+#  Requires : Requires PHP5, GD library.
+#  Example  :
+#  include('class.image.php');
+#  $obj = new Image('input.jpg', array('.jpg','.png'));
+#  $obj->resizeImage(150, 100, 0);
+#  $obj->saveImage('output.jpg', 100);
+#
+# ========================================================================#
 
-class Image
+Class Image
 {
-    /**
-     *
-     * @var array
-     * @access protected
-     */
-    protected $allowedExtensions = array( '.jpg', 'jpeg', '.gif', '.png' );
+    /* Class variables */
 
-    /**
-     *
-     * @var int
-     * @access protected
-     */
-    protected $jpegQuality = 100;
+    protected $image;
+    protected $width;
+    protected $height;
+    protected $imageResized;
+    protected $extensions = array( '.jpg', '.jpeg', '.png', '.gif' );
 
-    /**
-     *
-     * @var string
-     * @access protected
-     */
-    protected $imageUrl;
-
-    /**
-     *
-     * @var resource
-     * @access protected
-     */
-    protected $imageObj;
-
-    /**
-     *
-     * @var string
-     * @access protected
-     */
-    protected $imageType;
-
-    /**
-     *
-     * @var resource
-     * @access protected
-     */
-    protected $resizedImage;
-    
-    /**
-     *
-     * @var string
-     * @access protected
-     */
-    protected $imageName;
-
-    /**
-     *
-     * @var string
-     * @access protected
-     */
-    protected $locationToSave;
-
-    /**
-     *
-     * @var array
-     * @access protected
-     */
-    protected $errorMsg;
-
-    /**
-     *
-     * @var bool
-     * @access protected
-     */
-    protected $uniqueName = false;
-
-
-
-    /**
-     * Constructor Method
-     * @access public
-     * @param mixed $imageFile
-     * @param mixed $imageName
-     * @param mixed $locationToSave
-     * @param array $allowedExtension
-     * @param bool $uniqueName
-     */
-    public function __construct( $imageFile, $imageName, $locationToSave, $allowedExtensions = null, $uniqueName = null )
+    public function __construct($file, array $extensions = null)
     {
-        $this->imageUrl = $imageFile;
-        $this->imageName = $imageName;
-        $this->locationToSave = $locationToSave;
-        $this->allowedExtensions = ( is_null( $allowedExtensions ) ) ? $this->allowedExtensions : ( array ) $allowedExtensions;
-        $this->uniqueName = ( is_null( $uniqueName ) ) ? false : ( boolean ) $uniqueName;
-        $this->imageType = $this->getImageType( $imageFile, $imageName );
-        $this->init();
-    }
+        $this->extensions = !is_null($extensions) ? $extensions : $this->extensions;
 
-
-
-    /**
-     *
-     * Destructor Method
-     * Free Memory
-     * @access public
-     */
-    public function __destruct()
-    {
-        if( $this->isImage( $this->imageUrl, $this->imageName ) )
+        try
         {
-            imagedestroy( $this->imageObj );
-            if( !empty( $this->resizedImage ) )
+            if ( !$this->isFile($file) )
             {
-                imagedestroy( $this->resizedImage );
+                throw new Exception('File does not exist');
             }
+
+            if ( !$this->isAllowedExtensions($file) )
+            {
+                throw new Exception('File extension is not allowed');
+            }
+
+            /* Open up the file */
+            $this->image = $this->openImage($file);
+
+            /* Get width and height */
+            $this->width = imagesx($this->image);
+            $this->height = imagesy($this->image);
+        }
+        catch ( Exception $e )
+        {
+            echo $e->getMessage();
         }
     }
 
@@ -124,176 +58,340 @@ class Image
 
     /**
      *
-     * Method to perform initialization
-     * @access private
+     * Resize the image
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param string $option 
      */
-    private function init()
+    public function resize($newWidth, $newHeight, $option = "auto")
     {
-        $this->isImgDir();
-        $this->isImgDirWritable();
-        $this->isImage( $this->imageUrl, $this->imageName );
+        // *** Get optimal width and height - based on $option
+        $optionArray = $this->getDimensions($newWidth, $newHeight, $option);
+
+        $optimalWidth = $optionArray[ 'optimalWidth' ];
+        $optimalHeight = $optionArray[ 'optimalHeight' ];
+
+
+        // *** Resample - create image canvas of x, y size
+        $this->imageResized = imagecreatetruecolor($optimalWidth, $optimalHeight);
+        imagecopyresampled($this->imageResized, $this->image, 0, 0, 0, 0, $optimalWidth, $optimalHeight, $this->width, $this->height);
+
+
+        // *** if option is 'crop', then crop too
+        if ( $option == 'crop' )
+        {
+            $this->crop($optimalWidth, $optimalHeight, $newWidth, $newHeight);
+        }
     }
 
 
 
     /**
-     * Method to create new blank image
-     * @access private
-     * @return mixed
+     *
+     * Save the image
+     * @param type $savePath
+     * @param type $imageQuality 
      */
-    private function create()
+    public function save($savePath, $imageQuality = "100")
     {
-        if( $this->isImage( $this->imageUrl, $this->imageName ) )
+        /* Get extension */
+        $extension = strrchr($savePath, '.');
+        $extension = strtolower($extension);
+
+        switch ( $extension )
         {
-            switch( $this->imageType )
+            case '.jpg':
+            case '.jpeg':
+                if ( imagetypes() & IMG_JPG )
+                {
+                    imagejpeg($this->imageResized, $savePath, $imageQuality);
+                }
+                break;
+
+            case '.gif':
+                if ( imagetypes() & IMG_GIF )
+                {
+                    imagegif($this->imageResized, $savePath);
+                }
+                break;
+
+            case '.png':
+                /* Scale quality from 0-100 to 0-9 */
+                $scaleQuality = round(($imageQuality / 100) * 9);
+
+                /* Invert quality setting as 0 is best, not 9 */
+                $invertScaleQuality = 9 - $scaleQuality;
+
+                if ( imagetypes() & IMG_PNG )
+                {
+                    imagepng($this->imageResized, $savePath, $invertScaleQuality);
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        imagedestroy($this->imageResized);
+    }
+
+
+
+    /**
+     *
+     * Create blank image
+     * @param type $fileName
+     * @return boolean 
+     */
+    protected function openImage($fileName)
+    {
+        /* Get extension */
+        $extension = $this->getExtension($fileName);
+
+        switch ( $extension )
+        {
+            case '.jpg':
+            case '.jpeg':
+                $img = @imagecreatefromjpeg($fileName);
+                break;
+
+            case '.gif':
+                $img = @imagecreatefromgif($fileName);
+                break;
+
+            case '.png':
+                $img = @imagecreatefrompng($fileName);
+                break;
+
+            default:
+                $img = false;
+                break;
+        }
+        return $img;
+    }
+
+
+
+    /**
+     *
+     * Get the optimal size for width and height of an image based on option
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param string $option
+     * @return array 
+     */
+    protected function getDimensions($newWidth, $newHeight, $option)
+    {
+
+        switch ( $option )
+        {
+            case 'exact':
+                $optimalWidth = $newWidth;
+                $optimalHeight = $newHeight;
+                break;
+            case 'portrait':
+                $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+                $optimalHeight = $newHeight;
+                break;
+            case 'landscape':
+                $optimalWidth = $newWidth;
+                $optimalHeight = $this->getSizeByFixedWidth($newWidth);
+                break;
+            case 'auto':
+                $optionArray = $this->getSizeByAuto($newWidth, $newHeight);
+                $optimalWidth = $optionArray[ 'optimalWidth' ];
+                $optimalHeight = $optionArray[ 'optimalHeight' ];
+                break;
+            case 'crop':
+                $optionArray = $this->getOptimalCrop($newWidth, $newHeight);
+                $optimalWidth = $optionArray[ 'optimalWidth' ];
+                $optimalHeight = $optionArray[ 'optimalHeight' ];
+                break;
+        }
+        return array( 'optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight );
+    }
+
+
+
+    /**
+     *
+     * Get optimal width when height is fixed
+     * @param type $newHeight
+     * @return int 
+     */
+    protected function getSizeByFixedHeight($newHeight)
+    {
+        $ratio = $this->width / $this->height;
+        $newWidth = $newHeight * $ratio;
+        return $newWidth;
+    }
+
+
+
+    /**
+     *
+     * Get optimal height when width is fixed
+     * @param type $newWidth
+     * @return int 
+     */
+    protected function getSizeByFixedWidth($newWidth)
+    {
+        $ratio = $this->height / $this->width;
+        $newHeight = $newWidth * $ratio;
+        return $newHeight;
+    }
+
+
+
+    /**
+     *
+     * Get optimal width and height when resize is auto
+     * @param type $newWidth
+     * @param type $newHeight
+     * @return int 
+     */
+    protected function getSizeByAuto($newWidth, $newHeight)
+    {
+        if ( $this->height < $this->width )
+        // *** Image to be resized is wider (landscape)
+        {
+            $optimalWidth = $newWidth;
+            $optimalHeight = $this->getSizeByFixedWidth($newWidth);
+        }
+        elseif ( $this->height > $this->width )
+        // *** Image to be resized is taller (portrait)
+        {
+            $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+            $optimalHeight = $newHeight;
+        }
+        else
+        // *** Image to be resizerd is a square
+        {
+            if ( $newHeight < $newWidth )
             {
-                case '.gif':
-                    $this->imageObj = imagecreatefromgif( $this->imageUrl );
-                    break;
-
-                case '.jpg':
-                    $this->imageObj = imagecreatefromjpeg( $this->imageUrl );
-                    break;
-
-                case '.jpeg':
-                    $this->imageObj = imagecreatefromjpeg( $this->imageUrl );
-                    break;
-
-                case '.png':
-                    $this->imageObj = imagecreatefrompng( $this->imageUrl );
-                    break;
+                $optimalWidth = $newWidth;
+                $optimalHeight = $this->getSizeByFixedWidth($newWidth);
             }
-            return true;
+            else if ( $newHeight > $newWidth )
+            {
+                $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+                $optimalHeight = $newHeight;
+            }
+            else
+            {
+                // *** Sqaure being resized to a square
+                $optimalWidth = $newWidth;
+                $optimalHeight = $newHeight;
+            }
+        }
+
+        return array( 'optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight );
+    }
+
+
+
+    /**
+     * Get the optimal width and height for cropping
+     * @param type $newWidth
+     * @param type $newHeight
+     * @return type 
+     */
+    protected function getOptimalCrop($newWidth, $newHeight)
+    {
+
+        $heightRatio = $this->height / $newHeight;
+        $widthRatio = $this->width / $newWidth;
+
+        if ( $heightRatio < $widthRatio )
+        {
+            $optimalRatio = $heightRatio;
         }
         else
         {
-            return false;
+            $optimalRatio = $widthRatio;
         }
+
+        $optimalHeight = $this->height / $optimalRatio;
+        $optimalWidth = $this->width / $optimalRatio;
+
+        return array( 'optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight );
     }
 
 
 
     /**
      *
-     * Method To Resize Image By Percent
-     * @param int $Percent
-     * @return bool
+     * Crop the image
+     * @param int $optimalWidth
+     * @param int $optimalHeight
+     * @param int $newWidth
+     * @param int $newHeight 
      */
-    public function resizeByPercent( $percent )
+    protected function crop($optimalWidth, $optimalHeight, $newWidth, $newHeight)
     {
-        $this->create();
-        /* Get new dimensions */
-        list( $width, $height ) = getimagesize( $this->imageUrl );
-        $newWidth = intval( ( $Width * $percent ) / 100 );
-        $newHeight = intval( ( $Height * $percent ) / 100 );
+        /* Find center - this will be used for the crop */
+        $cropStartX = ( $optimalWidth / 2) - ( $newWidth / 2 );
+        $cropStartY = ( $optimalHeight / 2) - ( $newHeight / 2 );
 
-        $this->resizedImage = imagecreatetruecolor( $NewWidth, $NewHeight );
-        imagecopyresampled( $this->resizedImage, $this->imageObj, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height );
-
-        if( !$this->uniqueName )
-        {
-            if( $this->isImageExists( $this->locationToSave . $this->imageName ) )
-            {
-                $this->errorMsg = array( );
-                $this->errorMsg[] = $this->errorText( 4 );
-                return false;
-            }
-            else
-            {
-                if( $this->outputIMage( $this->imageType ) )
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        else
-        {
-            $this->imageName = $this->createUniqueImageName( $this->imageName );
-            if( $this->outputIMage( $this->imageType ) )
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        $crop = $this->imageResized;
+        /* Now crop from center to exact requested size */
+        $this->imageResized = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresampled($this->imageResized, $crop, 0, 0, $cropStartX, $cropStartY, $newWidth, $newHeight, $newWidth, $newHeight);
     }
 
 
 
     /**
      *
-     * Method To Resize Image Based on Given Respective Width And Heigth
-     * @param int $W
-     * @param int $H
-     * @return bool
+     * Check file existence
+     * @return boolean 
      */
-    public function resizeByWidthHeight( $w, $h )
+    protected function isFile($file)
     {
-        $this->create();
-        /* Get new dimensions */
-        list($width, $height) = getimagesize( $this->imageUrl );
-        $newWidth = $w;
-        $newHeight = $h;
-
-        $this->resizedImage = imagecreatetruecolor( $newWidth, $newHeight );
-        imagecopyresampled( $this->resizedImage, $this->imageObj, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height );
-
-        if( !$this->uniqueName )
-        {
-            if( $this->isImageExists( $this->locationToSave . $this->imageName ) )
-            {
-                $this->errorMsg = array( );
-                $this->errorMsg[] = $this->errorText( 4 );
-                return false;
-            }
-            else
-            {
-                if( $this->outputIMage( $this->imageType ) )
-                {
-
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        else
-        {
-            $this->imageName = $this->createUniqueImageName( $this->imageName );
-            if( $this->outputIMage( $this->imageType ) )
-            {
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        return file_exists($file);
     }
 
 
 
     /**
      * 
-     * Method To Check Wether Image Is Exist
-     * To check, before move the upload file, typically used to check wethere the same file already being upload
-     * To prevent override
-     * @access public
-     * @param mixed $image
-     * @return bool
+     * Get file extension
+     * @param string $file
+     * @return string 
      */
-    public function isImageExists( $image )
+    protected function getExtension($file)
     {
-        if( file_exists( $image ) )
+        return strtolower(strrchr($file, '.'));
+    }
+
+
+
+    /**
+     *
+     * Get file name
+     * @param type $file
+     * @return type 
+     */
+    protected function getFileName($file)
+    {
+        $file = str_replace('\\', '/', $file);
+        return substr($file, strrpos($file, '/') + 1);
+    }
+
+
+
+    /**
+     *
+     * Check is uploaded image is in allowed extension
+     * @param type $file
+     * @return boolean 
+     */
+    protected function isAllowedExtensions($file)
+    {
+        $fileName = $this->getFileName($file);
+        $fileExtension = $this->getExtension($fileName);
+
+        if ( in_array($fileExtension, $this->extensions) )
         {
             return true;
         }
@@ -301,257 +399,6 @@ class Image
         {
             return false;
         }
-    }
-
-
-
-    /**
-     * 
-     * Provide acces to override $locationTosave set in constructor
-     * Typically used to set different directory for thumbnail
-     * @access public
-     * @param string $location
-     */
-
-    public function setImgLocation( $location )
-    {
-        $this->locationToSave = $location;
-    }
-
-
-
-    /**
-     *
-     * Save/output image to location
-     * @access private
-     * @param string $imageType
-     * @return bool
-     */
-
-    private function outputIMage( $imageType )
-    {
-        if( $this->isImgDir() && $this->isImgDirWritable() )
-        {
-            switch( $imageType )
-            {
-                case '.gif':
-                    imagegif( $this->resizedImage, $this->locationToSave . $this->imageName );
-                    break;
-
-                case '.jpg':
-                    imagejpeg( $this->resizedImage, $this->locationToSave . $this->imageName, $this->jpegQuality );
-                    break;
-
-                case '.jpeg':
-                    imagejpeg( $this->resizedImage, $this->locationToSave . $this->imageName, $this->jpegQuality );
-                    break;
-
-                case '.png':
-                    imagepng( $this->resizedImage, $this->locationToSave . $this->imageName );
-                    break;
-            }
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-
-
-    /**
-     *
-     * Method to check wether submitted file is an image and its in allowed extension list
-     * @access private
-     * @param mixed $File
-     * @return bool
-     */
-    private function isImage( $imageFile, $imageName )
-    {
-        if( $this->isImageExists( $imageFile ) )
-        {
-            $extension = strtolower( substr( $imageName, strrpos( $imageName, '.' ) ) );
-            if( count( $this->allowedExtensions ) > 0 )
-            {
-                if( !in_array( $extension, $this->allowedExtensions ) )
-                {
-                    $this->errorMsg[] = $this->errorText( 3 );
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                $this->errorMsg[] = $this->errorText( 2 );
-                return false;
-            }
-        }
-        else
-        {
-            $this->errorMsg[] = $this->errorText( 1 );
-            return false;
-        }
-    }
-
-
-
-    /**
-     *
-     * Method To Check Image Extension
-     * @access private
-     * @param string $imageFile
-     * @param string $imageName
-     * @return bool
-     */
-    private function getImageType( $imageFile, $imageName )
-    {
-        if( $this->isImage( $imageFile, $imageName ) )
-        {
-            $extension = strtolower( substr( $imageName, strrpos( $imageName, '.' ) ) );
-
-            switch( $extension )
-            {
-                case '.gif':
-                    return '.gif';
-                    break;
-
-                case '.jpg':
-                    return '.jpg';
-
-                    break;
-
-                case '.png':
-                    return '.png';
-
-                    break;
-
-                default:
-                    return false;
-                    break;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-
-
-    /**
-     *
-     * Method To Create Unique Image Name
-     * @access private
-     * @param string $imageName
-     * @return string
-     */
-    private function createUniqueImageName( $imageName )
-    {
-        $imageName = substr( $imageName, 0, strpos( $imageName, '.' ) );
-        $imageName .= '_' . strtotime( 'now' ) . $this->imageType;
-        return $imageName;
-    }
-
-
-
-    /**
-     * 
-     * Method to check wether directory location for image is exist
-     * @access private
-     * @return bool
-     */
-    private function isImgDir()
-    {
-        if( is_dir( $this->locationToSave ) )
-        {
-            return true;
-        }
-        else
-        {
-            $this->errorMsg[] = $this->errorText( 5 );
-            return false;
-        }
-    }
-
-
-
-    /**
-     *
-     * Method to check wethere directory location for image is writable
-     * @access private
-     * @return bool
-     */
-    private function isImgDirWritable()
-    {
-        if( is_writable( $this->locationToSave ) )
-        {
-            return true;
-        }
-        else
-        {
-            $this->errorMsg[] = $this->errorText( 6 );
-            return false;
-        }
-    }
-
-
-
-    /**
-     *
-     * Method to check if error occured during object initilization
-     * @access public
-     * @return bool
-     */
-    public function isError()
-    {
-        return ( count( $this->errorMsg ) > 0 ) ? true : false;
-    }
-
-
-
-    /**
-     *
-     * Method To Retun Error Message
-     * @access public
-     * @return string
-     */
-    public function getErrorMsg( $breakElem = '<br />' )
-    {
-        $msg = '';
-        if( count( $this->errorMsg ) > 0 )
-        {
-            array_unshift( $this->errorMsg, $this->errorText( 0 ) );
-            foreach( $this->errorMsg as $value )
-            {
-                $msg .= $value . $breakElem . "\n";
-            }
-        }
-        return $msg;
-    }
-
-
-
-    /**
-     *
-     * Method To Get Error List
-     * @access private
-     * @param mixed $errorNum
-     * @return string
-     */
-    private function errorText( $errorNum )
-    {
-        $error[0] = 'Please correct the following error(s):';
-        $error[1] = 'Image File Not Exist';
-        $error[2] = 'Allowed Extension List Are Empty';
-        $error[3] = 'File Are Not In The Allowed Extension List';
-        $error[4] = 'File Already Exist';
-        $error[5] = 'Directory location for image dosent exist';
-        $error[6] = 'Directory location for image is not writable';
-        return $error[$errorNum];
     }
 
 
