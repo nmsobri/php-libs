@@ -6,9 +6,9 @@
  * 
  */
 
-
 class Authentication
 {
+
     /**
      * Store Db Object
      * @var Crud
@@ -72,8 +72,6 @@ class Authentication
      */
     public $passwordField = 'password';
 
-
-
     /**
      * Construction Method
      * @access public
@@ -83,7 +81,6 @@ class Authentication
      * @param mixed $tableName table name use to store user credential
      * @return Authentication
      */
-
     public function __construct( Crud $db, Session $ses, Cookie $cookie, $tableName )
     {
         $this->db = $db;
@@ -91,8 +88,6 @@ class Authentication
         $this->cookie = $cookie;
         $this->table = $tableName;
     }
-
-
 
     /**
      * Method To Perform Login And Then Call isAuthenticated To Verify Wether User Who Try To Login is Authenticated
@@ -107,15 +102,15 @@ class Authentication
         $this->username = $username;
         $this->password = $password;
 
-        if( $this->isAuthenticated() )
+        if ( $this->isAuthenticated() )
         {
-            $userId = $this->db->query( "Select id from users where username='{$this->username}'" );
-            $userId = $userId[0]['id'];
+            $userId = $this->db->query( "Select id from users where username='{$this->username}'" )->execute();
+            $userId = $userId[ 0 ][ 'id' ];
 
             $this->ses->regenerateSessionId();
             $this->ses->set( $this->cookSesName, array( 'userId' => $userId, 'username' => $username, 'password' => $password ) );
 
-            if( $rememberMe )
+            if ( $rememberMe )
             {
                 $cookieData = serialize( array( 'username' => $username, 'password' => $password ) );  /* Need to serialize cause cookie cant store an array (aka cast it to string) */
                 $this->cookie->set( $this->cookSesName, $cookieData );
@@ -129,19 +124,16 @@ class Authentication
         }
     }
 
-
-
     /**
      * Method To Check Wether User Is Verified To Access Resource
      * @access public
      * @return boolean
      */
-
     public function isAuthenticated()
     {
-        if( $this->cookie->check( $this->cookSesName ) ) //come from cookie
+        if ( $this->cookie->check( $this->cookSesName ) ) //come from cookie
         {
-            if( !$this->ses->check( $this->cookSesName ) )
+            if ( !$this->ses->check( $this->cookSesName ) )
             {
                 $cookieData = $this->cookie->get( $this->cookSesName );
                 $cookieData = unserialize( $cookieData );
@@ -149,27 +141,29 @@ class Authentication
             }
         }
 
-        if( $this->ses->check( $this->cookSesName ) ) //come from session
+        if ( $this->ses->check( $this->cookSesName ) ) //come from session
         {
             $sessionData = $this->ses->get( $this->cookSesName );
-            $username = $sessionData['username'];
-            $password = $sessionData['password'];
+            $username = $sessionData[ 'username' ];
+            $password = $sessionData[ 'password' ];
         }
 
-        if( $this->username && $this->password ) //come from login form
+        if ( $this->username && $this->password ) //come from login form
         {
             $username = $this->username;
             $password = $this->password;
         }
 
-        if( !$username and !$password )
+        if ( !$username and !$password )
         {
             return false; //return false in none of the above variable dosent exist
         }
 
-        $recordFound = $this->db->getTotalRows( $this->table, array( $this->usernameField => $username, $this->passwordField => $password ) );
+        $recordFound = $this->db->select( $this->table )->where( "{$this->usernameField}='{$username}' and {$this->passwordField}='{$password}'" )->total_row()->execute();
 
-        if( $recordFound == 1 )
+        print_r($recordFound);
+        exit;
+        if ( $recordFound == 1 )
         {
             return true;
         }
@@ -178,22 +172,19 @@ class Authentication
             return false;
         }
     }
-
-
 
     /**
      * Method To Logout User
      * @access public
      * @return boolean
      */
-
     public function logout()
     {
         $this->ses->del( $this->cookSesName );
         $this->ses->unsetSession();
         $this->cookie->del( $this->cookSesName );
 
-        if( !$this->ses->check( $this->cookSesName ) and !$this->cookie->check( $this->cookSesName ) )
+        if ( !$this->ses->check( $this->cookSesName ) and !$this->cookie->check( $this->cookSesName ) )
         {
             return true;
         }
@@ -202,8 +193,6 @@ class Authentication
             return false;
         }
     }
-
-
 
 }
 
