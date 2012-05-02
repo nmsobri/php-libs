@@ -9,7 +9,7 @@ class Crud extends PDO
     protected $where = null;
     protected $order = null;
     protected $limit = null;
-
+    protected $count = null;
 
     /**
      * Constructor method
@@ -33,13 +33,12 @@ class Crud extends PDO
      */
     protected function connect( $dsn, $username, $password )
     {
-        if( !$this->db instanceof PDO )
+        if ( !$this->db instanceof PDO )
         {
             $this->db = new PDO( $dsn, $username, $password );
             $this->db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         }
     }
-
 
     /**
      * Runn raw query
@@ -56,30 +55,28 @@ class Crud extends PDO
         return $this;
     }
 
-
     /**
      * Query to select data
      * @access public
      */
-    public function select( $table, $column )
+    public function select( $table, $column ='*')
     {
         $column = ( is_string( $column ) ) ? $column : implode( ',', $column );
         $this->query = 'SELECT ' . $column . ' FROM ' . $table;
         return $this;
     }
 
-
     /**
      * Insert a value into a table
      * @access public
      */
-    public function insert( $table, $data = array(), $bind = null )
+    public function insert( $table, $data = array( ), $bind = null )
     {
         $columns = null;
         $values = null;
         $this->bind = $this->bind( $bind );
 
-        foreach( $data as $key => $val )
+        foreach ( $data as $key => $val )
         {
             $columns .= $key . ',';
             $values .= '"' . $val . '"' . ',';
@@ -92,17 +89,16 @@ class Crud extends PDO
         return $this;
     }
 
-
     /**
      * Update a value in a table
      * @access public
      */
-    public function update( $table, $data = array(), $bind = null )
+    public function update( $table, $data = array( ), $bind = null )
     {
         $segment = null;
         $this->bind = $this->bind( $bind );
 
-        foreach( $data as $key => $val )
+        foreach ( $data as $key => $val )
         {
             $segment .= $key . '="' . $val . '",';
         }
@@ -122,6 +118,11 @@ class Crud extends PDO
         return $this;
     }
 
+    public function total_row()
+    {
+        $this->count = true;
+        return $this;
+    }
 
     /**
      * 
@@ -129,22 +130,27 @@ class Crud extends PDO
      */
     public function where( $where, $bind = null )
     {
-        $this->bind = $this->bind( $bind );
-        $this->where = ' WHERE ' . $where;
-        return $this;
+        if ( preg_match( '/where/i', $this->query ) )
+        {
+            throw new Exception( 'There is a where clause already in the sql statement' );
+        }
+        else
+        {
+            $this->bind = $this->bind( $bind );
+            $this->where = ' WHERE ' . $where;
+            return $this;
+        }
     }
-
 
     /**
      * 
-     *Setup order by clause 
+     * Setup order by clause 
      */
     public function orderby( $order )
     {
         $this->order = ' ORDER BY ' . $order;
         return $this;
     }
-
 
     /**
      * 
@@ -156,7 +162,6 @@ class Crud extends PDO
         return $this;
     }
 
-
     /**
      * Method to get last insert id From insert statement
      * @access public
@@ -167,10 +172,9 @@ class Crud extends PDO
         return $this->db->lastInsertId();
     }
 
-
     /**
      * 
-     *Execute the query 
+     * Execute the query 
      */
     public function execute()
     {
@@ -179,11 +183,12 @@ class Crud extends PDO
             $sql = $this->query . $this->where . $this->order . $this->limit;
             $stmt = $this->db->prepare( $sql );
             $stmt->execute( $this->bind );
-            $this->query = $this->where = $this->order = $this->limit = null;
+            $count = $this->count; //cache this value cause if use directly, statement below will always make $this->count = null
+            $this->query = $this->where = $this->order = $this->limit = $this->count =null;
 
-            if( preg_match( '/^sel/i', trim( $sql ) ) )
+            if ( preg_match( '/^sel/i', trim( $sql ) ) )
             {
-                return $stmt->fetchAll( PDO::FETCH_ASSOC );
+                return is_null( $count ) ? $stmt->fetchAll( PDO::FETCH_ASSOC ) :count( $stmt->fetchAll( PDO::FETCH_ASSOC ) ) ;
             }
             else
             {
@@ -196,23 +201,21 @@ class Crud extends PDO
         }
     }
 
-
     /**
      * 
      * Build bind parameter
      */
     protected function bind( $bind )
     {
-        if( !is_array( $bind ) )
+        if ( !is_array( $bind ) )
         {
-            if( !empty( $bind ) )
+            if ( !empty( $bind ) )
                 $bind = array( $bind );
             else
-                $bind = array();
+                $bind = array( );
         }
         return $bind;
     }
-
 
 }
 
