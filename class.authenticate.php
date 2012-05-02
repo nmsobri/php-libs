@@ -161,8 +161,6 @@ class Authentication
 
         $recordFound = $this->db->select( $this->table )->where( "{$this->usernameField}='{$username}' and {$this->passwordField}='{$password}'" )->total_row()->execute();
 
-        print_r($recordFound);
-        exit;
         if ( $recordFound == 1 )
         {
             return true;
