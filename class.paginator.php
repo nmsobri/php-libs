@@ -3,7 +3,7 @@
 
 /**
  * New and improve pagination class
- * @author Joddy
+ * @author slier
  */
 class Pagination
 {
