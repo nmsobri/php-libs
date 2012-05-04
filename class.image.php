@@ -51,6 +51,7 @@ Class Image
         catch ( Exception $e )
         {
             echo $e->getMessage();
+            exit; //no more further processing
         }
     }
 
