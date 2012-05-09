@@ -29,7 +29,7 @@ class Crud extends PDO
      * @param string $dsn
      * @param string $username
      * @param string $password
-     * @return mixed 
+     * @return mixed
      */
     protected function connect( $dsn, $username, $password )
     {
@@ -120,12 +120,12 @@ class Crud extends PDO
 
     public function total_row()
     {
-        $this->count = true;
+        $this->count = 100;
         return $this;
     }
 
     /**
-     * 
+     *
      * Setup where clause
      */
     public function where( $where, $bind = null )
@@ -143,8 +143,8 @@ class Crud extends PDO
     }
 
     /**
-     * 
-     * Setup order by clause 
+     *
+     * Setup order by clause
      */
     public function orderby( $order )
     {
@@ -153,7 +153,7 @@ class Crud extends PDO
     }
 
     /**
-     * 
+     *
      * Setup limit clause
      */
     public function limit( $start, $limit )
@@ -173,8 +173,8 @@ class Crud extends PDO
     }
 
     /**
-     * 
-     * Execute the query 
+     *
+     * Execute the query
      */
     public function execute()
     {
@@ -198,11 +198,12 @@ class Crud extends PDO
         catch ( PDOException $e )
         {
             echo $e->getMessage();
+            exit();
         }
     }
 
     /**
-     * 
+     *
      * Build bind parameter
      */
     protected function bind( $bind )
@@ -218,5 +219,4 @@ class Crud extends PDO
     }
 
 }
-
 ?>
