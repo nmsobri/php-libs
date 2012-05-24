@@ -236,6 +236,23 @@ class Upload
     }
 
     /**
+     *Get file bname
+     * @return string 
+     */
+    public function getFileName()
+    {
+
+        if ( is_null( $this->fullPathToFile ) )
+        {
+            trigger_error( 'Pleease call method upload() first', E_USER_ERROR );
+        }
+        else
+        {
+            return basename( $this->fullPathToFile );
+        }
+    }
+
+    /**
      *
      * Move The Uploaded File To New Location
      * @access private
@@ -510,7 +527,7 @@ class Upload
         $error[ 3 ] = 'The uploaded file was only partially uploaded.';
         $error[ 4 ] = 'An error occured while uploading.';
         $error[ 10 ] = 'Please select a file for upload.';
-        $error[ 11 ] = 'Only files with the following allowedExtensions are allowed: <b>' . $this->extErrorString . '</b>';
+        $error[ 11 ] = 'Only files with the following extensions are allowed: <b>' . $this->extErrorString . '</b>';
         $error[ 12 ] = 'Sorry, the filename contains invalid characters. Use only alphanumerical chars and separate parts of the name (if needed) with an underscore. <br>A valid filename ends with one dot followed by the extension.';
         $error[ 13 ] = 'The filename exceeds the maximum length of ' . $this->filenameLength . ' characters.';
         $error[ 14 ] = 'Sorry, the upload directory doesn\'t exist!.';
