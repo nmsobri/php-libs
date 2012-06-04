@@ -528,7 +528,7 @@ class Upload
         $error[ 4 ] = 'An error occured while uploading.';
         $error[ 10 ] = 'Please select a file for upload.';
         $error[ 11 ] = 'Only files with the following extensions are allowed: <b>' . $this->extErrorString . '</b>';
-        $error[ 12 ] = 'Sorry, the filename contains invalid characters. Use only alphanumerical chars and separate parts of the name (if needed) with an underscore. <br>A valid filename ends with one dot followed by the extension.';
+        $error[ 12 ] = 'Sorry, the filename contains invalid characters. Use only alphanumerical chars and separate parts of the name (if needed) with an underscore.';
         $error[ 13 ] = 'The filename exceeds the maximum length of ' . $this->filenameLength . ' characters.';
         $error[ 14 ] = 'Sorry, the upload directory doesn\'t exist!.';
         $error[ 15 ] = 'Uploading <b>' . $this->theFile . '...Error!</b> Sorry, a file with this name already exitst.';
@@ -544,7 +544,7 @@ class Upload
         }
         else
         {
-            $this->message[ ] = $this->errorText( 4 );
+            $this->message[ ] = $this->errorText( $this->httpError );
             return false;
         }
     }
