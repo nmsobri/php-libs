@@ -522,7 +522,7 @@ class Upload
     private function errorText( $err_num )
     {
         $error[ 0 ] = 'File: <b>' . $this->theFile . '</b> successfully uploaded!';
-        $error[ 1 ] = 'The uploaded file exceeds the max. upload filesize directive in the server configuration.';
+        $error[ 1 ] = 'The uploaded file exceeds the max upload filesize directive in the server configuration.';
         $error[ 2 ] = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the html form.';
         $error[ 3 ] = 'The uploaded file was only partially uploaded.';
         $error[ 4 ] = 'An error occured while uploading.';
