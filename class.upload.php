@@ -526,6 +526,8 @@ class Upload
         $error[ 2 ] = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the html form.';
         $error[ 3 ] = 'The uploaded file was only partially uploaded.';
         $error[ 4 ] = 'An error occured while uploading.';
+        $error[ 6 ] = 'Missing a temporary folder.';
+        $error[ 7 ] = 'Failed to write file to disk.';
         $error[ 10 ] = 'Please select a file for upload.';
         $error[ 11 ] = 'Only files with the following extensions are allowed: <b>' . $this->extErrorString . '</b>';
         $error[ 12 ] = 'Sorry, the filename contains invalid characters. Use only alphanumerical chars and separate parts of the name (if needed) with an underscore.';
