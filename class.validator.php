@@ -1053,6 +1053,7 @@ class Validator
      * @access protected
      * @var array
      */
+     
     protected $validators;
 
     /**
