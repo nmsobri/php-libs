@@ -10,21 +10,33 @@ class Request
         $this->session = $session;
     }
 
+    
+    
+    
     public function isPost()
     {
         return isset( $_POST );
     }
 
+    
+    
+    
     public function isGet()
     {
         return isset( $_GET );
     }
 
+    
+    
+    
     public function isAjax()
     {
         return (!empty( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) && strtolower( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) == 'xmlhttprequest' ) ? true : false;
     }
 
+    
+    
+    
     public function postToGet()
     {
         /*quickly delete session data iff this GET data don exist (make session only available on this page and only when GET data is exist)*/
