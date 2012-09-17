@@ -45,23 +45,8 @@ class Form
     public function __construct( $formMethod = 'Post' )
     {
         $formMethod = ( is_null( $formMethod ) ) ? 'Post' : ucfirst( strtolower( $formMethod ) );
-
         $this->formData = ( $formMethod == 'Post' ) ? $_POST : $_GET;
         $this->formMethod = $formMethod;
-        $this->session = $session;
-    }
-
-
-
-
-    /**
-     *
-     * Set Form Data Incase Form Get Redirect And Lost The POSTed Data
-     * @param mixed $data
-     */
-    public function setFormData( &$data )
-    {
-        $this->formData = $data;
     }
 
 
@@ -72,25 +57,23 @@ class Form
      * @access public
      * @param string $name
      * @param mixed $defaultValue
-     * @param mixed $attributes['id']
-     * @param mixed $attributes['class']
-     * @param mixed $attributes['event']
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
+     * @param mixed $attr['disabled']
      * @return string
      */
-    public function text( $name, $defaultValue = '', $attributes = null )
+    public function text( $name, $defaultValue = '', $attr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( ); /* Cast to an array if $atrributes exist otherwise create an empty array */
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( ); /* Cast to an array if $atrributes exist otherwise create an empty array */
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $event = ( array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
-        $readOnly = ( array_key_exists( 'readOnly', $attributes ) ) ? 'readonly="readonly"' : '';
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
+        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
-        $textValue = isset( $this->formData[ $name ] ) ? $this->formData[ $name ] : $defaultValue;
+        $value = isset( $this->formData[ $name ] ) ? $this->formData[ $name ] : $defaultValue;
         $text = '';
-        $text .= '<input type="text" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $textValue . '" ' . $readOnly;
-        $text .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
+        $text .= '<input type="text" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . '>';
         $text .= PHP_EOL;
         return $text;
     }
@@ -103,29 +86,28 @@ class Form
      * @access public
      * @param string $name
      * @param mixed $defaultValue
-     * @param mixed $attributes['id']
-     * @param mixed $attributes['class']
-     * @param mixed $attributes['event']
-     * @param mixed $attributes['cols']
-     * @param mixed $attributes['rows']
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
+     * @param mixed $attr['disabled']
+     * @param mixed $attr['cols']
+     * @param mixed $attr['rows']
      * @return string
      */
-    public function textarea( $name, $defaultValue = '', $attributes = null )
+    public function textarea( $name, $defaultValue = '', $attr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( );
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $event = ( array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
-        $cols = ( array_key_exists( 'cols', $attributes ) ) ? $attributes[ 'cols' ] : 20;
-        $rows = ( array_key_exists( 'rows', $attributes ) ) ? $attributes[ 'rows' ] : 3;
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
+        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $cols = ( array_key_exists( 'cols', $attr ) ) ? $attr[ 'cols' ] : 20;
+        $rows = ( array_key_exists( 'rows', $attr ) ) ? $attr[ 'rows' ] : 3;
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
-        $textAreaValue = isset( $this->formData[ $name ] ) ? $this->formData[ $name ] : $defaultValue;
+        $value = isset( $this->formData[ $name ] ) ? $this->formData[ $name ] : $defaultValue;
         $textarea = '';
-        $textarea .= '<textarea name="' . $name . '" id="' . $id . '" class="' . $class . '" cols="' . $cols . '" rows="' . $rows . '"';
-        $textarea .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
-        $textarea .= $textAreaValue;
+        $textarea .= '<textarea name="' . $name . '" id="' . $id . '" class="' . $class . '" cols="' . $cols . '" rows="' . $rows . '" ' . $disabled . '>';
+        $textarea .= $value;
         $textarea .= '</textarea>';
         $textarea .= PHP_EOL;
         return $textarea;
@@ -139,20 +121,19 @@ class Form
      * Method to create password control
      * @access public
      * @param string $name
-     * @param mixed $attributes
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
      * @return string
      */
-    public function password( $name, $attributes = null )
+    public function password( $name, $attr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( );
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $event = ( array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
 
         $password = '';
-        $password .= '<input type="password" name="' . $name . '" id="' . $id . '" class="' . $class . '"';
-        $password .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
+        $password .= '<input type="password" name="' . $name . '" id="' . $id . '" class="' . $class . '">';
         $password .= PHP_EOL;
         return $password;
     }
@@ -168,10 +149,14 @@ class Form
      * @param mixed $selected marked option selected
      * @param array $group create option group
      * @param mixed $defaultValue
-     * @param mixed $attributes['id']
-     * @param mixed $attributes['class']
-     * @param mixed $attributes['event']
-     * @param $options is passed like this:: 
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
+     * @param mixed $attr['disabled']
+     * @param mixed $attr['multiple']
+     * @param mixed $attr['size']
+     * 
+     * 
+     * @param $options is pass as follows:
      * 
      * array('png'=>'Penang','kl'=>'K.Lumpur') will create select option like this 
      * <select>
@@ -190,27 +175,27 @@ class Form
      * 
      * 
      */
-    public function select( $name, $options, $selected = null, $attributes = null )
+    public function select( $name, $options, $selected = null, $atr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( );
+        $atr = (!is_null( $atr ) ) ? ( array ) $atr : array( );
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $multiple = ( array_key_exists( 'multiple', $attributes ) ) ? $attributes[ 'multiple' ] : null;
-        $size = ( array_key_exists( 'size', $attributes ) ) ? $attributes[ 'size' ] : null;
-        $event = (array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
+        $id = ( array_key_exists( 'id', $atr ) ) ? $atr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $atr ) ) ? $atr[ 'class' ] : $name . 'Class';
+        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $multiple = ( array_key_exists( 'multiple', $atr ) ) ? $atr[ 'multiple' ] : null;
+        $size = ( array_key_exists( 'size', $atr ) ) ? $atr[ 'size' ] : null;
         $selected = ( is_null( $selected ) ) ? '' : $selected;
 
         static $instance = 0;
         static $optionsList;
-        $selectValue = '';
+        $value = '';
 
         if ( $instance == 0 ) /* need to check if this method call in sequential (calling this method twice) to make sure it dosent cache previous <option> */
         {
             $optionsList = '';
         }
 
-        $selectValue = isset( $this->formData[ $name ] ) ? $this->formData[ $name ] : $selected;
+        $value = isset( $this->formData[ $name ] ) ? $this->formData[ $name ] : $selected;
 
         foreach ( $options as $key => $val )
         {
@@ -225,7 +210,7 @@ class Form
             else
             {
                 $optionsList .='<option value="' . $key . '" ';
-                if ( $key == $selectValue )
+                if ( $key == $value )
                 {
                     $optionsList .= 'selected="selected"';
                 }
@@ -238,7 +223,7 @@ class Form
         $select .= (!is_null( $multiple ) ) ? ' multiple="multiple"' : '';
         $select .= (!is_null( $size ) ) ? ' size="' . $size . '"' : '';
         $select .= ' id="' . $id . '" class="' . $class . '"';
-        $select .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
+        $select .= $disabled . '>';
         $select .= PHP_EOL;
         $select .= $optionsList;
         $select .= '</select>';
@@ -255,18 +240,18 @@ class Form
      * @access public
      * @param string $name
      * @param mixed $value
-     * @param mixed $attributes['id']
-     * @param mixed $attributes['class']
-     * @param mixed $attributes['event']
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
+     * @param mixed $attr['disabled']
      * @return string
      */
-    public function radio( $name, $value, $checked = false, $attributes = null )
+    public function radio( $name, $value, $checked = false, $attr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( );
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $event = ( array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
+        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
         $checked = ( is_null( $checked ) ) ? false : ( boolean ) $checked;
 
         $radio = '';
@@ -281,8 +266,7 @@ class Form
             $radio .= 'checked';
         }
 
-        $radio .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
-        $radio .= PHP_EOL;
+        $radio .= $disabled . '>' . PHP_EOL;
         return $radio;
     }
 
@@ -294,18 +278,18 @@ class Form
      * @access public
      * @param mixed $name
      * @param mixed $value
-     * @param mixed $attributes['id']
-     * @param mixed $attributes['class']
-     * @param mixed $attributes['event']
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
+     * @param mixed $attr['disabled']
      * @return string
      */
-    public function checkbox( $name, $value, $checked = false, $attributes = null )
+    public function checkbox( $name, $value, $checked = false, $attr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( );
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $event = ( array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
+        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
         $checked = ( is_null( $checked ) ) ? false : ( boolean ) $checked;
 
         $checkbox = '';
@@ -316,8 +300,7 @@ class Form
             $checkbox .= 'checked';
         }
 
-        $checkbox .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
-        $checkbox .= PHP_EOL;
+        $checkbox .= $disabled . '>' . PHP_EOL;
         return $checkbox;
     }
 
@@ -328,22 +311,21 @@ class Form
      * Method to create file control (for upload)
      * @access public
      * @param mixed $name
-     * @param mixed $attributes['id']
-     * @param mixed $attributes['class']
-     * @param mixed $attributes['event']
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
+     * @param mixed $attr['disabled']
      * @return string
      */
-    public function file( $name, $attributes = null )
+    public function file( $name, $attr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( );
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $event = ( array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
+        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
 
         $file = '';
-        $file .= '<input type="file" name="' . $name . '" id="' . $id . '" class="' . $class . '"';
-        $file .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
+        $file .= '<input type="file" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled . '>';
         $file .= PHP_EOL;
         return $file;
     }
@@ -356,22 +338,19 @@ class Form
      * @access public
      * @param mixed $name
      * @param mixed $value
-     * @param mixed $attributes['id']
-     * @param mixed $attributes['class']
-     * @param mixed $attributes['event']
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
      * @return string
      */
-    public function hidden( $name, $value, $attributes = null )
+    public function hidden( $name, $value, $attr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( );
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $event = ( array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
 
         $hidden = '';
-        $hidden .= '<input type="hidden" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '"';
-        $hidden .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
+        $hidden .= '<input type="hidden" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '">';
         $hidden .= PHP_EOL;
         return $hidden;
     }
@@ -385,22 +364,21 @@ class Form
      * @access public
      * @param mixed $name
      * @param mixed $value
-     * @param mixed $attributes['id']
-     * @param mixed $attributes['class']
-     * @param mixed $attributes['event']
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
+     * @param mixed $attr['disabled']
      * @return string
      */
-    public function button( $name, $value, $attributes = null )
+    public function button( $name, $value, $attr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( );
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $event = ( array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
+        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
 
         $button = '';
-        $button .= '<input type="button" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '"';
-        $button .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
+        $button .= '<input type="button" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ' . $disabled . '>';
         $button .= PHP_EOL;
         return $button;
     }
@@ -412,23 +390,21 @@ class Form
      * Method to create submit control
      * @access public
      * @param mixed $name
-     * @param mixed $attributes['id']
-     * @param mixed $attributes['class']
-     * @param mixed $attributes['event']
-     * @param mixed $attributes['caption']
+     * @param mixed $attr['id']
+     * @param mixed $attr['class']
+     * @param mixed $attr['disabled']
      * @return string
      */
-    public function submit( $name, $value = 'Submit', $attributes = null )
+    public function submit( $name, $value = 'Submit', $attr = null )
     {
-        $attributes = (!is_null( $attributes ) ) ? ( array ) $attributes : array( );
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
-        $id = ( array_key_exists( 'id', $attributes ) ) ? $attributes[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attributes ) ) ? $attributes[ 'class' ] : $name . 'Class';
-        $event = ( array_key_exists( 'event', $attributes ) ) ? $attributes[ 'event' ] : null;
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
+        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
 
         $submit = '';
-        $submit .= '<input type="submit" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '"';
-        $submit .= (!is_null( $event ) ) ? ' ' . $event . '>' : '>';
+        $submit .= '<input type="submit" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . '>';
         $submit .= PHP_EOL;
         return $submit;
     }

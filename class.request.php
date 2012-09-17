@@ -40,7 +40,7 @@ class Request
     public function postToGet()
     {
         /*quickly delete session data iff this GET data don exist (make session only available on this page and only when GET data is exist)*/
-        if ( !$_GET[ 'post' ] ) 
+        if ( !@$_GET[ 'post' ] ) 
         {
             unset( $_SESSION[ $_SERVER[ 'PHP_SELF' ] . 'POST' ] );
             unset( $_SESSION[ $_SERVER[ 'PHP_SELF' ] . 'FILES' ] );
