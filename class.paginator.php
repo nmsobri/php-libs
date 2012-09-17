@@ -15,6 +15,7 @@ class Pagination
     protected $itemsPerPage;
 
 
+    
     /**
      *
      * @var int
@@ -23,6 +24,7 @@ class Pagination
     protected $totalItems;
 
 
+    
     /**
      *
      * @var int
@@ -31,6 +33,7 @@ class Pagination
     protected $currentPage;
 
 
+    
     /**
      *
      * @var int
@@ -39,6 +42,7 @@ class Pagination
     protected $totalPages;
 
 
+    
     /**
      *
      * @var int
@@ -47,6 +51,7 @@ class Pagination
     protected $midRange;
 
 
+    
     /**
      *
      * @var string
@@ -55,6 +60,7 @@ class Pagination
     protected $return;
 
 
+    
     /**
      *
      * @var mixed
@@ -63,6 +69,7 @@ class Pagination
     protected $queryString;
 
 
+    
     /**
      *
      * @var int

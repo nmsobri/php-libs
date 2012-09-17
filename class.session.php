@@ -5,10 +5,9 @@
  * Session Class
  * @author slier
  */
-
-
 class Session
 {
+
     /**
      *
      * @var array
@@ -97,7 +96,7 @@ class Session
      */
     public function set( $name, $value )
     {
-        $this->_sess[$name] = $value;
+        $this->_sess[ $name ] = $value;
     }
 
 
@@ -112,7 +111,7 @@ class Session
      */
     public function flash( $key, $val )
     {
-        $_SESSION['flash'][$key] = 'new';
+        $_SESSION[ 'flash' ][ $key ] = 'new';
         $this->set( $key, $val );
     }
 
@@ -128,13 +127,13 @@ class Session
      */
     public function keepFlash( $keys = null )
     {
-        $keys = ( $keys === null ) ? array_keys( $_SESSION['flash'] ) : func_get_args();
+        $keys = ( $keys === null ) ? array_keys( $_SESSION[ 'flash' ] ) : func_get_args();
 
-        foreach( $keys as $key )
+        foreach ( $keys as $key )
         {
-            if( isset( $_SESSION['flash'][$key] ) )
+            if ( isset( $_SESSION[ 'flash' ][ $key ] ) )
             {
-                $_SESSION['flash'][$key] = 'new';
+                $_SESSION[ 'flash' ][ $key ] = 'new';
             }
         }
     }
@@ -150,7 +149,7 @@ class Session
      */
     public function del( $name )
     {
-        unset( $this->_sess[$name] );
+        unset( $this->_sess[ $name ] );
     }
 
 
@@ -165,9 +164,9 @@ class Session
      */
     public function get( $name )
     {
-        if( isset( $this->_sess[$name] ) )
+        if ( isset( $this->_sess[ $name ] ) )
         {
-            return $this->_sess[$name];
+            return $this->_sess[ $name ];
         }
     }
 
@@ -183,7 +182,7 @@ class Session
      */
     public function check( $name )
     {
-        return isset( $this->_sess[$name] ) ? true : false;
+        return isset( $this->_sess[ $name ] ) ? true : false;
     }
 
 
@@ -212,14 +211,14 @@ class Session
     public function getSessionCount()
     {
         $i = 0;
-        if( is_dir( $this->_path ) )
+        if ( is_dir( $this->_path ) )
         {
-            if( $dir = opendir( $this->_path ) )
+            if ( $dir = opendir( $this->_path ) )
             {
-                while( false !== ( $file = readdir( $dir ) ) )
+                while ( false !== ( $file = readdir( $dir ) ) )
                 {
                     // cek apakah prefix dari nama = sess_ dan yang pasti size nya > 0
-                    if( eregi( "sess_", $file ) )
+                    if ( eregi( "sess_", $file ) )
                     {
                         $i++;
                     }
@@ -284,9 +283,9 @@ class Session
      */
     private function initFlashData()
     {
-        if( !isset( $_SESSION['flash'] ) )
+        if ( !isset( $_SESSION[ 'flash' ] ) )
         {
-            $_SESSION['flash'] = array( );
+            $_SESSION[ 'flash' ] = array( );
         }
         $this->expireFlash();
     }
@@ -303,22 +302,22 @@ class Session
         static $run;
 
         //Method can only be run once
-        if( $run === TRUE )
+        if ( $run === TRUE )
             return;
 
-        if( !empty( $_SESSION['flash'] ) )
+        if ( !empty( $_SESSION[ 'flash' ] ) )
         {
-            foreach( $_SESSION['flash'] as $key => $state )
+            foreach ( $_SESSION[ 'flash' ] as $key => $state )
             {
-                if( $state === 'old' )
+                if ( $state === 'old' )
                 {
                     #Flash has expired
-                    unset( $_SESSION['flash'][$key], $_SESSION[$key] );
+                    unset( $_SESSION[ 'flash' ][ $key ], $_SESSION[ $key ] );
                 }
                 else
                 {
                     #Mark it old,so it expire in next request
-                    $_SESSION['flash'][$key] = 'old';
+                    $_SESSION[ 'flash' ][ $key ] = 'old';
                 }
             }
         }
@@ -341,6 +340,7 @@ class Session
         header( 'Location: ' . $path );
         exit();
     }
+
 
 
 

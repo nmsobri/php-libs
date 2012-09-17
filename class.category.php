@@ -1,13 +1,13 @@
 <?php
 
 /**
-  CREATE TABLE IF NOT EXISTS `category` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `parent` int(10) unsigned DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `description` tinytext,
-  PRIMARY KEY (`id`)
-  ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
+ *  CREATE TABLE IF NOT EXISTS `category` (
+ *  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ *  `parent` int(10) unsigned DEFAULT NULL,
+ *  `title` varchar(255) DEFAULT NULL,
+ *  `description` tinytext,
+ *   PRIMARY KEY (`id`)
+ *   ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
  */
 class Category
 {
@@ -16,12 +16,16 @@ class Category
     protected $tableName;
     protected $categories;
 
+
+
+
     public function __construct( Crud $db, $tableName )
     {
         $this->db = $db;
         $this->tableName = $tableName;
         $this->categories = $this->db->query( "SELECT * FROM {$this->tableName} order by parent, id " );
     }
+
 
 
 
@@ -34,17 +38,17 @@ class Category
         static $collections = array( );
         $rootCategory = $this->rootNodes();
 
-        foreach( $rootCategory as $x => $parent )
+        foreach ( $rootCategory as $x => $parent )
         {
-            foreach( $this->categories as $y => $child )
+            foreach ( $this->categories as $y => $child )
             {
-                if( $parent[ 'id' ] == $child[ 'parent' ] )
+                if ( $parent[ 'id' ] == $child[ 'parent' ] )
                 {
-                    if( @is_null( $collections[ $parent[ 'title' ] ] ) )
+                    if ( @is_null( $collections[ $parent[ 'title' ] ] ) )
                     {
                         $collections[ $parent[ 'title' ] ] = array( );
                     }
-                    if( $this->hasChild( $child[ 'id' ] ) )
+                    if ( $this->hasChild( $child[ 'id' ] ) )
                     {
                         $collections[ $parent[ 'title' ] ][ $this->padding( 3 ) . $child[ 'title' ] ] = $this->buildChild( $child[ 'id' ], 3, 1 );
                     }
@@ -55,13 +59,14 @@ class Category
                 }
             }
             /* This part is for root category that dosent have child */
-            if( @is_null( $collections[ $parent[ 'title' ] ] ) )
+            if ( @is_null( $collections[ $parent[ 'title' ] ] ) )
             {
                 $collections[ $parent[ 'title' ] ] = $parent[ 'title' ];
             }
         }
         return $collections;
     }
+
 
 
 
@@ -79,6 +84,7 @@ class Category
         $sql = "INSERT INTO {$this->tableName} ( parent, title, description ) VALUES ( {$parent}, '{$title}', '{$description}' )";
         return $this->db->query( $sql );
     }
+
 
 
 
@@ -101,6 +107,7 @@ class Category
 
 
 
+
     /**
      * Delete category
      * @access public
@@ -118,6 +125,7 @@ class Category
 
 
 
+
     /**
      * Check if current node has child
      * @param int $id
@@ -125,15 +133,16 @@ class Category
      */
     protected function hasChild( $id )
     {
-        foreach( $this->categories as $key => $val )
+        foreach ( $this->categories as $key => $val )
         {
-            if( $id == $val[ 'parent' ] )
+            if ( $id == $val[ 'parent' ] )
             {
                 return true;
             }
         }
         return false;
     }
+
 
 
 
@@ -145,15 +154,16 @@ class Category
     {
         $rootCategory = array( );
 
-        foreach( $this->categories as $key => $val )
+        foreach ( $this->categories as $key => $val )
         {
-            if( is_null( $val[ 'parent' ] ) )
+            if ( is_null( $val[ 'parent' ] ) )
             {
                 $rootCategory[ $key ] = $this->categories[ $key ];
             }
         }
         return $rootCategory;
     }
+
 
 
 
@@ -166,11 +176,11 @@ class Category
     {
         $stack = array( );
 
-        foreach( $this->categories as $key => $val )
+        foreach ( $this->categories as $key => $val )
         {
-            if( $id == $val[ 'parent' ] )
+            if ( $id == $val[ 'parent' ] )
             {
-                if( $this->hasChild( $val[ 'id' ] ) )
+                if ( $this->hasChild( $val[ 'id' ] ) )
                 {
                     $stack[ $this->padding( $parentPad + 2 ) . $val[ 'title' ] ] = $this->buildChild( $val[ 'id' ], $parentPad + 2, $childPad + 2 );
                 }
@@ -185,6 +195,7 @@ class Category
 
 
 
+
     /**
      * Get all child under this node
      * @param int $id
@@ -194,11 +205,11 @@ class Category
     {
         static $childs = array( );
 
-        foreach( $this->categories as $key => $val )
+        foreach ( $this->categories as $key => $val )
         {
-            if( $id == $val[ 'parent' ] )
+            if ( $id == $val[ 'parent' ] )
             {
-                if( $this->hasChild( $val[ 'id' ] ) )
+                if ( $this->hasChild( $val[ 'id' ] ) )
                 {
                     array_push( $childs, $val[ 'id' ] );
                     $this->nodeChild( $val[ 'id' ] );
@@ -207,6 +218,7 @@ class Category
         }
         return $childs;
     }
+
 
 
 
@@ -220,6 +232,7 @@ class Category
     {
         return str_repeat( $pad, $times );
     }
+
 
 
 

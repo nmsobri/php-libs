@@ -1,13 +1,10 @@
 <?php
 
-
 /**
  * Exception Class
  * Note:When Using This Class..U dont Need to Use Try Catch Block
  * @author slier
  */
-
-
 class GenerealException
 {
 
@@ -42,6 +39,9 @@ class GenerealException
         echo "</pre>";
         echo '</div>';
     }
+
+
+
 
 }
 

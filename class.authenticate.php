@@ -17,12 +17,14 @@ class Authentication
     private $db = false;
 
 
+
     /**
      * Store Session Object
      * @var Session
      * @access private
      */
     private $ses = false;
+
 
 
     /**
@@ -33,12 +35,14 @@ class Authentication
     private $cookie = false;
 
 
+
     /**
      * Store Table Name Used For Authentication
      * @var string
      * @access private
      */
     private $table = null;
+
 
 
     /**
@@ -49,12 +53,14 @@ class Authentication
     private $cookSesName = 'auth';
 
 
+
     /**
      * Cached passed in username
      * @var string
      * @var access private
      */
     private $username = null;
+
 
 
     /**
@@ -65,12 +71,14 @@ class Authentication
     private $password = null;
 
 
+
     /**
      * Store Username Coulmn In The Database
      * @var string
      * @access private
      */
     public $usernameField = 'username';
+
 
 
     /**
@@ -211,6 +219,9 @@ class Authentication
             return false;
         }
     }
+
+
+
 
 }
 

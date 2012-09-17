@@ -26,12 +26,16 @@ class Upload
      */
     private $theFile = null;
 
+
+
     /**
      *
      * @access private
      * @var resource
      */
     private $theTempFile = null;
+
+
 
     /**
      *
@@ -40,12 +44,16 @@ class Upload
      */
     private $uploadDir = null;
 
+
+
     /**
      *
      * @access private
      * @var mixed
      */
     private $httpError = null;
+
+
 
     /**
      *
@@ -54,12 +62,16 @@ class Upload
      */
     private $allowedExtensions = array( );
 
+
+
     /**
      *
      * @access private
      * @var array
      */
     private $message = array( );
+
+
 
     /**
      *
@@ -68,12 +80,16 @@ class Upload
      */
     private $extErrorString = null;
 
+
+
     /**
      *
      * @access private
      * @var string
      */
     private $copyFile = null;
+
+
 
     /**
      *
@@ -82,12 +98,16 @@ class Upload
      */
     private $fullPathToFile = null;
 
+
+
     /**
      *
      * @access private
      * @var bool
      */
     private $renameFile = false;
+
+
 
     /**
      *
@@ -96,12 +116,16 @@ class Upload
      */
     private $replaceOldFile = false;
 
+
+
     /**
      *
      * @access
      * @var bool
      */
     private $createDirectory = true;
+
+
 
     /**
      *
@@ -110,12 +134,17 @@ class Upload
      */
     private $filenameCheck = true;
 
+
+
     /**
      *
      * @access private
      * @var int
      */
     private $filenameLength = 100;
+
+
+
 
     /**
      *
@@ -130,6 +159,9 @@ class Upload
         $this->httpError = $file[ 'error' ];
         $this->allowedExtensions = $extensions;
     }
+
+
+
 
     /**
      *
@@ -166,6 +198,9 @@ class Upload
         return true;
     }
 
+
+
+
     /**
      *
      * Show Appropriate Error Message
@@ -182,6 +217,9 @@ class Upload
         return $msg_string;
     }
 
+
+
+
     /**
      *
      * Method to set how long can file name can be
@@ -193,6 +231,9 @@ class Upload
         $this->filenameLength = ( int ) $length;
     }
 
+
+
+
     /**
      *
      * Method to set either to check for valid file name
@@ -202,6 +243,9 @@ class Upload
     {
         $this->filenameCheck = ( bool ) $type;
     }
+
+
+
 
     /**
      *
@@ -213,15 +257,24 @@ class Upload
         $this->createDirectory = ( bool ) $type;
     }
 
+
+
+
     public function setRenameFile( $type = true )
     {
         $this->renameFile = ( boolean ) $type;
     }
 
+
+
+
     public function setReplaceOldFile( $type = true )
     {
         $this->replaceOldFile = ( boolean ) $type;
     }
+
+
+
 
     public function getFullPathToFile()
     {
@@ -235,8 +288,11 @@ class Upload
         }
     }
 
+
+
+
     /**
-     *Get file bname
+     * Get file bname
      * @return string 
      */
     public function getFileName()
@@ -251,6 +307,9 @@ class Upload
             return basename( $this->fullPathToFile );
         }
     }
+
+
+
 
     /**
      *
@@ -292,6 +351,9 @@ class Upload
         }
     }
 
+
+
+
     /**
      *
      * Set File Name
@@ -313,6 +375,9 @@ class Upload
         }
         return $name;
     }
+
+
+
 
     /**
      *
@@ -357,6 +422,9 @@ class Upload
         }
     }
 
+
+
+
     /**
      *
      * Check Wether Uploaded File Is In The Allowed Extension Type
@@ -380,6 +448,9 @@ class Upload
         }
     }
 
+
+
+
     /**
      * Get File Extension
      * @access private
@@ -391,6 +462,9 @@ class Upload
         $ext = strtolower( strrchr( $file, '.' ) );
         return $ext;
     }
+
+
+
 
     /**
      * Check Directory
@@ -419,6 +493,9 @@ class Upload
         }
     }
 
+
+
+
     /**
      * Check Wether File Already Exist
      * @access private
@@ -444,6 +521,9 @@ class Upload
         }
     }
 
+
+
+
     /**
      *
      * Get Uploaded File Info
@@ -466,6 +546,9 @@ class Upload
         return $str;
     }
 
+
+
+
     /**
      * Safely add '/' to the end of $dir if its not exist
      * @access private
@@ -480,6 +563,9 @@ class Upload
         }
         return $dir;
     }
+
+
+
 
     /**
      * This method was first located inside the foto_upload extension
@@ -504,6 +590,9 @@ class Upload
         }
     }
 
+
+
+
     /**
      *
      * This method is only used for detailed error reporting
@@ -514,6 +603,9 @@ class Upload
         $this->extErrorString = implode( ' ', $this->allowedExtensions );
     }
 
+
+
+
     /**
      * Some error (HTTP)reporting, change the messages or remove options if you like
      * @param mixed $err_num
@@ -521,13 +613,13 @@ class Upload
      */
     private function errorText( $err_num )
     {
-        $error[ 0 ]  = 'File: <b>' . $this->theFile . '</b> successfully uploaded!';
-        $error[ 1 ]  = 'The uploaded file exceeds the max upload filesize directive in the server configuration.';
-        $error[ 2 ]  = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the html form.';
-        $error[ 3 ]  = 'The uploaded file was only partially uploaded.';
-        $error[ 4 ]  = 'An error occured while uploading.';
-        $error[ 6 ]  = 'Missing a temporary folder.';
-        $error[ 7 ]  = 'Failed to write file to disk.';
+        $error[ 0 ] = 'File: <b>' . $this->theFile . '</b> successfully uploaded!';
+        $error[ 1 ] = 'The uploaded file exceeds the max upload filesize directive in the server configuration.';
+        $error[ 2 ] = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the html form.';
+        $error[ 3 ] = 'The uploaded file was only partially uploaded.';
+        $error[ 4 ] = 'An error occured while uploading.';
+        $error[ 6 ] = 'Missing a temporary folder.';
+        $error[ 7 ] = 'Failed to write file to disk.';
         $error[ 10 ] = 'Please select a file for upload.';
         $error[ 11 ] = 'Only files with the following extensions are allowed: <b>' . $this->extErrorString . '</b>';
         $error[ 12 ] = 'Sorry, the filename contains invalid characters. Use only alphanumerical chars and separate parts of the name (if needed) with an underscore.';
@@ -537,6 +629,9 @@ class Upload
         $error[ 16 ] = 'The uploaded file is renamed to <b>' . $this->copyFile . '</b>.';
         return $error[ $err_num ];
     }
+
+
+
 
     private function isFileUploaded()
     {
@@ -550,6 +645,9 @@ class Upload
             return false;
         }
     }
+
+
+
 
 }
 

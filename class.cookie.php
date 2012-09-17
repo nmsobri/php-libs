@@ -1,28 +1,18 @@
 <?php
 
-
 /**
  * Class For Handling Cookie
  * Cookie Always Exist In Next Request
  * But This Class Make Cookie Available In Current Request
  * @author Joddy
  */
-
-
 class Cookie
 {
+
     const OneDay = 86400;
-
-
     const SevenDays = 604800;
-
-
     const OneMonth = 2592000;
-
-
     const SixMonths = 15811200;
-
-
     const OneYear = 31536000;
 
 
@@ -37,7 +27,7 @@ class Cookie
      */
     public function check( $name )
     {
-        return isset( $_COOKIE[$name] );
+        return isset( $_COOKIE[ $name ] );
     }
 
 
@@ -53,7 +43,7 @@ class Cookie
      */
     public function get( $name )
     {
-        return ( isset( $_COOKIE[$name] ) ? $_COOKIE[$name] : null );
+        return ( isset( $_COOKIE[ $name ] ) ? $_COOKIE[ $name ] : null );
     }
 
 
@@ -75,14 +65,14 @@ class Cookie
     public function set( $name, $value, $expiry = self::OneYear, $path = '/', $domain = false )
     {
         $returnVal = false;
-        if( !headers_sent() )
+        if ( !headers_sent() )
         {
-            if( $domain === false )
+            if ( $domain === false )
             {
-                $domain = $_SERVER['HTTP_HOST'];
+                $domain = $_SERVER[ 'HTTP_HOST' ];
             }
 
-            if( is_numeric( $expiry ) )
+            if ( is_numeric( $expiry ) )
             {
                 $expiry += time();
             }
@@ -93,9 +83,9 @@ class Cookie
 
             $returnVal = @setcookie( $name, $value, $expiry, $path, $domain );
 
-            if( $returnVal )
+            if ( $returnVal )
             {
-                $_COOKIE[$name] = $value;
+                $_COOKIE[ $name ] = $value;
             }
         }
         return $returnVal;
@@ -117,21 +107,22 @@ class Cookie
     public function del( $name, $remove_from_global = true, $path = '/', $domain = false )
     {
         $returnVal = false;
-        if( !headers_sent() )
+        if ( !headers_sent() )
         {
-            if( $domain === false )
+            if ( $domain === false )
             {
-                $domain = $_SERVER['HTTP_HOST'];
+                $domain = $_SERVER[ 'HTTP_HOST' ];
             }
 
             $returnVal = setcookie( $name, '', time() - 3600, $path, $domain );
-            if( $remove_from_global )
+            if ( $remove_from_global )
             {
-                unset( $_COOKIE[$name] );
+                unset( $_COOKIE[ $name ] );
             }
         }
         return $retval;
     }
+
 
 
 

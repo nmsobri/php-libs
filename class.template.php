@@ -1,18 +1,18 @@
 <?php
 
-
 /**
  *
  * Template Class
  * @author slier
  */
-
 class Template
 {
 
     const DS = DIRECTORY_SEPARATOR;
 
-    
+
+
+
     /**
      * The variable property contains the variables
      * that can be used inside of the templates.
@@ -22,12 +22,14 @@ class Template
     private $variables = array( );
 
 
+
     /**
      * The directory where the templates are stored
      * @access private
      * @var string
      */
     private $templateDir = null;
+
 
 
     /**
@@ -41,6 +43,7 @@ class Template
     private $caching = false;
 
 
+
     /**
      * The directory where the cache files will be saved.
      * @access private
@@ -49,12 +52,14 @@ class Template
     private $cacheDir = 'cache';
 
 
+
     /**
      * Lifetime of a cache file in seconds.
      * @access private
      * @var int
      */
     private $cacheLifetime = 600;
+
 
 
     /**
@@ -96,7 +101,7 @@ class Template
      */
     public function set( $name, $value )
     {
-        $this->variables[$name] = $value;
+        $this->variables[ $name ] = $value;
     }
 
 
@@ -112,7 +117,7 @@ class Template
      */
     public function get( $name )
     {
-        return isset( $this->variables[$name] ) ? $this->variables[$name] : null;
+        return isset( $this->variables[ $name ] ) ? $this->variables[ $name ] : null;
     }
 
 
@@ -148,17 +153,17 @@ class Template
         $this->populateVar( $data );
         $output = $this->fetch( $template_file, $data );
 
-        if( $this->caching == true )
+        if ( $this->caching == true )
         {
             $this->addCache( $output, $template_file );
         }
 
-        if( $this->useGzip )
+        if ( $this->useGzip )
         {
             /* Check wether browser support compress output */
-            if( substr_count( $_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip' ) )
+            if ( substr_count( $_SERVER[ 'HTTP_ACCEPT_ENCODING' ], 'gzip' ) )
             {
-                if( extension_loaded( 'zlib' ) )
+                if ( extension_loaded( 'zlib' ) )
                 {
                     ob_start( 'ob_gzhandler' );
                 }
@@ -197,7 +202,7 @@ class Template
         $this->populateVar( $data );
         $template_file = $this->templateDir . $template_file;
 
-        if( $this->caching == true && $this->isCached( $template_file ) )
+        if ( $this->caching == true && $this->isCached( $template_file ) )
         {
             $output = $this->getCache( $template_file );
         }
@@ -222,7 +227,7 @@ class Template
     private function getOutput( $template_file )
     {
         extract( $this->variables );
-        if( file_exists( $template_file ) )
+        if ( file_exists( $template_file ) )
         {
             ob_start();
             include( $template_file );
@@ -249,7 +254,7 @@ class Template
     {
         $template_dir = $this->fixPath( $dir );
 
-        if( is_dir( $template_dir ) )
+        if ( is_dir( $template_dir ) )
         {
             $this->templateDir = $template_dir;
         }
@@ -274,7 +279,7 @@ class Template
         $cache_dir = $this->fixPath( $dir );
 
 
-        if( is_dir( $cache_dir ) && is_writable( $cache_dir ) )
+        if ( is_dir( $cache_dir ) && is_writable( $cache_dir ) )
         {
             $this->cacheDir = $cache_dir;
         }
@@ -311,7 +316,7 @@ class Template
      */
     public function setCaching( $state )
     {
-        if( is_bool( $state ) )
+        if ( is_bool( $state ) )
         {
             $this->caching = $state;
         }
@@ -342,7 +347,7 @@ class Template
      */
     private function checkCacheDir()
     {
-        if( is_dir( $this->cacheDir ) && is_writable( $this->cacheDir ) )
+        if ( is_dir( $this->cacheDir ) && is_writable( $this->cacheDir ) )
         {
             return true;
         }
@@ -366,7 +371,7 @@ class Template
      */
     public function isCached( $file )
     {
-        if( $this->checkCacheDir() )
+        if ( $this->checkCacheDir() )
         {
             $this->cacheDir = $this->fixPath( $this->cacheDir );
 
@@ -374,13 +379,13 @@ class Template
 
             $filename = $this->cacheDir . $cacheId . basename( $file );
 
-            if( is_file( $filename ) )
+            if ( is_file( $filename ) )
             {
                 clearstatcache();
                 /* time of file creation    current time-time file must exist
                   Current time must minus cached timed because current time always move,
                   so need to minus the cached time to check wether file creation time is greater than current time-cahched time, cause creation time si static */
-                if( filemtime( $filename ) > ( time() - $this->cacheLifetime ) )
+                if ( filemtime( $filename ) > ( time() - $this->cacheLifetime ) )
                 {
                     $isCached = true;
                 }
@@ -413,13 +418,13 @@ class Template
      */
     private function addCache( $content, $file )
     {
-        if( $this->checkCacheDir() )
+        if ( $this->checkCacheDir() )
         {
             $this->cacheDir = $this->fixPath( $this->cacheDir );
             $cacheId = md5( basename( $file ) );
             $filename = $this->cacheDir . $cacheId . basename( $file );
 
-            if( file_put_contents( $filename, $content ) == FALSE )
+            if ( file_put_contents( $filename, $content ) == FALSE )
             {
                 throw new Exception( "Unable to write to cache" );
             }
@@ -445,7 +450,7 @@ class Template
      */
     private function getCache( $file )
     {
-        if( $this->checkCacheDir() )
+        if ( $this->checkCacheDir() )
         {
             $this->cacheDir = $this->fixPath( $this->cacheDir );
             $cacheId = md5( basename( $file ) );
@@ -470,9 +475,9 @@ class Template
      */
     private function delCacheFile( $file )
     {
-        if( file_exists( $file ) )
+        if ( file_exists( $file ) )
         {
-            if( is_writable( $file ) )
+            if ( is_writable( $file ) )
             {
                 unlink( $file );
             }
@@ -494,9 +499,9 @@ class Template
      */
     private function isAssocArray( $array )
     {
-        foreach( array_keys( $array ) as $key => $val )
+        foreach ( array_keys( $array ) as $key => $val )
         {
-            if( is_numeric( $val ) )
+            if ( is_numeric( $val ) )
             {
 
                 return false;
@@ -515,17 +520,17 @@ class Template
      */
     private function populateVar( $data )
     {
-        if( ( count( $data ) > 0 ) )
+        if ( ( count( $data ) > 0 ) )
         {
-            if( !$this->isAssocArray( $data ) )
+            if ( !$this->isAssocArray( $data ) )
             {
                 throw new Exception( 'Array passed to template must be an associative array' );
             }
             else
             {
-                foreach( $data as $key => $val )
+                foreach ( $data as $key => $val )
                 {
-                    $this->variables[$key] = $val;
+                    $this->variables[ $key ] = $val;
                 }
             }
         }
@@ -546,13 +551,14 @@ class Template
     {
         $fixPath = $path;
 
-        if( substr( $path, -1 ) !== self::DS )
+        if ( substr( $path, -1 ) !== self::DS )
         {
             $fixPath = $fixPath . self::DS;
         }
 
         return $fixPath;
     }
+
 
 
 

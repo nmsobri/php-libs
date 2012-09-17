@@ -27,12 +27,14 @@ class Upload
     private $theFile = null;
 
 
+
     /**
      *
      * @access private
      * @var resource
      */
     private $theTempFile = null;
+
 
 
     /**
@@ -43,12 +45,14 @@ class Upload
     private $uploadDir = null;
 
 
+
     /**
      *
      * @access private
      * @var mixed
      */
     private $httpError = null;
+
 
 
     /**
@@ -59,12 +63,14 @@ class Upload
     private $allowedExtensions = array( );
 
 
+
     /**
      *
      * @access private
      * @var array
      */
     private $message = array( );
+
 
 
     /**
@@ -75,12 +81,14 @@ class Upload
     private $extErrorString = null;
 
 
+
     /**
      *
      * @access private
      * @var string
      */
     private $copyFile = null;
+
 
 
     /**
@@ -91,12 +99,14 @@ class Upload
     private $fullPathToFile = null;
 
 
+
     /**
      *
      * @access private
      * @var bool
      */
     private $renameFile = false;
+
 
 
     /**
@@ -107,6 +117,7 @@ class Upload
     private $replaceOldFile = false;
 
 
+
     /**
      *
      * @access
@@ -115,12 +126,14 @@ class Upload
     private $createDirectory = true;
 
 
+
     /**
      *
      * @access private
      * @var bool
      */
     private $filenameCheck = true;
+
 
 
     /**
@@ -279,7 +292,7 @@ class Upload
 
 
     /**
-     *Get file bname
+     * Get file bname
      * @return string 
      */
     public function getFileName()
@@ -630,6 +643,9 @@ class Upload
             return false;
         }
     }
+
+
+
 
 }
 

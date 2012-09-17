@@ -4,23 +4,11 @@ class Crud extends PDO
 {
 
     protected $db = null;
-
-
     protected $bind = null;
-
-
     protected $query = null;
-
-
     protected $where = null;
-
-
     protected $order = null;
-
-
     protected $limit = null;
-
-
     protected $count = null;
 
 
@@ -83,7 +71,7 @@ class Crud extends PDO
      * Query to select data
      * @access public
      */
-    public function select( $table, $column ='*')
+    public function select( $table, $column = '*' )
     {
         $column = ( is_string( $column ) ) ? $column : implode( ',', $column );
         $this->query = 'SELECT ' . $column . ' FROM ' . $table;
@@ -239,7 +227,7 @@ class Crud extends PDO
 
             if ( preg_match( '/^sel/i', trim( $sql ) ) )
             {
-                return is_null( $count ) ? $stmt->fetchAll( PDO::FETCH_ASSOC ) :count( $stmt->fetchAll( PDO::FETCH_ASSOC ) ) ;
+                return is_null( $count ) ? $stmt->fetchAll( PDO::FETCH_ASSOC ) : count( $stmt->fetchAll( PDO::FETCH_ASSOC ) );
             }
             else
             {
@@ -272,5 +260,9 @@ class Crud extends PDO
         return $bind;
     }
 
+
+
+
 }
+
 ?>

@@ -1,22 +1,22 @@
 <?php
 
-
 /**
  * Class to store configuration entities
  * Use Xml File As A Configuration File
  * Root element <configs></configs>
  * @author slier
  */
-
 class Config
 {
+
     /**
      *
      * @var string
      * @access private
      */
     private $fileName;
-    
+
+
 
     /**
      *
@@ -24,7 +24,8 @@ class Config
      * @access private
      */
     private $data = array( );
-    
+
+
 
     /**
      *
@@ -44,7 +45,7 @@ class Config
      */
     public function __construct( $fileName, $rootName )
     {
-        if( !file_exists( $fileName ) )
+        if ( !file_exists( $fileName ) )
         {
             throw new Exception( "File {$fileName} not found" );
         }
@@ -64,7 +65,7 @@ class Config
      */
     public function get( $name )
     {
-        return ( isset( $this->data[$name] ) ) ? $this->data[$name] : null;
+        return ( isset( $this->data[ $name ] ) ) ? $this->data[ $name ] : null;
     }
 
 
@@ -78,9 +79,9 @@ class Config
      */
     public function set( $name, $value )
     {
-        if( isset( $this->data[$name] ) )
+        if ( isset( $this->data[ $name ] ) )
         {
-            $this->data[$name] = $value;
+            $this->data[ $name ] = $value;
         }
     }
 
@@ -94,19 +95,19 @@ class Config
      */
     public function read()
     {
-        if( count( $this->data ) < 1 )
+        if ( count( $this->data ) < 1 )
         {
             $xml = simplexml_load_file( $this->fileName );
             $rootName = $xml->getName();
 
-            if( $rootName != $this->rootName )
+            if ( $rootName != $this->rootName )
             {
                 throw new Exception( "File {$this->fileName} should have root <{$this->rootName}>" );
             }
 
-            foreach( $xml->children() as $child )
+            foreach ( $xml->children() as $child )
             {
-                $this->data[$child->getName()] = ( string ) $child;
+                $this->data[ $child->getName() ] = ( string ) $child;
             }
             return $this->data;
         }
@@ -125,13 +126,13 @@ class Config
      */
     public function write()
     {
-        if( !is_writable( $this->fileName ) )
+        if ( !is_writable( $this->fileName ) )
         {
             throw new Exception( "File {$this->fileName} is not writable" );
         }
 
         $xml = new SimpleXMLElement( '<configs></configs>' );
-        foreach( $this->data as $key => $val )
+        foreach ( $this->data as $key => $val )
         {
             $xml->addChild( $key, $val );
         }
@@ -141,6 +142,7 @@ class Config
         $dom->formatOutput = true;
         $dom->save( $this->fileName );
     }
+
 
 
 
