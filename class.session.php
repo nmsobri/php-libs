@@ -147,7 +147,7 @@ class Session
      * @access public
      * @param string $name
      */
-    public function del( $name )
+    public function delete( $name )
     {
         unset( $this->_sess[ $name ] );
     }
@@ -300,8 +300,6 @@ class Session
     private function expireFlash()
     {
         static $run;
-
-        //Method can only be run once
         if ( $run === TRUE )
             return;
 
@@ -321,8 +319,6 @@ class Session
                 }
             }
         }
-
-        #Method has been run
         $run = TRUE;
     }
 

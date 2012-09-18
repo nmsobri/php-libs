@@ -1,649 +1,405 @@
 <?php
 
-/**
- * Class For Handling File Upload
- * @author slier
- * @example
- *
- *     $upload = new FileUpload('./upload/',$_FILES['upload'],array('.png','.jpg'));
- *     if($upload->upload())
- *     {
- *       echo 'successfully upload';
- *       echo $upload->getUploadedFileInfo();
- *     }
- *     else
- *     {
- *       echo $upload->showError();
- *     }
- */
-class Upload
+# ========================================================================#
+#
+#  Author   : Slier
+#  Version  : 1.0
+#  Date     : 17-Jan-10
+#  Purpose  :  Resizes and saves image
+#  Requires : Requires PHP5, GD library.
+#  Example  :
+#  include('class.image.php');
+#  $obj = new Image('input.jpg', array('.jpg','.png'));
+#  $obj->resizeImage(150, 100, 0);
+#  $obj->saveImage('output.jpg', 100);
+#
+# ========================================================================#
+
+Class Image
 {
+    /* Class variables */
 
-    /**
-     *
-     * @access private
-     * @var string
-     */
-    private $theFile = null;
+    protected $image;
+    protected $width;
+    protected $height;
+    protected $imageResized;
+    protected $extensions = array( '.jpg', '.jpeg', '.png', '.gif' );
 
-
-
-    /**
-     *
-     * @access private
-     * @var resource
-     */
-    private $theTempFile = null;
-
-
-
-    /**
-     *
-     * @access private
-     * @var string
-     */
-    private $uploadDir = null;
-
-
-
-    /**
-     *
-     * @access private
-     * @var mixed
-     */
-    private $httpError = null;
-
-
-
-    /**
-     *
-     * @access private
-     * @var array
-     */
-    private $allowedExtensions = array( );
-
-
-
-    /**
-     *
-     * @access private
-     * @var array
-     */
-    private $message = array( );
-
-
-
-    /**
-     *
-     * @access private
-     * @var string
-     */
-    private $extErrorString = null;
-
-
-
-    /**
-     *
-     * @access private
-     * @var string
-     */
-    private $copyFile = null;
-
-
-
-    /**
-     *
-     * @access private
-     * @var string
-     */
-    private $fullPathToFile = null;
-
-
-
-    /**
-     *
-     * @access private
-     * @var bool
-     */
-    private $renameFile = false;
-
-
-
-    /**
-     *
-     * @access private
-     * @var bool
-     */
-    private $replaceOldFile = false;
-
-
-
-    /**
-     *
-     * @access
-     * @var bool
-     */
-    private $createDirectory = true;
-
-
-
-    /**
-     *
-     * @access private
-     * @var bool
-     */
-    private $filenameCheck = true;
-
-
-
-    /**
-     *
-     * @access private
-     * @var int
-     */
-    private $filenameLength = 100;
-
-
-
-
-    /**
-     *
-     * Constructor Function
-     * @access public
-     */
-    public function __construct( $uploadDir, $file, $extensions )
+    public function __construct($file, array $extensions = null)
     {
-        $this->uploadDir = $this->constructUploadDir( $uploadDir );
-        $this->theFile = $file[ 'name' ];
-        $this->theTempFile = $file[ 'tmp_name' ];
-        $this->httpError = $file[ 'error' ];
-        $this->allowedExtensions = $extensions;
+        $this->extensions = !is_null($extensions) ? $extensions : $this->extensions;
+
+        try
+        {
+            if ( !$this->isFile($file) )
+            {
+                throw new Exception('File does not exist');
+            }
+
+            if ( !$this->isAllowedExtensions($file) )
+            {
+                throw new Exception('File extension is not allowed');
+            }
+
+            /* Open up the file */
+            $this->image = $this->openImage($file);
+
+            /* Get width and height */
+            $this->width = imagesx($this->image);
+            $this->height = imagesy($this->image);
+        }
+        catch ( Exception $e )
+        {
+            echo $e->getMessage();
+        }
     }
 
 
 
+    /**
+     *
+     * Resize the image
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param string $option 
+     */
+    public function resize($newWidth, $newHeight, $option = "auto")
+    {
+        // *** Get optimal width and height - based on $option
+        $optionArray = $this->getDimensions($newWidth, $newHeight, $option);
+
+        $optimalWidth = $optionArray[ 'optimalWidth' ];
+        $optimalHeight = $optionArray[ 'optimalHeight' ];
+
+
+        // *** Resample - create image canvas of x, y size
+        $this->imageResized = imagecreatetruecolor($optimalWidth, $optimalHeight);
+        imagecopyresampled($this->imageResized, $this->image, 0, 0, 0, 0, $optimalWidth, $optimalHeight, $this->width, $this->height);
+
+
+        // *** if option is 'crop', then crop too
+        if ( $option == 'crop' )
+        {
+            $this->crop($optimalWidth, $optimalHeight, $newWidth, $newHeight);
+        }
+    }
+
+
 
     /**
      *
-     * Main Method
-     * Upload The File
-     * @access public
-     * @return bool
+     * Save the image
+     * @param type $savePath
+     * @param type $imageQuality 
      */
-    public function upload()
+    public function save($savePath, $imageQuality = "100")
     {
-        $newName = $this->setFileName();
-        $this->copyFile = $newName . $this->getExtension( $this->theFile );
+        /* Get extension */
+        $extension = strrchr($savePath, '.');
+        $extension = strtolower($extension);
 
-        if ( !$this->checkFileName( $newName ) )
+        switch ( $extension )
         {
-            return false;
+            case '.jpg':
+            case '.jpeg':
+                if ( imagetypes() & IMG_JPG )
+                {
+                    imagejpeg($this->imageResized, $savePath, $imageQuality);
+                }
+                break;
+
+            case '.gif':
+                if ( imagetypes() & IMG_GIF )
+                {
+                    imagegif($this->imageResized, $savePath);
+                }
+                break;
+
+            case '.png':
+                /* Scale quality from 0-100 to 0-9 */
+                $scaleQuality = round(($imageQuality / 100) * 9);
+
+                /* Invert quality setting as 0 is best, not 9 */
+                $invertScaleQuality = 9 - $scaleQuality;
+
+                if ( imagetypes() & IMG_PNG )
+                {
+                    imagepng($this->imageResized, $savePath, $invertScaleQuality);
+                }
+                break;
+
+            default:
+                break;
         }
 
-        if ( !$this->validateExtension() )
-        {
-            return false;
-        }
-
-        if ( !$this->isFileUploaded() )
-        {
-            return false;
-        }
-
-        if ( !$this->moveUpload( $this->theTempFile, $this->copyFile ) )
-        {
-            return false;
-        }
-
-        return true;
+        imagedestroy($this->imageResized);
     }
-
 
 
 
     /**
      *
-     * Show Appropriate Error Message
-     * @access public
-     * @return string
+     * Create blank image
+     * @param type $fileName
+     * @return boolean 
      */
-    public function showError()
+    protected function openImage($fileName)
     {
-        $msg_string = null;
-        foreach ( $this->message as $value )
+        /* Get extension */
+        $extension = $this->getExtension($fileName);
+
+        switch ( $extension )
         {
-            $msg_string .= $value . '<br>' . PHP_EOL;
+            case '.jpg':
+            case '.jpeg':
+                $img = @imagecreatefromjpeg($fileName);
+                break;
+
+            case '.gif':
+                $img = @imagecreatefromgif($fileName);
+                break;
+
+            case '.png':
+                $img = @imagecreatefrompng($fileName);
+                break;
+
+            default:
+                $img = false;
+                break;
         }
-        return $msg_string;
+        return $img;
     }
-
 
 
 
     /**
      *
-     * Method to set how long can file name can be
-     * @access public
-     * @param int $length
+     * Get the optimal size for width and height of an image based on option
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param string $option
+     * @return array 
      */
-    public function setFileNameLength( $length = 100 )
+    protected function getDimensions($newWidth, $newHeight, $option)
     {
-        $this->filenameLength = ( int ) $length;
-    }
 
-
-
-
-    /**
-     *
-     * Method to set either to check for valid file name
-     * @param bool $type
-     */
-    public function setFileNameCheck( $type = true )
-    {
-        $this->filenameCheck = ( bool ) $type;
-    }
-
-
-
-
-    /**
-     *
-     * Method to set either to create upload directory if it dosent exist
-     * @param bool $type
-     */
-    public function setCreateDirectory( $type = true )
-    {
-        $this->createDirectory = ( bool ) $type;
-    }
-
-
-
-
-    public function setRenameFile( $type = true )
-    {
-        $this->renameFile = ( boolean ) $type;
-    }
-
-
-
-
-    public function setReplaceOldFile( $type = true )
-    {
-        $this->replaceOldFile = ( boolean ) $type;
-    }
-
-
-
-
-    public function getFullPathToFile()
-    {
-        if ( is_null( $this->fullPathToFile ) )
+        switch ( $option )
         {
-            trigger_error( 'Pleease call method upload() first', E_USER_ERROR );
+            case 'exact':
+                $optimalWidth = $newWidth;
+                $optimalHeight = $newHeight;
+                break;
+            case 'portrait':
+                $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+                $optimalHeight = $newHeight;
+                break;
+            case 'landscape':
+                $optimalWidth = $newWidth;
+                $optimalHeight = $this->getSizeByFixedWidth($newWidth);
+                break;
+            case 'auto':
+                $optionArray = $this->getSizeByAuto($newWidth, $newHeight);
+                $optimalWidth = $optionArray[ 'optimalWidth' ];
+                $optimalHeight = $optionArray[ 'optimalHeight' ];
+                break;
+            case 'crop':
+                $optionArray = $this->getOptimalCrop($newWidth, $newHeight);
+                $optimalWidth = $optionArray[ 'optimalWidth' ];
+                $optimalHeight = $optionArray[ 'optimalHeight' ];
+                break;
+        }
+        return array( 'optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight );
+    }
+
+
+
+    /**
+     *
+     * Get optimal width when height is fixed
+     * @param type $newHeight
+     * @return int 
+     */
+    protected function getSizeByFixedHeight($newHeight)
+    {
+        $ratio = $this->width / $this->height;
+        $newWidth = $newHeight * $ratio;
+        return $newWidth;
+    }
+
+
+
+    /**
+     *
+     * Get optimal height when width is fixed
+     * @param type $newWidth
+     * @return int 
+     */
+    protected function getSizeByFixedWidth($newWidth)
+    {
+        $ratio = $this->height / $this->width;
+        $newHeight = $newWidth * $ratio;
+        return $newHeight;
+    }
+
+
+
+    /**
+     *
+     * Get optimal width and height when resize is auto
+     * @param type $newWidth
+     * @param type $newHeight
+     * @return int 
+     */
+    protected function getSizeByAuto($newWidth, $newHeight)
+    {
+        if ( $this->height < $this->width )
+        // *** Image to be resized is wider (landscape)
+        {
+            $optimalWidth = $newWidth;
+            $optimalHeight = $this->getSizeByFixedWidth($newWidth);
+        }
+        elseif ( $this->height > $this->width )
+        // *** Image to be resized is taller (portrait)
+        {
+            $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+            $optimalHeight = $newHeight;
+        }
+        else
+        // *** Image to be resizerd is a square
+        {
+            if ( $newHeight < $newWidth )
+            {
+                $optimalWidth = $newWidth;
+                $optimalHeight = $this->getSizeByFixedWidth($newWidth);
+            }
+            else if ( $newHeight > $newWidth )
+            {
+                $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+                $optimalHeight = $newHeight;
+            }
+            else
+            {
+                // *** Sqaure being resized to a square
+                $optimalWidth = $newWidth;
+                $optimalHeight = $newHeight;
+            }
+        }
+
+        return array( 'optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight );
+    }
+
+
+
+    /**
+     * Get the optimal width and height for cropping
+     * @param type $newWidth
+     * @param type $newHeight
+     * @return type 
+     */
+    protected function getOptimalCrop($newWidth, $newHeight)
+    {
+
+        $heightRatio = $this->height / $newHeight;
+        $widthRatio = $this->width / $newWidth;
+
+        if ( $heightRatio < $widthRatio )
+        {
+            $optimalRatio = $heightRatio;
         }
         else
         {
-            return $this->fullPathToFile;
+            $optimalRatio = $widthRatio;
         }
+
+        $optimalHeight = $this->height / $optimalRatio;
+        $optimalWidth = $this->width / $optimalRatio;
+
+        return array( 'optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight );
     }
 
 
 
+    /**
+     *
+     * Crop the image
+     * @param int $optimalWidth
+     * @param int $optimalHeight
+     * @param int $newWidth
+     * @param int $newHeight 
+     */
+    protected function crop($optimalWidth, $optimalHeight, $newWidth, $newHeight)
+    {
+        /* Find center - this will be used for the crop */
+        $cropStartX = ( $optimalWidth / 2) - ( $newWidth / 2 );
+        $cropStartY = ( $optimalHeight / 2) - ( $newHeight / 2 );
+
+        $crop = $this->imageResized;
+        /* Now crop from center to exact requested size */
+        $this->imageResized = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresampled($this->imageResized, $crop, 0, 0, $cropStartX, $cropStartY, $newWidth, $newHeight, $newWidth, $newHeight);
+    }
+
+
 
     /**
-     * Get file bname
+     *
+     * Check file existence
+     * @return boolean 
+     */
+    protected function isFile($file)
+    {
+        return file_exists($file);
+    }
+
+
+
+    /**
+     * 
+     * Get file extension
+     * @param string $file
      * @return string 
      */
-    public function getFileName()
+    protected function getExtension($file)
     {
-
-        if ( is_null( $this->fullPathToFile ) )
-        {
-            trigger_error( 'Pleease call method upload() first', E_USER_ERROR );
-        }
-        else
-        {
-            return basename( $this->fullPathToFile );
-        }
+        return strtolower(strrchr($file, '.'));
     }
-
 
 
 
     /**
      *
-     * Move The Uploaded File To New Location
-     * @access private
-     * @param resource $tmp_file
-     * @param string $new_file
-     * @return true
+     * Get file name
+     * @param type $file
+     * @return type 
      */
-    private function moveUpload( $tmp_file, $new_file )
+    protected function getFileName($file)
     {
-        umask( 0 );
-        if ( !$this->isFileExist( $new_file ) )
-        {
-            $newfile = $this->uploadDir . $new_file;
-
-            if ( $this->checkDir( $this->uploadDir ) )
-            {
-                if ( move_uploaded_file( $tmp_file, $newfile ) )
-                {
-                    $this->fullPathToFile = $newfile;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                $this->message[ ] = $this->errorText( 14 );
-                return false;
-            }
-        }
-        else
-        {
-            $this->message[ ] = $this->errorText( 15 );
-            return false;
-        }
+        $file = str_replace('\\', '/', $file);
+        return substr($file, strrpos($file, '/') + 1);
     }
-
 
 
 
     /**
      *
-     * Set File Name
-     * @access private
-     * @return string
+     * Check is uploaded image is in allowed extension
+     * @param type $file
+     * @return boolean 
      */
-    private function setFileName()
+    protected function isAllowedExtensions($file)
     {
-        if ( empty( $this->theFile ) )
-        {
-            return null;
-        }
+        $fileName = $this->getFileName($file);
+        $fileExtension = $this->getExtension($fileName);
 
-        $name = substr( $this->theFile, 0, strpos( $this->theFile, '.' ) );
-
-        if ( $this->renameFile )
-        {
-            $name .= strtotime( 'now' );
-        }
-        return $name;
-    }
-
-
-
-
-    /**
-     *
-     * Check Wether $name is Valid Filename
-     * @access private
-     * @param mixed $name
-     * @return bool
-     */
-    private function checkFileName( $name )
-    {
-        if ( !is_null( $name ) )
-        {
-            if ( strlen( $name ) > $this->filenameLength )
-            {
-                $this->message[ ] = $this->errorText( 13 );
-                return false;
-            }
-            else
-            {
-                if ( $this->filenameCheck )
-                {
-                    if ( preg_match( "/^[a-z0-9_]*$/i", $name ) )
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        $this->message[ ] = $this->errorText( 12 );
-                        return false;
-                    }
-                }
-                else
-                {
-                    return true;
-                }
-            }
-        }
-        else
-        {
-            $this->message[ ] = $this->errorText( 10 );
-            return false;
-        }
-    }
-
-
-
-
-    /**
-     *
-     * Check Wether Uploaded File Is In The Allowed Extension Type
-     * @access private
-     * @return bool
-     */
-    private function validateExtension()
-    {
-        $extension = $this->getExtension( $this->theFile );
-        $ext_array = $this->allowedExtensions;
-
-        if ( in_array( $extension, $ext_array ) )
+        if ( in_array($fileExtension, $this->extensions) )
         {
             return true;
         }
         else
         {
-            $this->showAllowedExtensions();
-            $this->message[ ] = $this->errorText( 11 );
             return false;
         }
     }
-
-
-
-
-    /**
-     * Get File Extension
-     * @access private
-     * @param mixed $file
-     * @return string
-     */
-    private function getExtension( $file )
-    {
-        $ext = strtolower( strrchr( $file, '.' ) );
-        return $ext;
-    }
-
-
-
-
-    /**
-     * Check Directory
-     * @access private
-     * @param string $directory
-     * @return bool
-     */
-    private function checkDir( $directory )
-    {
-        if ( !is_dir( $directory ) )
-        {
-            if ( $this->createDirectory )
-            {
-                umask( 0 );
-                mkdir( $directory, 0777 );
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-
-
-
-    /**
-     * Check Wether File Already Exist
-     * @access private
-     * @param string $file_name
-     * @return bool
-     */
-    private function isFileExist( $file_name )
-    {
-        if ( $this->replaceOldFile )
-        {
-            return false;
-        }
-        else
-        {
-            if ( file_exists( $this->uploadDir . $file_name ) )
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
-
-
-
-
-    /**
-     *
-     * Get Uploaded File Info
-     * @access public
-     * @return string
-     */
-    public function getUploadedFileInfo()
-    {
-        $file = $this->fullPathToFile;
-        $str = 'File name: ' . basename( $file ) . '<br />';
-        $str .= 'File size: ' . filesize( $file ) . ' bytes<br />';
-        if ( function_exists( 'mime_content_type' ) )
-        {
-            $str .= 'Mime type: ' . mime_content_type( $file ) . '<br />';
-        }
-        if ( $img_dim = getimagesize( $file ) )
-        {
-            $str .= 'Image dimensions: x = ' . $img_dim[ 0 ] . 'px, y = ' . $img_dim[ 1 ] . 'px<br />';
-        }
-        return $str;
-    }
-
-
-
-
-    /**
-     * Safely add '/' to the end of $dir if its not exist
-     * @access private
-     * @param mixed $dir
-     * @return string
-     */
-    private function constructUploadDir( $dir )
-    {
-        if ( substr( $dir, -1, 1 ) != '/' )
-        {
-            $dir .= '/';
-        }
-        return $dir;
-    }
-
-
-
-
-    /**
-     * This method was first located inside the foto_upload extension
-     * @param mixed $file
-     * @deprecated
-     */
-    private function delTempFile( $file )
-    {
-        $delete = @unlink( $file );
-        clearstatcache();
-        if ( @file_exists( $file ) )
-        {
-            $filesys = eregi_replace( "/", "\\", $file );
-            $delete = @system( "del $filesys" );
-            clearstatcache();
-            if ( @file_exists( $file ) )
-            {
-                $delete = @chmod( $file, 0775 );
-                $delete = @unlink( $file );
-                $delete = @system( "del $filesys" );
-            }
-        }
-    }
-
-
-
-
-    /**
-     *
-     * This method is only used for detailed error reporting
-     * @access private
-     */
-    private function showAllowedExtensions()
-    {
-        $this->extErrorString = implode( ' ', $this->allowedExtensions );
-    }
-
-
-
-
-    /**
-     * Some error (HTTP)reporting, change the messages or remove options if you like
-     * @param mixed $err_num
-     * @return mixed
-     */
-    private function errorText( $err_num )
-    {
-        $error[ 0 ] = 'File: <b>' . $this->theFile . '</b> successfully uploaded!';
-        $error[ 1 ] = 'The uploaded file exceeds the max. upload filesize directive in the server configuration.';
-        $error[ 2 ] = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the html form.';
-        $error[ 3 ] = 'The uploaded file was only partially uploaded.';
-        $error[ 4 ] = 'An error occured while uploading.';
-        $error[ 10 ] = 'Please select a file for upload.';
-        $error[ 11 ] = 'Only files with the following allowedExtensions are allowed: <b>' . $this->extErrorString . '</b>';
-        $error[ 12 ] = 'Sorry, the filename contains invalid characters. Use only alphanumerical chars and separate parts of the name (if needed) with an underscore. <br>A valid filename ends with one dot followed by the extension.';
-        $error[ 13 ] = 'The filename exceeds the maximum length of ' . $this->filenameLength . ' characters.';
-        $error[ 14 ] = 'Sorry, the upload directory doesn\'t exist!.';
-        $error[ 15 ] = 'Uploading <b>' . $this->theFile . '...Error!</b> Sorry, a file with this name already exitst.';
-        $error[ 16 ] = 'The uploaded file is renamed to <b>' . $this->copyFile . '</b>.';
-        return $error[ $err_num ];
-    }
-
-
-
-
-    private function isFileUploaded()
-    {
-        if ( is_uploaded_file( $this->theTempFile ) )
-        {
-            return true;
-        }
-        else
-        {
-            $this->message[ ] = $this->errorText( 4 );
-            return false;
-        }
-    }
-
 
 
 
