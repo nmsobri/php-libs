@@ -70,34 +70,34 @@ abstract class ValidatorStrategy
      *
      * Method use to return appropriate error message
      * @param int $num
-     * @param string $fieldname
+     * @param string $field
      * @param string $fieldname2
      * @return string of message
      */
-    protected function errorText( $num, $fieldname = null, $fieldname2 = null )
+    protected function errorText( $num, $field = null, $fieldname2 = null )
     {
-        $msg[ 0 ] = 'Sila betulkan ralat dibawah:';
-        $msg[ 1 ] = 'Medan <b>' . $fieldname . '</b> kosong.';
-        $msg[ 2 ] = 'Medan <b>' . $fieldname . '</b> tidak padan dengan medan <b>' . $fieldname2 . '</b>';
-        $msg[ 3 ] = 'Medan <b>' . $fieldname . '</b> mengandungi ralat.';
-        $msg[ 4 ] = 'Tarikh didalam medan <b>' . $fieldname . '</b> tidak sah.';
-        $msg[ 5 ] = 'Email didalam medan <b>' . $fieldname . '</b> tidak sah.';
-        $msg[ 6 ] = 'Nilai didalam medan <b>' . $fieldname . '</b> tidak sah.';
-        $msg[ 7 ] = 'Teks didalam medan <b>' . $fieldname . '</b> terlalu panjang.';
-        $msg[ 8 ] = 'Url didalam medan <b>' . $fieldname . '</b> tidak sah.';
-        $msg[ 9 ] = 'Terdapat kod html didalam medan <b>' . $fieldname . '</b>, ini tidak dibenarkan!.';
-        $msg[ 10 ] = 'Teks didalam medan <b>' . $fieldname . '</b> tidak memenuhi panjang yang dikehendaki.';
-        $msg[ 11 ] = 'Checkbox <b>' . $fieldname . '</b> tidak ditanda.';
-        $msg[ 12 ] = 'Selection <b>' . $fieldname . '</b> tidak dipilih.';
-        $msg[ 13 ] = 'Radio <b>' . $fieldname . '</b> tidak ditanda.';
-        $msg[ 14 ] = 'Medan <b>' . $fieldname . '</b> tidak boleh mengandungi nombor.';
-        $msg[ 15 ] = 'Teks didalam medan <b>' . $fieldname . '</b> tidak memenuhi panjang yang dikehendaki  atau mengandungi nombor.';
-        $msg[ 16 ] = 'Medan <b>' . $fieldname . '</b> hanya boleh mengandungi nombor.';
-        $msg[ 17 ] = 'Teks didalam medan <b>' . $fieldname . '</b> tidak memenuhi panjang yang dikehendaki atau mengandungi teks.';
-        $msg[ 18 ] = 'Nilaididalam medan <b>' . $fieldname . '</b> tidak memenuhi panjang yang dikehendaki  atau titik perpuluhan yang sah atau mengandungi teks.';
-        $msg[ 19 ] = 'Teks didalam medan <b>' . $fieldname . '</b> tidak boleh mengandungi ruang kosong';
-        $msg[ 20 ] = 'Teks didalam medan <b>' . $fieldname . '</b> hanya boleh mengandungi teks dan ruang kosong';
-        $msg[ 21 ] = 'Teks didalam medan <b>' . $fieldname . '</b> hanya boleh mengandungi teks';
+        $msg[ 0 ]  = 'Sila betulkan ralat dibawah:';
+        $msg[ 1 ]  = 'Medan' . $field . ' kosong.';
+        $msg[ 2 ]  = 'Medan' . $field . ' tidak padan dengan medan ' . $fieldname2;
+        $msg[ 3 ]  = 'Medan' . $field . ' mengandungi ralat.';
+        $msg[ 4 ]  = 'Tarikh didalam medan ' . $field . ' tidak sah.';
+        $msg[ 5 ]  = 'Email didalam medan ' . $field . ' tidak sah.';
+        $msg[ 6 ]  = 'Nilai didalam medan ' . $field . ' tidak sah.';
+        $msg[ 7 ]  = 'Teks didalam medan ' . $field . ' terlalu panjang.';
+        $msg[ 8 ]  = 'Url didalam medan ' . $field . ' tidak sah.';
+        $msg[ 9 ]  = 'Terdapat kod html didalam medan ' . $field . ', ini tidak dibenarkan!.';
+        $msg[ 10 ] = 'Teks didalam medan ' . $field . ' tidak memenuhi panjang yang dikehendaki.';
+        $msg[ 11 ] = 'Checkbox ' . $field . ' tidak ditanda.';
+        $msg[ 12 ] = 'Selection ' . $field . ' tidak dipilih.';
+        $msg[ 13 ] = 'Radio ' . $field . ' tidak ditanda.';
+        $msg[ 14 ] = 'Medan ' . $field . ' tidak boleh mengandungi nombor.';
+        $msg[ 15 ] = 'Teks didalam medan ' . $field . ' tidak memenuhi panjang yang dikehendaki  atau mengandungi nombor.';
+        $msg[ 16 ] = 'Medan ' . $field . ' hanya boleh mengandungi nombor.';
+        $msg[ 17 ] = 'Teks didalam medan ' . $field . ' tidak memenuhi panjang yang dikehendaki atau mengandungi teks.';
+        $msg[ 18 ] = 'Nilai didalam medan ' . $field . ' tidak memenuhi panjang yang dikehendaki  atau titik perpuluhan yang sah atau mengandungi teks.';
+        $msg[ 19 ] = 'Teks didalam medan ' . $field . ' tidak boleh mengandungi ruang kosong';
+        $msg[ 20 ] = 'Teks didalam medan ' . $field . ' hanya boleh mengandungi teks dan ruang kosong';
+        $msg[ 21 ] = 'Teks didalam medan ' . $field . ' hanya boleh mengandungi teks';
         return $msg[ $num ];
     }
 
