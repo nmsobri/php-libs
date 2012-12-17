@@ -33,15 +33,14 @@ abstract class ValidatorStrategy
 
 
 
-
     /**
      *
-     * Abstract function, implemented in child class 
+     * Abstract function, implemented in child class
      */
     public abstract function isValid();
 
     /**
-     * 
+     *
      * Get error message
      * @access public
      */
@@ -52,9 +51,8 @@ abstract class ValidatorStrategy
 
 
 
-
     /**
-     * 
+     *
      * Set error message
      * @access public
      */
@@ -62,7 +60,6 @@ abstract class ValidatorStrategy
     {
         $this->messages = ( $message == null ) ? ( $this->data[ 'field' ] ) ? $this->errorText( 3, $this->data[ 'field' ] ) : $this->errorText( 3, $field )  : $message;
     }
-
 
 
 
@@ -76,35 +73,37 @@ abstract class ValidatorStrategy
      */
     protected function errorText( $num, $field = null, $fieldname2 = null )
     {
-        $msg[ 0 ]  = 'Sila betulkan ralat dibawah:';
-        $msg[ 1 ]  = 'Medan' . $field . ' kosong.';
-        $msg[ 2 ]  = 'Medan' . $field . ' tidak padan dengan medan ' . $fieldname2;
-        $msg[ 3 ]  = 'Medan' . $field . ' mengandungi ralat.';
-        $msg[ 4 ]  = 'Tarikh didalam medan ' . $field . ' tidak sah.';
-        $msg[ 5 ]  = 'Email didalam medan ' . $field . ' tidak sah.';
-        $msg[ 6 ]  = 'Nilai didalam medan ' . $field . ' tidak sah.';
-        $msg[ 7 ]  = 'Teks didalam medan ' . $field . ' terlalu panjang.';
-        $msg[ 8 ]  = 'Url didalam medan ' . $field . ' tidak sah.';
-        $msg[ 9 ]  = 'Terdapat kod html didalam medan ' . $field . ', ini tidak dibenarkan!.';
-        $msg[ 10 ] = 'Teks didalam medan ' . $field . ' tidak memenuhi panjang yang dikehendaki.';
-        $msg[ 11 ] = 'Checkbox ' . $field . ' tidak ditanda.';
-        $msg[ 12 ] = 'Selection ' . $field . ' tidak dipilih.';
-        $msg[ 13 ] = 'Radio ' . $field . ' tidak ditanda.';
-        $msg[ 14 ] = 'Medan ' . $field . ' tidak boleh mengandungi nombor.';
-        $msg[ 15 ] = 'Teks didalam medan ' . $field . ' tidak memenuhi panjang yang dikehendaki  atau mengandungi nombor.';
-        $msg[ 16 ] = 'Medan ' . $field . ' hanya boleh mengandungi nombor.';
-        $msg[ 17 ] = 'Teks didalam medan ' . $field . ' tidak memenuhi panjang yang dikehendaki atau mengandungi teks.';
-        $msg[ 18 ] = 'Nilai didalam medan ' . $field . ' tidak memenuhi panjang yang dikehendaki  atau titik perpuluhan yang sah atau mengandungi teks.';
-        $msg[ 19 ] = 'Teks didalam medan ' . $field . ' tidak boleh mengandungi ruang kosong';
-        $msg[ 20 ] = 'Teks didalam medan ' . $field . ' hanya boleh mengandungi teks dan ruang kosong';
-        $msg[ 21 ] = 'Teks didalam medan ' . $field . ' hanya boleh mengandungi teks';
+        $msg[ 0 ] = 'Please correct following errors:';
+        $msg[ 1 ] = 'Field ' . $field . ' is empty.';
+        $msg[ 2 ] = 'Field ' . $field . ' does not match field  ' . $fieldname2 . '.';
+        $msg[ 3 ] = 'Field ' . $field . ' contains error.';
+        $msg[ 4 ] = 'Date in field ' . $field . ' is invalid.';
+        $msg[ 5 ] = 'Email in field ' . $field . ' is invalid.';
+        $msg[ 6 ] = 'Field ' . $field . ' is invalid.';
+        $msg[ 7 ] = 'Field ' . $field . ' is too long.';
+        $msg[ 8 ] = 'Url in field ' . $field . ' is invalid.';
+        $msg[ 9 ] = 'Html code detected in field ' . $field . '.';
+        $msg[ 10 ] = 'Field ' . $field . ' does not match required length.';
+        $msg[ 11 ] = 'Checkbox ' . $field . ' is not marked.';
+        $msg[ 12 ] = 'Selection ' . $field . ' is not selected.';
+        $msg[ 13 ] = 'Radio ' . $field . ' is not marked.';
+        $msg[ 14 ] = 'Field ' . $field . ' cannot contain numbers.';
+        $msg[ 15 ] = 'Field ' . $field . ' does not match required length or contain numbers.';
+        $msg[ 16 ] = 'Field  ' . $field . ' can only contain numbers.';
+        $msg[ 17 ] = 'Field  ' . $field . ' does not match required length or contain texts.';
+        $msg[ 18 ] = 'Field ' . $field . ' does not match required length or does not contain valid decimal place or contain texts.';
+        $msg[ 19 ] = 'Field ' . $field . ' cannot contain spaces';
+        $msg[ 20 ] = 'Field ' . $field . ' can only contain texts and spaces';
+        $msg[ 21 ] = 'Field ' . $field . ' can only have texts';
         return $msg[ $num ];
     }
 
 
 
-
 }
+
+
+
 
 class CheckBoxValidator extends ValidatorStrategy
 {
@@ -131,37 +130,34 @@ class CheckBoxValidator extends ValidatorStrategy
 
 
 
-
     /**
      *
      * Validation for checkbox
      * @access protected
      * @param mixed $name
      * @param mixed $value
-     * @param mixed $customMsg
+     * @param mixed $this->data[ 'message' ]
      * @return boolean
      */
     public function isValid()
     {
-        $value = $this->data[ 'value' ];
-        $customMsg = $this->data[ 'message' ];
-        $fieldName = $this->data[ 'field' ];
-
-        if ( isset( $value ) )
+        if ( isset( $this->data[ 'value' ] ) )
         {
             return true;
         }
         else
         {
-            $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 11, $fieldName );
+            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 11, $this->data[ 'field' ] );
             return false;
         }
     }
 
 
 
-
 }
+
+
+
 
 class CompareValidator extends ValidatorStrategy
 {
@@ -176,7 +172,7 @@ class CompareValidator extends ValidatorStrategy
      * @param bool $attr['required']
      * @param mixed $attr['empty_message'] error message if field is empty
      * @param mixed $attr['unmatch_message'] - error message if this field is not equal with comparison field
-     * @param mixed $attr['field'] custom field name in error message ( @default $name ) 
+     * @param mixed $attr['field'] custom field name in error message ( @default $name )
      * @example new CompareValidator( 'new_pass' , $_POST['password'], $_POST['repeat_password'], 'Repeat Password', array( 'empty_message' => 'Repeat password is empty', 'unmatch_message' => 'Repeat password dosent match password' ) )
      */
     public function __construct( $name, $value, $compareValue, $comparsionField, $attr = null )
@@ -195,7 +191,6 @@ class CompareValidator extends ValidatorStrategy
 
 
 
-
     /**
      *
      * Validation for comparing two field
@@ -204,28 +199,20 @@ class CompareValidator extends ValidatorStrategy
      * @param mixed $to_compare
      * @param mixed $compare_with
      * @param mixed $comparasionFieldName
-     * @param str $required
-     * @param mixed $emptyMsg
-     * @param mixed $notMatchMsg
+     * @param str $this->data[ 'required' ]
+     * @param mixed $this->data[ 'empty_message' ]
+     * @param mixed $this->data[ 'unmatch_message' ]
      * @return boolean
      * @example to set custom msg through setCustomMsg()::setCustomMsg(array('fieldname'=>array('empty'=>'*','notMatch'=>'**')))
      * @info index 'empty' donate msg when field are empty and index 'notMatch' donate msg when comparing field are not macth
      */
     public function isValid()
     {
-        $toCompare = $this->data[ 'to_compare' ];
-        $compareWith = $this->data[ 'compare_with' ];
-        $required = $this->data[ 'required' ];
-        $comparasionName = $this->data[ 'field_comparasion' ];
-        $emptyMsg = $this->data[ 'empty_message' ];
-        $notMatchMsg = $this->data[ 'unmatch_message' ];
-        $fieldName = $this->data[ 'field' ];
-
-        if ( $toCompare == '' )
+        if ( $this->data[ 'to_compare' ] == '' )
         {
-            if ( $required == true )
+            if ( $this->data[ 'required' ] == true )
             {
-                $this->messages = ( $emptyMsg ) ? $emptyMsg : $this->errorText( 1, $fieldName );
+                $this->messages = ( $this->data[ 'empty_message' ] ) ? $this->data[ 'empty_message' ] : $this->errorText( 1, $this->data[ 'field' ] );
                 return false;
             }
             else
@@ -235,9 +222,9 @@ class CompareValidator extends ValidatorStrategy
         }
         else
         {
-            if ( $toCompare != $compareWith )
+            if ( $this->data[ 'to_compare' ] != $this->data[ 'compare_with' ] )
             {
-                $this->messages = ( $notMatchMsg ) ? $notMatchMsg : $this->errorText( 2, $fieldName, $comparasionName );
+                $this->messages = ( $this->data[ 'unmatch_message' ] ) ? $this->data[ 'unmatch_message' ] : $this->errorText( 2, $this->data[ 'field' ], $this->data[ 'field_comparison' ] );
                 return false;
             }
             else
@@ -249,8 +236,10 @@ class CompareValidator extends ValidatorStrategy
 
 
 
-
 }
+
+
+
 
 class DateValidator extends ValidatorStrategy
 {
@@ -281,31 +270,24 @@ class DateValidator extends ValidatorStrategy
 
 
 
-
     /**
      *
      * Validation for date
      * @access protected
      * @param mixed $name
-     * @param mixed $value
-     * @param mixed $version
-     * @param str $required
-     * @param mixed $customMsg
+     * @param mixed $this->data[ 'value' ]
+     * @param mixed $this->data[ 'version' ]
+     * @param str $this->data[ 'required' ]
+     * @param mixed $this->data[ 'message' ]
      * @return boolean
      */
     public function isValid()
     {
-        $value = $this->data[ 'value' ];
-        $version = $this->data[ 'version' ];
-        $required = $this->data[ 'required' ];
-        $customMsg = $this->data[ 'message' ];
-        $fieldName = $this->data[ 'field' ];
-
-        if ( $value == '' )
+        if ( $this->data[ 'value' ] == '' )
         {
-            if ( $required == true )
+            if ( $this->data[ 'required' ] == true )
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 1, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
                 return false;
             }
             else
@@ -315,7 +297,7 @@ class DateValidator extends ValidatorStrategy
         }
         else
         {
-            if ( $version == 'eu' )
+            if ( $this->data[ 'version' ] == 'eu' )
             {
                 $pattern = "/^(0[1-9]|[1-2][0-9]|3[0-1])[-](0[1-9]|1[0-2])[-](19|20)[0-9]{2}$/";
             }
@@ -323,13 +305,13 @@ class DateValidator extends ValidatorStrategy
             {
                 $pattern = "/^(19|20)[0-9]{2}[-](0[1-9]|1[0-2])[-](0[1-9]|[1-2][0-9]|3[0-1])$/";
             }
-            if ( preg_match( $pattern, $value ) )
+            if ( preg_match( $pattern, $this->data[ 'value' ] ) )
             {
                 return true;
             }
             else
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 4, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 4, $this->data[ 'field' ] );
                 return false;
             }
         }
@@ -337,8 +319,10 @@ class DateValidator extends ValidatorStrategy
 
 
 
-
 }
+
+
+
 
 class EmailValidator extends ValidatorStrategy
 {
@@ -367,29 +351,23 @@ class EmailValidator extends ValidatorStrategy
 
 
 
-
     /**
      *
      * Validation for email
      * @access protected
      * @param mixed $name
-     * @param mixed $value
-     * @param str $required
-     * @param mixed $customMsg
+     * @param mixed $this->data[ 'value' ]
+     * @param str $this->data[ 'required' ]
+     * @param mixed $this->data[ 'message' ]
      * @return boolean
      */
     public function isValid()
     {
-        $value = $this->data[ 'value' ];
-        $required = $this->data[ 'required' ];
-        $customMsg = $this->data[ 'message' ];
-        $fieldName = $this->data[ 'field' ];
-
-        if ( $value == '' )
+        if ( $this->data[ 'value' ] == '' )
         {
-            if ( $required == true )
+            if ( $this->data[ 'required' ] == true )
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 1, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
                 return false;
             }
             else
@@ -399,13 +377,13 @@ class EmailValidator extends ValidatorStrategy
         }
         else
         {
-            if ( preg_match( "/^[^\W\d](?:\w+)(?:\.\w+|\-\w+)*@(?:\w+)(\.[a-z]{2,6})+$/i", $value ) )
+            if ( preg_match( "/^[^\W\d](?:\w+)(?:\.\w+|\-\w+)*@(?:\w+)(\.[a-z]{2,6})+$/i", $this->data[ 'value' ] ) )
             {
                 return true;
             }
             else
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 5, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 5, $this->data[ 'field' ] );
                 return false;
             }
         }
@@ -413,8 +391,10 @@ class EmailValidator extends ValidatorStrategy
 
 
 
-
 }
+
+
+
 
 class NumberValidator extends ValidatorStrategy
 {
@@ -452,41 +432,32 @@ class NumberValidator extends ValidatorStrategy
 
 
 
-
     /**
      *
      * Validation for number
      * @access protected
      * @param mixed $name
-     * @param mixed $value
-     * @param str $required
-     * @param int $decimal
-     * @param int $minLength
-     * @param int $maxLength
-     * @param mixed $customMsg
+     * @param mixed $this->data[ 'value' ]
+     * @param str $this->data[ 'required' ]
+     * @param int $this->data[ 'decimal' ]
+     * @param int $this->data[ 'min_length' ]
+     * @param int $this->data[ 'max_length' ]
+     * @param mixed $this->data[ 'message' ]
      * @return boolean
      */
     public function isValid()
     {
-        $value = $this->data[ 'value' ];
-        $required = $this->data[ 'required' ];
-        $decimal = $this->data[ 'decimal' ];
-        $minLength = $this->data[ 'min_length' ];
-        $maxLength = $this->data[ 'max_length' ];
-        $customMsg = $this->data[ 'message' ];
-        $fieldName = $this->data[ 'field' ];
-
-        if ( empty( $value ) )
+        if ( empty( $this->data[ 'value' ] ) )
         {
             $this->checkRequired();
         }
         else
         {
-            if ( $minLength > 0 && $maxLength == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */
+            if ( $this->data[ 'min_length' ] > 0 && $this->data[ 'max_length' ] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */
             {
                 $this->checkExactLength();
             }
-            elseif ( $minLength >= 0 && $maxLength > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */
+            elseif ( $this->data[ 'min_length' ] >= 0 && $this->data[ 'max_length' ] > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */
             {
                 $this->checkVariableLength();
             }
@@ -499,12 +470,11 @@ class NumberValidator extends ValidatorStrategy
 
 
 
-
     protected function checkRequired()
     {
-        if ( $required == true )
+        if ( $this->data[ 'required' ] == true )
         {
-            $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 1, $fieldName );
+            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
             return false;
         }
         else
@@ -515,92 +485,89 @@ class NumberValidator extends ValidatorStrategy
 
 
 
-
     protected function checkExactLength()
     {
-        if ( $decimal > 0 )
+        if ( $this->data[ 'decimal' ] > 0 )
         {
-            if ( preg_match( '/^[0-9]{' . $minLength . '}\.[0-9]{' . $decimal . '}$/i', $value ) )
+            if ( preg_match( '/^[0-9]{' . $this->data[ 'min_length' ] . '}\.[0-9]{' . $this->data[ 'decimal' ] . '}$/i', $this->data[ 'value' ] ) )
             {
                 return true;
             }
             else
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 18, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 18, $this->data[ 'field' ] );
                 return false;
             }
         }
         else
         {
-            if ( preg_match( '/^[0-9]{' . $minLength . '}$/i', $value ) )
+            if ( preg_match( '/^[0-9]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
             {
                 return true;
             }
             else
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 17, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 17, $this->data[ 'field' ] );
                 return false;
             }
         }
     }
-
 
 
 
     protected function checkVariableLength()
     {
-        if ( $decimal > 0 )
+        if ( $this->data[ 'decimal' ] > 0 )
         {
-            if ( preg_match( '/^[0-9]{' . $minLength . ',' . $maxLength . '}\.[0-9]{' . $decimal . '}$/i', $value ) )
+            if ( preg_match( '/^[0-9]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}\.[0-9]{' . $this->data[ 'decimal' ] . '}$/i', $this->data[ 'value' ] ) )
             {
                 return true;
             }
             else
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 18, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 18, $this->data[ 'field' ] );
                 return false;
             }
         }
         else
         {
-            if ( preg_match( '/^[0-9]{' . $minLength . ',' . $maxLength . '}$/i', $value ) )
+            if ( preg_match( '/^[0-9]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
             {
                 return true;
             }
             else
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 10, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
                 return false;
             }
         }
     }
-
 
 
 
     protected function checkInfiniteLength()
     {
-        if ( $decimal > 0 )
+        if ( $this->data[ 'decimal' ] > 0 )
         {
-            if ( preg_match( '/^[0-9]+\.[0-9]{' . $decimal . '}$/i', $value ) )
+            if ( preg_match( '/^[0-9]+\.[0-9]{' . $this->data[ 'decimal' ] . '}$/i', $this->data[ 'value' ] ) )
             {
                 return true;
             }
             else
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 18, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 18, $this->data[ 'field' ] );
                 return false;
             }
         }
         else
         {
-            if ( preg_match( '/^[0-9]+$/i', $value ) )
+            if ( preg_match( '/^[0-9]+$/i', $this->data[ 'value' ] ) )
             {
                 return true;
             }
             else
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 16, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 16, $this->data[ 'field' ] );
                 return false;
             }
         }
@@ -608,8 +575,10 @@ class NumberValidator extends ValidatorStrategy
 
 
 
-
 }
+
+
+
 
 class RadioValidator extends ValidatorStrategy
 {
@@ -636,37 +605,34 @@ class RadioValidator extends ValidatorStrategy
 
 
 
-
     /**
      *
      * Validation for radio
      * @access protected
      * @param mixed $name
-     * @param mixed $value
-     * @param mixed $customMsg
+     * @param mixed $this->data[ 'value' ]
+     * @param mixed $this->data[ 'message' ]
      * @return boolean
      */
     public function isValid()
     {
-        $value = $this->data[ 'value' ];
-        $customMsg = $this->data[ 'message' ];
-        $fieldName = $this->data[ 'field' ];
-
-        if ( isset( $value ) )
+        if ( isset( $this->data[ 'value' ] ) )
         {
             return true;
         }
         else
         {
-            $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 13, $fieldName );
+            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 13, $this->data[ 'field' ] );
             return false;
         }
     }
 
 
 
-
 }
+
+
+
 
 class RegexValidator extends ValidatorStrategy
 {
@@ -696,45 +662,38 @@ class RegexValidator extends ValidatorStrategy
 
 
 
-
     /**
      *
      * Validation using custom regex
      * @access protected
      * @param mixed $name
-     * @param mixed $value
-     * @param mixed $regex
-     * @param mixed $required
-     * @param mixed $customMsg
+     * @param mixed $this->data[ 'value' ]
+     * @param mixed $this->data[ 'regex' ]
+     * @param mixed $this->data[ 'required' ]
+     * @param mixed $this->data[ 'message' ]
      */
     public function isValid()
     {
-        $value = $this->data[ 'value' ];
-        $regex = $this->data[ 'regex' ];
-        $required = $this->data[ 'required' ];
-        $customMsg = $this->data[ 'message' ];
-        $fieldName = $this->data[ 'field' ];
-
-        if ( $value == '' and $required == true )
+        if ( $this->data[ 'value' ] == '' and $this->data[ 'required' ] == true )
         {
-            $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 1, $fieldName );
+            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
             return false;
         }
 
-        if ( $value == '' and $required != true )
+        if ( $this->data[ 'value' ] == '' and $this->data[ 'required' ] != true )
         {
             return true; //simply return true cause we dont care if this field is empty or not
         }
 
-        if ( $value != '' )
+        if ( $this->data[ 'value' ] != '' )
         {
-            if ( preg_match( $regex, $value ) )
+            if ( preg_match( $this->data[ 'regex' ], $this->data[ 'value' ] ) )
             {
                 return true;
             }
             else
             {
-                $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 6, $fieldName );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 6, $this->data[ 'field' ] );
                 return false;
             }
         }
@@ -742,8 +701,10 @@ class RegexValidator extends ValidatorStrategy
 
 
 
-
 }
+
+
+
 
 class SelectValidator extends ValidatorStrategy
 {
@@ -770,37 +731,34 @@ class SelectValidator extends ValidatorStrategy
 
 
 
-
     /**
      *
      * Validation for select
      * @access protected
      * @param mixed $name
-     * @param mixed $value
-     * @param mixed $customMsg
+     * @param mixed $this->data[ 'value' ]
+     * @param mixed $this->data[ 'message' ]
      * @return boolean
      */
     public function isValid()
     {
-        $value = $this->data[ 'value' ];
-        $customMsg = $this->data[ 'message' ];
-        $fieldName = $this->data[ 'field' ];
-
-        if ( !empty( $value ) )
+        if ( !empty( $this->data[ 'value' ] ) )
         {
             return true;
         }
         else
         {
-            $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 12, $fieldName );
+            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 12, $this->data[ 'field' ] );
             return false;
         }
     }
 
 
 
-
 }
+
+
+
 
 class TextValidator extends ValidatorStrategy
 {
@@ -839,42 +797,32 @@ class TextValidator extends ValidatorStrategy
 
 
 
-
     /**
      *
      * Validation for text field
      * @access protected
      * @param mixed $name
-     * @param mixed $value
-     * @param str $required
-     * @param str $permitNum
-     * @param int $minLength
-     * @param int $maxLength
-     * @param mixed $customMsg
+     * @param mixed $this->data[ 'value' ]
+     * @param str $this->data[ 'required' ]
+     * @param str $this->data[ 'allow_num' ]
+     * @param int $this->data[ 'min_length' ]
+     * @param int $this->data[ 'max_length' ]
+     * @param mixed $this->data[ 'message' ]
      * @return boolean
      */
     public function isValid()
     {
-        $value = $this->data[ 'value' ];
-        $required = $this->data[ 'required' ];
-        $permitSpace = $this->data[ 'allow_space' ];
-        $permitNum = $this->data[ 'allow_num' ];
-        $minLength = $this->data[ 'min_length' ];
-        $maxLength = $this->data[ 'max_length' ];
-        $customMsg = $this->data[ 'message' ];
-        $fieldName = $this->data[ 'field' ];
-
-        if ( empty( $value ) )
+        if ( empty( $this->data[ 'value' ] ) )
         {
             $this->checkrequired();
         }
         else
         {
-            if ( $minLength > 0 && $maxLength == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */
+            if ( $this->data[ 'min_length' ] > 0 && $this->data[ 'max_length' ] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */
             {
                 $this->checkExactLength();
             }
-            elseif ( $minLength >= 0 && $maxLength > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */
+            elseif ( $this->data[ 'min_length' ] >= 0 && $this->data[ 'max_length' ] > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */
             {
                 $this->checkVariableLength();
             }
@@ -887,12 +835,11 @@ class TextValidator extends ValidatorStrategy
 
 
 
-
     protected function checkrequired()
     {
-        if ( $required )
+        if ( $this->data[ 'required' ] )
         {
-            $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 1, $fieldName );
+            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
             return false;
         }
         else
@@ -904,183 +851,180 @@ class TextValidator extends ValidatorStrategy
 
 
 
-
     protected function checkExactLength()
     {
 
-        if ( $permitNum )
+        if ( $this->data[ 'allow_num' ] )
         {
-            if ( $permitSpace )
+            if ( $this->data[ 'allow_space' ] )
             {
-                if ( preg_match( '/^[a-zA-Z0-9\s]{' . $minLength . '}$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z0-9\s]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 10, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
                     return false;
                 }
             }
             else
             {
-                if ( preg_match( '/^[a-zA-Z0-9]{' . $minLength . '}$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z0-9]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 10, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
                     return false;
                 }
             }
         }
         else
         {
-            if ( $permitSpace )
+            if ( $this->data[ 'allow_space' ] )
             {
-                if ( preg_match( '/^[a-zA-Z\s]{' . $minLength . '}$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z\s]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 15, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 15, $this->data[ 'field' ] );
                     return false;
                 }
             }
             else
             {
-                if ( preg_match( '/^[a-zA-Z]{' . $minLength . '}$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 15, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 15, $this->data[ 'field' ] );
                     return false;
                 }
             }
         }
     }
-
 
 
 
     protected function checkVariableLength()
     {
-        if ( $permitNum )
+        if ( $this->data[ 'allow_num' ] )
         {
-            if ( $permitSpace )
+            if ( $this->data[ 'allow_space' ] )
             {
-                if ( preg_match( '/^[a-zA-Z0-9\s]{' . $minLength . ',' . $maxLength . '}$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z0-9\s]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 10, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
                     return false;
                 }
             }
             else
             {
-                if ( preg_match( '/^[a-zA-Z0-9]{' . $minLength . ',' . $maxLength . '}$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z0-9]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 10, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
                     return false;
                 }
             }
         }
         else
         {
-            if ( $permitSpace )
+            if ( $this->data[ 'allow_space' ] )
             {
-                if ( preg_match( '/^[a-zA-Z\s]{' . $minLength . ',' . $maxLength . '}$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z\s]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 15, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 15, $this->data[ 'field' ] );
                     return false;
                 }
             }
             else
             {
-                if ( preg_match( '/^[a-zA-Z]{' . $minLength . ',' . $maxLength . '}$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 15, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 15, $this->data[ 'field' ] );
                     return false;
                 }
             }
         }
     }
-
 
 
 
     protected function checkInfiniteLength()
     {
-        if ( $permitNum )
+        if ( $this->data[ 'allow_num' ] )
         {
-            if ( $permitSpace )
+            if ( $this->data[ 'allow_space' ] )
             {
-                if ( preg_match( '/^[a-zA-Z0-9\s]+$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z0-9\s]+$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 6, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 6, $this->data[ 'field' ] );
                     return false;
                 }
             }
             else
             {
-                if ( preg_match( '/^[a-zA-Z0-9]+$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z0-9]+$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 19, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 19, $this->data[ 'field' ] );
                     return false;
                 }
             }
         }
         else
         {
-            if ( $permitSpace )
+            if ( $this->data[ 'allow_space' ] )
             {
 
-                if ( preg_match( '/^[a-zA-Z\s]+$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z\s]+$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 20, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 20, $this->data[ 'field' ] );
                     return false;
                 }
             }
             else
             {
-                if ( preg_match( '/^[a-zA-Z]+$/i', $value ) )
+                if ( preg_match( '/^[a-zA-Z]+$/i', $this->data[ 'value' ] ) )
                 {
                     return true;
                 }
                 else
                 {
-                    $this->messages = ( $customMsg ) ? $customMsg : $this->errorText( 21, $fieldName );
+                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 21, $this->data[ 'field' ] );
                     return false;
                 }
             }
@@ -1089,8 +1033,10 @@ class TextValidator extends ValidatorStrategy
 
 
 
-
 }
+
+
+
 
 class Validator
 {
@@ -1106,13 +1052,12 @@ class Validator
 
 
     /**
-     * 
+     *
      * Hold and array of ValidatorStrategy
      * @access protected
      * @var array
      */
     protected $validators;
-
 
 
 
@@ -1124,9 +1069,8 @@ class Validator
      */
     public function __construct()
     {
-        
-    }
 
+    }
 
 
 
@@ -1140,7 +1084,6 @@ class Validator
     {
         $this->validators[ $name ] = $strategy;
     }
-
 
 
 
@@ -1173,7 +1116,6 @@ class Validator
 
 
 
-
     /**
      *
      * Custom method to mark any form field as invalidate (failed validation)
@@ -1186,7 +1128,6 @@ class Validator
         $this->validators[ $field ]->setMessage( $field, $customMsg );
         $this->isEror = true;
     }
-
 
 
 
@@ -1205,7 +1146,6 @@ class Validator
 
 
 
-
     /**
      *
      * Method to check wether validation is successfull or fail
@@ -1216,7 +1156,6 @@ class Validator
     {
         return $this->isEror;
     }
-
 
 
 
@@ -1232,7 +1171,6 @@ class Validator
     {
         return $this->validators[ $name ]->getMessage();
     }
-
 
 
 
@@ -1259,7 +1197,6 @@ class Validator
 
 
 
-
     /**
      *
      * Method to create block of error message (usualy used at the top of the form)
@@ -1283,7 +1220,9 @@ class Validator
 
 
 
-
 }
+
+
+
 
 ?>
