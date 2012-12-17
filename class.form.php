@@ -34,7 +34,6 @@ class Form
 
 
 
-
     /**
      * Constructor
      * @access public
@@ -45,10 +44,8 @@ class Form
     public function __construct( $formMethod = 'Post' )
     {
         $formMethod = ( is_null( $formMethod ) ) ? 'Post' : ucfirst( strtolower( $formMethod ) );
-        $this->formData = ( $formMethod == 'Post' ) ? $_POST : $_GET;
         $this->formMethod = $formMethod;
     }
-
 
 
 
@@ -66,18 +63,18 @@ class Form
     {
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( ); /* Cast to an array if $atrributes exist otherwise create an empty array */
 
+        $formData = $this->getFormData();
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
-        $value = isset( $this->formData[ $name ] ) ? $this->formData[ $name ] : $defaultValue;
+        $value = isset( $formData[ $name ] ) ? $formData[ $name ] : $defaultValue;
         $text = '';
         $text .= '<input type="text" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . '>';
         $text .= PHP_EOL;
         return $text;
     }
-
 
 
 
@@ -97,6 +94,7 @@ class Form
     {
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
+        $formData = $this->getFormData();
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
@@ -104,7 +102,7 @@ class Form
         $rows = ( array_key_exists( 'rows', $attr ) ) ? $attr[ 'rows' ] : 3;
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
-        $value = isset( $this->formData[ $name ] ) ? $this->formData[ $name ] : $defaultValue;
+        $value = isset( $formData[ $name ] ) ? $formData[ $name ] : $defaultValue;
         $textarea = '';
         $textarea .= '<textarea name="' . $name . '" id="' . $id . '" class="' . $class . '" cols="' . $cols . '" rows="' . $rows . '" ' . $disabled . '>';
         $textarea .= $value;
@@ -112,7 +110,6 @@ class Form
         $textarea .= PHP_EOL;
         return $textarea;
     }
-
 
 
 
@@ -140,7 +137,6 @@ class Form
 
 
 
-
     /**
      * Method to create select control
      * @access public
@@ -154,31 +150,32 @@ class Form
      * @param mixed $attr['disabled']
      * @param mixed $attr['multiple']
      * @param mixed $attr['size']
-     * 
-     * 
+     *
+     *
      * @param $options is pass as follows:
-     * 
-     * array('png'=>'Penang','kl'=>'K.Lumpur') will create select option like this 
+     *
+     * array('png'=>'Penang','kl'=>'K.Lumpur') will create select option like this
      * <select>
      * <option value='png'>Penang</option>
      * <option value='kl'>K.Lumpur</option>
      * </select>
-     * 
-     *  array('north'=>array('kdh'=>'Kedah', 'png'=>'Penang', 'prk'=>'Perak' ) ) will create select option like this 
-     * <select> 
+     *
+     *  array('north'=>array('kdh'=>'Kedah', 'png'=>'Penang', 'prk'=>'Perak' ) ) will create select option like this
+     * <select>
      * <optgroup label='north'>
      *  <option value='kdh'>Kedah</option>
      *  <option value='png'>Penang</option>
      *  <option value='prk'>Perak</option>
      * </optgroup>
-     * <select> 
-     * 
-     * 
+     * <select>
+     *
+     *
      */
     public function select( $name, $options, $selected = null, $atr = null )
     {
         $atr = (!is_null( $atr ) ) ? ( array ) $atr : array( );
 
+        $formData = $this->getFormData();
         $id = ( array_key_exists( 'id', $atr ) ) ? $atr[ 'id' ] : $name . 'Id';
         $class = ( array_key_exists( 'class', $atr ) ) ? $atr[ 'class' ] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
@@ -195,7 +192,7 @@ class Form
             $optionsList = '';
         }
 
-        $value = isset( $this->formData[ $name ] ) ? $this->formData[ $name ] : $selected;
+        $value = isset( $formData[ $name ] ) ? $formData[ $name ] : $selected;
 
         foreach ( $options as $key => $val )
         {
@@ -234,7 +231,6 @@ class Form
 
 
 
-
     /**
      * Method to create radio control
      * @access public
@@ -249,6 +245,7 @@ class Form
     {
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
+        $formData = $this->getFormData();
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
@@ -257,11 +254,11 @@ class Form
         $radio = '';
         $radio .= '<input type="radio" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ';
 
-        if ( $checked and !isset( $this->formData[ $name ] ) )
+        if ( $checked and !isset( $formData[ $name ] ) )
         {
             $radio .= 'checked';
         }
-        elseif ( ( isset( $this->formData[ $name ] ) and $this->formData[ $name ] == $value ) )
+        elseif ( ( isset( $formData[ $name ] ) and $formData[ $name ] == $value ) )
         {
             $radio .= 'checked';
         }
@@ -269,7 +266,6 @@ class Form
         $radio .= $disabled . '>' . PHP_EOL;
         return $radio;
     }
-
 
 
 
@@ -287,6 +283,7 @@ class Form
     {
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
+        $formData = $this->getFormData();
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
@@ -295,7 +292,7 @@ class Form
         $checkbox = '';
         $checkbox .= '<input type="checkbox" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ';
 
-        if ( ( isset( $this->formData[ $name ] ) and $this->formData[ $name ] == $value ) or $checked )
+        if ( ( isset( $formData[ $name ] ) and $formData[ $name ] == $value ) or $checked )
         {
             $checkbox .= 'checked';
         }
@@ -303,7 +300,6 @@ class Form
         $checkbox .= $disabled . '>' . PHP_EOL;
         return $checkbox;
     }
-
 
 
 
@@ -332,7 +328,6 @@ class Form
 
 
 
-
     /**
      * Method to create hidden control
      * @access public
@@ -354,7 +349,6 @@ class Form
         $hidden .= PHP_EOL;
         return $hidden;
     }
-
 
 
 
@@ -385,7 +379,6 @@ class Form
 
 
 
-
     /**
      * Method to create submit control
      * @access public
@@ -411,7 +404,6 @@ class Form
 
 
 
-
     /**
      * Method to create start form tag
      * @access public
@@ -430,7 +422,6 @@ class Form
 
 
 
-
     /**
      * Method to create end form tag
      * @access public
@@ -443,7 +434,20 @@ class Form
 
 
 
+    /**
+     * Populated form data
+     * @return array
+     */
+    protected function getFormData()
+    {
+        return ($this->formMethod == 'Post') ? $_POST : $_GET;
+    }
+
+
 
 }
+
+
+
 
 ?>
