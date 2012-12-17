@@ -455,15 +455,15 @@ class NumberValidator extends ValidatorStrategy
         {
             if ( $this->data[ 'min_length' ] > 0 && $this->data[ 'max_length' ] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */
             {
-                $this->checkExactLength();
+                return $this->checkExactLength();
             }
             elseif ( $this->data[ 'min_length' ] >= 0 && $this->data[ 'max_length' ] > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */
             {
-                $this->checkVariableLength();
+                return $this->checkVariableLength();
             }
             else
             {
-                $this->checkInfiniteLength();
+                return $this->checkInfiniteLength();
             }
         }
     }
@@ -820,15 +820,15 @@ class TextValidator extends ValidatorStrategy
         {
             if ( $this->data[ 'min_length' ] > 0 && $this->data[ 'max_length' ] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */
             {
-                $this->checkExactLength();
+                return $this->checkExactLength();
             }
             elseif ( $this->data[ 'min_length' ] >= 0 && $this->data[ 'max_length' ] > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */
             {
-                $this->checkVariableLength();
+                return $this->checkVariableLength();
             }
             else /* we dont bother string length..just check wether we permit for num and space character */
             {
-                $this->checkInfiniteLength();
+                return $this->checkInfiniteLength();
             }
         }
     }
