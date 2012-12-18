@@ -90,7 +90,7 @@ class Database extends PDO
         foreach ( $data as $key => $val )
         {
             $columns .= $key . ',';
-            if ( preg_match( '#(:.*|\?{1})#', $val ) )
+            if ( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) )
             {
                 $values .= $val . ',';
             }
@@ -104,6 +104,7 @@ class Database extends PDO
         $values = '(' . trim( $values, ',' ) . ')';
 
         $this->query = 'INSERT INTO ' . $table . $columns . ' VALUES ' . $values;
+        var_dump($this->query);
         return $this;
     }
 
@@ -125,7 +126,7 @@ class Database extends PDO
 
         foreach ( $data as $key => $val )
         {
-            if ( preg_match( '#(:.*|\?{1})#', $val ) )
+            if ( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) )
             {
                 $segment .= $key . '=' . $val . ',';
             }
