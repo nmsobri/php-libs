@@ -171,16 +171,16 @@ class Form
      *
      *
      */
-    public function select( $name, $options, $selected = null, $atr = null )
+    public function select( $name, $options, $selected = null, $attr = null )
     {
-        $atr = (!is_null( $atr ) ) ? ( array ) $atr : array( );
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
         $formData = $this->getFormData();
-        $id = ( array_key_exists( 'id', $atr ) ) ? $atr[ 'id' ] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $atr ) ) ? $atr[ 'class' ] : $name . 'Class';
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $multiple = ( array_key_exists( 'multiple', $atr ) ) ? $atr[ 'multiple' ] : null;
-        $size = ( array_key_exists( 'size', $atr ) ) ? $atr[ 'size' ] : null;
+        $multiple = ( array_key_exists( 'multiple', $attr ) ) ? $attr[ 'multiple' ] : null;
+        $size = ( array_key_exists( 'size', $attr ) ) ? $attr[ 'size' ] : null;
         $selected = ( is_null( $selected ) ) ? '' : $selected;
 
         static $instance = 0;
