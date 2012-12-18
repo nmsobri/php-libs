@@ -104,7 +104,6 @@ class Database extends PDO
         $values = '(' . trim( $values, ',' ) . ')';
 
         $this->query = 'INSERT INTO ' . $table . $columns . ' VALUES ' . $values;
-        var_dump($this->query);
         return $this;
     }
 
