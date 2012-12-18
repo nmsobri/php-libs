@@ -22,27 +22,18 @@ class Database extends PDO
      */
     public function __construct( $dsn, $username, $password )
     {
-        $this->connect( $dsn, $username, $password );
-    }
-
-
-
-    /**
-     * @Connect to the database and set the error mode to Exception
-     * @access private
-     * @param string $dsn
-     * @param string $username
-     * @param string $password
-     * @return mixed
-     */
-    protected function connect( $dsn, $username, $password )
-    {
-        if ( !$this->db instanceof PDO )
+        try
         {
             $this->db = new PDO( $dsn, $username, $password );
             $this->db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         }
+        catch( PDOException $e )
+        {
+            echo $e->getMessage();
+            exit(); /* cause pdo is stupid , its not stopping execution flow on exception */
+        }
     }
+
 
 
 
