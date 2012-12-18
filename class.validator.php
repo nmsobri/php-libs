@@ -225,7 +225,7 @@ class CompareValidator extends ValidatorStrategy
             if ( $this->data[ 'to_compare' ] != $this->data[ 'compare_with' ] )
             {
                 $this->messages = ( $this->data[ 'unmatch_message' ] ) ? $this->data[ 'unmatch_message' ] : $this->errorText( 2, $this->data[ 'field' ], $this->data[ 'field_comparison' ] );
-                        var_dump($this->data['field_comparasion']);
+                var_dump( $this->data[ 'field_comparasion' ] );
 
                 return false;
             }
@@ -1040,6 +1040,51 @@ class TextValidator extends ValidatorStrategy
 
 
 
+/**
+ * Error Validator
+ * use in Validator::invalidateValidation() to give user friendly error message after marked overall validation as failed
+ */
+class ErrorValidator extends ValidatorStrategy
+{
+
+    /**
+     *
+     * @access protected
+     */
+    protected $error_msg = null;
+
+
+
+    /**
+     *
+     * @param string $message
+     * @return void
+     */
+    public function __construct( $message )
+    {
+        $this->error_msg = $message;
+        $this->isValid();
+    }
+
+
+
+    /**
+     * Reimplement abstract method
+     * @return boolean
+     */
+    public function isValid()
+    {
+        $this->messages = $this->error_msg;
+        return false;
+    }
+
+
+
+}
+
+
+
+
 class Validator
 {
 
@@ -1135,15 +1180,16 @@ class Validator
 
     /**
      *
-     * Custom method to mark overall validation process as valid or invalid
-     * Typical use is login system, all input pass validation, but somehow no valid user is found
+     * Custom method to mark overall validation process as invalid
+     * Typical use is login system, all input passed validation, but somehow no valid user is found
      * So use this method to mark overall process as invalid
      * @access public
-     * @param boolean $type
+     * @param string $message custom error message
      */
-    public function invalidateValidation( $type = true )
+    public function invalidateValidation( $message )
     {
-        $this->isEror = ( boolean ) $type;
+        $this->validators[ ] = new ErrorValidator( $message );
+        $this->isEror = true;
     }
 
 
@@ -1163,7 +1209,7 @@ class Validator
 
     /**
      *
-     * Method to display eror message in html document
+     * Method to get the erorr for particular/individual validator startegy
      * @access public
      * @param mixed $name
      * @example $obj->getError('username')
