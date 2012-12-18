@@ -181,7 +181,7 @@ class CompareValidator extends ValidatorStrategy
 
         $this->data[ 'to_compare' ] = $value;
         $this->data[ 'compare_with' ] = $compareValue;
-        $this->data[ 'field_comparasion' ] = ( array_key_exists( 'field_comparison', $attr ) ) ? $attr[ 'field_comparison' ] : $comparsionField;
+        $this->data[ 'field_comparison' ] = ( array_key_exists( 'field_comparison', $attr ) ) ? $attr[ 'field_comparison' ] : $comparsionField;
         $this->data[ 'type' ] = 'compare_field';
         $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'empty_message' ] = ( array_key_exists( 'empty_message', $attr ) ) ? $attr[ 'empty_message' ] : null;
@@ -198,7 +198,7 @@ class CompareValidator extends ValidatorStrategy
      * @param mixed $name
      * @param mixed $to_compare
      * @param mixed $compare_with
-     * @param mixed $comparasionFieldName
+     * @param mixed $comparisonFieldName
      * @param str $this->data[ 'required' ]
      * @param mixed $this->data[ 'empty_message' ]
      * @param mixed $this->data[ 'unmatch_message' ]
@@ -224,7 +224,10 @@ class CompareValidator extends ValidatorStrategy
         {
             if ( $this->data[ 'to_compare' ] != $this->data[ 'compare_with' ] )
             {
+                var_dump('masuk sini');
                 $this->messages = ( $this->data[ 'unmatch_message' ] ) ? $this->data[ 'unmatch_message' ] : $this->errorText( 2, $this->data[ 'field' ], $this->data[ 'field_comparison' ] );
+                        var_dump($this->data['field_comparasion']);
+
                 return false;
             }
             else
