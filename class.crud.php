@@ -1,6 +1,6 @@
 <?php
 
-class Crud extends PDO
+class Database extends PDO
 {
 
     protected $db = null;
@@ -10,7 +10,6 @@ class Crud extends PDO
     protected $order = null;
     protected $limit = null;
     protected $count = null;
-
 
 
 
@@ -25,7 +24,6 @@ class Crud extends PDO
     {
         $this->connect( $dsn, $username, $password );
     }
-
 
 
 
@@ -48,14 +46,15 @@ class Crud extends PDO
 
 
 
-
     /**
      * Runn raw query
      * @access public
-     * @param string $sql
-     * @example $obj->query('select * from user')
-     * @return if $return=='y'=return result set
-     * @return mixed
+     * @param string $sql raw query
+     * @param mixed $bind value to bind
+     * @example query('select * from user')
+     * @example query('select * from user where age > ? and level > ? ', array( $age, $level ) )
+     * @example query('select * from user where age > :age and level > :level ', array( ':age' => $age, ':level' => $level ) )
+     * @return Database for chaining
      */
     public function query( $sql, $bind = null )
     {
@@ -63,7 +62,6 @@ class Crud extends PDO
         $this->query = $sql;
         return $this;
     }
-
 
 
 
@@ -80,10 +78,15 @@ class Crud extends PDO
 
 
 
-
     /**
      * Insert a value into a table
      * @access public
+     * @param string $table table name
+     * @param mixed $data data to insert
+     * @param mixed $bind value to bind
+     * @example insert('users', array( ?, ? ), array( $username, $password ) )
+     * @example insert('users', array( ':username', ':password' ), array( ':username' => $username, ':password' => $password ) )
+     * @return Database for chaining
      */
     public function insert( $table, $data = array( ), $bind = null )
     {
@@ -106,10 +109,14 @@ class Crud extends PDO
 
 
 
-
     /**
      * Update a value in a table
      * @access public
+     * @param string $table table name
+     * @param mixed $data data to update
+     * @param mixed $bind value to bind
+     * @example update('users', array( ?, ? ), array( $username, $password ) )
+     * @example update('users', array( ':username', ':password' ), array( ':username' => $username, ':password' => $password ) )
      */
     public function update( $table, $data = array( ), $bind = null )
     {
@@ -128,7 +135,6 @@ class Crud extends PDO
 
 
 
-
     /**
      * Delete a record from a table
      * @access public
@@ -141,19 +147,22 @@ class Crud extends PDO
 
 
 
-
     public function totalrow()
     {
-        $this->count = 100;
+        $this->count = true;
         return $this;
     }
-
 
 
 
     /**
      *
      * Setup where clause
+     * @access public
+     * @param string $where raw sql condition
+     * @param mixed $bind value to bind
+     * @example where( "username = ? and password = ?", array( $username, $password ) )
+     * @example where("username = :username and password = :password", array( ':username' => $username, ':password' => $password ) )
      */
     public function where( $where, $bind = null )
     {
@@ -171,7 +180,6 @@ class Crud extends PDO
 
 
 
-
     /**
      *
      * Setup order by clause
@@ -181,7 +189,6 @@ class Crud extends PDO
         $this->order = ' ORDER BY ' . $order;
         return $this;
     }
-
 
 
 
@@ -197,7 +204,6 @@ class Crud extends PDO
 
 
 
-
     /**
      * Method to get last insert id From insert statement
      * @access public
@@ -207,7 +213,6 @@ class Crud extends PDO
     {
         return $this->db->lastInsertId();
     }
-
 
 
 
@@ -227,20 +232,19 @@ class Crud extends PDO
 
             if ( preg_match( '/^sel/i', trim( $sql ) ) )
             {
-                return is_null( $count ) ? $stmt->fetchAll( PDO::FETCH_ASSOC ) : count( $stmt->fetchAll( PDO::FETCH_ASSOC ) );
+                return ($count) ? count( $stmt->fetchAll( PDO::FETCH_ASSOC ) ) : $stmt->fetchAll( PDO::FETCH_ASSOC );
             }
             else
             {
                 return $stmt->rowCount();
             }
         }
-        catch ( PDOException $e )
+        catch( PDOException $e )
         {
             echo $e->getMessage();
             exit();
         }
     }
-
 
 
 
@@ -262,7 +266,9 @@ class Crud extends PDO
 
 
 
-
 }
+
+
+
 
 ?>
