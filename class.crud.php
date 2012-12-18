@@ -29,11 +29,13 @@ class Database extends PDO
         }
         catch( PDOException $e )
         {
-            echo $e->getMessage();
+            $msg = "Message: {$e->getMessage()}";
+            $msg .="\nFile:   {$e->getFile()}";
+            $msg .="\nLine:   {$e->getLine()}";
+            echo nl2br( $msg );
             exit(); /* cause pdo is stupid , its not stopping execution flow on exception */
         }
     }
-
 
 
 
@@ -49,7 +51,7 @@ class Database extends PDO
      */
     public function query( $sql, $bind = null )
     {
-        $this->bind = $this->bind( $bind );
+        $this->bind( $bind );
         $this->query = $sql;
         return $this;
     }
@@ -75,20 +77,27 @@ class Database extends PDO
      * @param string $table table name
      * @param mixed $data data to insert
      * @param mixed $bind value to bind
-     * @example insert('users', array( ?, ? ), array( $username, $password ) )
-     * @example insert('users', array( ':username', ':password' ), array( ':username' => $username, ':password' => $password ) )
+     * @example insert('users', array( array( 'username'=> '?', 'password'=> '?' ) ), array( $username, $password ) )
+     * @example insert('users', array( array( 'username'=> ':username', 'password'=> ':password' ) ), array( ':username' => $username, ':password' => $password ) )
      * @return Database for chaining
      */
     public function insert( $table, $data = array( ), $bind = null )
     {
         $columns = null;
         $values = null;
-        $this->bind = $this->bind( $bind );
+        $this->bind( $bind );
 
         foreach ( $data as $key => $val )
         {
             $columns .= $key . ',';
-            $values .= '"' . $val . '"' . ',';
+            if ( preg_match( '#(:.*|\?{1})#', $val ) )
+            {
+                $values .= $val . ',';
+            }
+            else
+            {
+                $values .= '"' . $val . '"' . ',';
+            }
         }
 
         $columns = '(' . trim( $columns, ',' ) . ')';
@@ -106,17 +115,24 @@ class Database extends PDO
      * @param string $table table name
      * @param mixed $data data to update
      * @param mixed $bind value to bind
-     * @example update('users', array( ?, ? ), array( $username, $password ) )
-     * @example update('users', array( ':username', ':password' ), array( ':username' => $username, ':password' => $password ) )
+     * @example update('users', array( array( 'username'=> '?', 'password'=> '?' ) ), array( $username, $password ) )
+     * @example update('users', array( array( 'username'=> ':username', 'password'=> ':password' ) ), array( ':username' => $username, ':password' => $password ) )
      */
     public function update( $table, $data = array( ), $bind = null )
     {
         $segment = null;
-        $this->bind = $this->bind( $bind );
+        $this->bind( $bind );
 
         foreach ( $data as $key => $val )
         {
-            $segment .= $key . '="' . $val . '",';
+            if ( preg_match( '#(:.*|\?{1})#', $val ) )
+            {
+                $segment .= $key . '=' . $val . ',';
+            }
+            else
+            {
+                $segment .= $key . '="' . $val . '",';
+            }
         }
 
         $segment = substr( $segment, 0, -1 );
@@ -153,7 +169,7 @@ class Database extends PDO
      * @param string $where raw sql condition
      * @param mixed $bind value to bind
      * @example where( "username = ? and password = ?", array( $username, $password ) )
-     * @example where("username = :username and password = :password", array( ':username' => $username, ':password' => $password ) )
+     * @example where( "username = :username and password = :password", array( ':username' => $username, ':password' => $password ) )
      */
     public function where( $where, $bind = null )
     {
@@ -163,7 +179,7 @@ class Database extends PDO
         }
         else
         {
-            $this->bind = $this->bind( $bind );
+            $this->bind( $bind );
             $this->where = ' WHERE ' . $where;
             return $this;
         }
@@ -219,7 +235,7 @@ class Database extends PDO
             $stmt = $this->db->prepare( $sql );
             $stmt->execute( $this->bind );
             $count = $this->count; //cache this value cause if use directly, statement below will always make $this->count = null
-            $this->query = $this->where = $this->order = $this->limit = $this->count = null;
+            $this->query = $this->where = $this->order = $this->limit = $this->count = $this->bind = null;
 
             if ( preg_match( '/^sel/i', trim( $sql ) ) )
             {
@@ -232,7 +248,10 @@ class Database extends PDO
         }
         catch( PDOException $e )
         {
-            echo $e->getMessage();
+            $msg = "Message: {$e->getMessage()}";
+            $msg .="\nFile:   {$e->getFile()}";
+            $msg .="\nLine:   {$e->getLine()}";
+            echo nl2br( $msg );
             exit();
         }
     }
@@ -245,14 +264,25 @@ class Database extends PDO
      */
     protected function bind( $bind )
     {
-        if ( !is_array( $bind ) )
+        if ( is_null( $this->bind ) )
         {
-            if ( !empty( $bind ) )
-                $bind = array( $bind );
-            else
-                $bind = array( );
+            $this->bind = array( );
         }
-        return $bind;
+
+        if ( !empty( $bind ) )
+        {
+            if ( is_array( $bind ) )
+            {
+                foreach ( $bind as $key=>$val )
+                {
+                    $this->bind[ $key] = $val;
+                }
+            }
+            else
+            {
+                $this->bind[ ] = $bind;
+            }
+        }
     }
 
 
