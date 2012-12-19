@@ -135,15 +135,35 @@ class Session
     /**
      * Clear flash session
      * If this method is call without parameter,all flash session will be deleted
-     * @param type $keys
+     * @param type $keys key in flash session to be search
      */
-    public function clearFlash( $keys = null )
+    public function clearFlash( $needles = null )
     {
-        $keys = ( $keys === null ) ? array_keys( $_SESSION[ 'flash' ] ) : func_get_args();
+        $needles = ( $needles === null ) ? null : func_get_args();
+        $haystacks = array_keys( $_SESSION[ 'flash' ] );
 
-        foreach ( $keys as $key )
+        if ( !is_null( $needles ) )
         {
-            unset( $_SESSION[ 'flash' ][ $key ], $_SESSION[ $key ] );
+            foreach ( $haystacks as $haystack )
+            {
+                foreach ( $_SESSION[ $haystack ] as $ses_key => $ses_val )
+                {
+                    foreach ( $needles as $needle )
+                    {
+                        if ( $needle == $ses_key )
+                        {
+                            unset( $_SESSION[ $haystack ][ $ses_key ] );
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            foreach ( $haystacks as $haystack )
+            {
+                unset( $_SESSION[ 'flash' ][ $haystack ], $_SESSION[ $haystack ] );
+            }
         }
     }
 
