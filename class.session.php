@@ -17,7 +17,6 @@ class Session
 
 
 
-
     /**
      *
      * Constructor method
@@ -36,7 +35,6 @@ class Session
 
 
 
-
     /**
      * Free all session variables
      * @access public
@@ -45,7 +43,6 @@ class Session
     {
         session_unset();
     }
-
 
 
 
@@ -60,7 +57,6 @@ class Session
 
 
 
-
     /**
      * Get The Current Session Id
      * @access public
@@ -69,7 +65,6 @@ class Session
     {
         return session_id();
     }
-
 
 
 
@@ -82,7 +77,6 @@ class Session
     {
         session_regenerate_id();
     }
-
 
 
 
@@ -101,9 +95,8 @@ class Session
 
 
 
-
     /**
-     * 
+     *
      * Set session so that only exist on one request
      * @access public
      * @param mixed $keys
@@ -117,9 +110,8 @@ class Session
 
 
 
-
     /**
-     * 
+     *
      * Set session so it keep exist on only for next request
      * If this method is call without parameter,all flash session var will be keep for next request
      * @access public
@@ -140,6 +132,22 @@ class Session
 
 
 
+    /**
+     * Clear flash session
+     * If this method is call without parameter,all flash session will be deleted
+     * @param type $keys
+     */
+    public function clearFlash( $keys = null )
+    {
+        $keys = ( $keys === null ) ? array_keys( $_SESSION[ 'flash' ] ) : func_get_args();
+
+        foreach ( $keys as $key )
+        {
+            unset( $_SESSION[ 'flash' ][ $key ], $_SESSION[ $key ] );
+        }
+    }
+
+
 
     /**
      *
@@ -151,7 +159,6 @@ class Session
     {
         unset( $this->_sess[ $name ] );
     }
-
 
 
 
@@ -172,7 +179,6 @@ class Session
 
 
 
-
     /**
      *
      * Check For Existence Of Session Variable
@@ -187,7 +193,6 @@ class Session
 
 
 
-
     /**
      *
      * Get All Session List
@@ -198,7 +203,6 @@ class Session
     {
         return array_keys( $this->_sess );
     }
-
 
 
 
@@ -230,7 +234,6 @@ class Session
 
 
 
-
     /**
      *
      * Start the session
@@ -244,9 +247,8 @@ class Session
 
 
 
-
     /**
-     * 
+     *
      * Set how long cached page in client cache should be store
      * Dosent affect session lifetime
      * Use in conjunction with session_cache_limiter != 'nocache'
@@ -257,7 +259,6 @@ class Session
     {
         session_cache_expire( $delay );
     }
-
 
 
 
@@ -275,7 +276,6 @@ class Session
 
 
 
-
     /**
      *
      * Init session flash data
@@ -289,7 +289,6 @@ class Session
         }
         $this->expireFlash();
     }
-
 
 
 
@@ -324,7 +323,6 @@ class Session
 
 
 
-
     /**
      *
      * Redirect User
@@ -339,7 +337,9 @@ class Session
 
 
 
-
 }
+
+
+
 
 ?>
