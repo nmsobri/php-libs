@@ -6,20 +6,23 @@
 *
 *  @author slier
 *  @example
+ *
+ * [code]
 *  include "libmail.php";
-*  $m = new Mail; // create the mail
+*  $m = new Mail;
 *  $m->From( "leo@isp.com" );
 *  $m->To( "destination@somewhere.fr" );
 *  $m->Subject( "the subject of the mail" );
 *
 *  $message= "Hello world!\nthis is a test of the Mail class\nplease ignore\nThanks.";
-*  $m->Body( $message);   // set the body
+*  $m->Body( $message);
 *  $m->Cc( "someone@somewhere.fr");
 *  $m->Bcc( "someoneelse@somewhere.fr");
-*  $m->Priority(4) ;   // set the priority to Low
-*  $m->Attach( "/home/leo/toto.gif", "image/gif" ) ;   // attach a file of type image/gif
-*  $m->Send();   // send the mail
-*  echo "the mail below has been sent:<br><pre>", $m->Get(), "</pre>";
+*  $m->Priority(4) ;
+*  $m->Attach( "/home/leo/toto.gif", "image/gif" ) ;
+*  $m->Send();
+*  echo "the mail below has been sent:", $m->Get(), "";
+ * [/code]
 */
 class Mail
 {
@@ -134,7 +137,7 @@ class Mail
      * @param string $subject any monoline string
      * @access public
      */
-    public function Subject( $subject )
+    public function subject( $subject )
     {
         $this->xheaders['Subject'] = strtr( $subject, "\r\n", "  " );
     }
@@ -148,7 +151,7 @@ class Mail
      * @param string $from should be an email address
      * @access public
      */
-    public function From( $from )
+    public function from( $from )
     {
 
         if( !is_string( $from ) )
@@ -168,7 +171,7 @@ class Mail
      * @param string $address should be an email address
      * @access public
      */
-    public function ReplyTo( $address )
+    public function replyTo( $address )
     {
 
         if( !is_string( $addres ) )
@@ -186,7 +189,7 @@ class Mail
      * @warning this functionality is *not* a standard, thus only some mail clients are compliants.
      * @access public
      */
-    public function Receipt()
+    public function receipt()
     {
         $this->receipt = 1;
     }
@@ -200,7 +203,7 @@ class Mail
      * @param string $to email address, accept both a single address or an array of addresses
      * @access public
      */
-    public function To( $to )
+    public function to( $to )
     {
         // TODO : test validit� sur to
         if( is_array( $to ) )
@@ -209,7 +212,7 @@ class Mail
             $this->sendto[] = $to;
 
         if( $this->checkAddress == true )
-            $this->CheckAdresses( $this->sendto );
+            $this->checkAdresses( $this->sendto );
     }
 
 
@@ -221,7 +224,7 @@ class Mail
      * @param mixed $cc : email address(es), accept both array and string
      * @access public
      */
-    public function Cc( $cc )
+    public function cc( $cc )
     {
         if( is_array( $cc ) )
             $this->acc = $cc;
@@ -229,7 +232,7 @@ class Mail
             $this->acc[] = $cc;
 
         if( $this->checkAddress == true )
-            $this->CheckAdresses( $this->acc );
+            $this->checkAdresses( $this->acc );
     }
 
 
@@ -241,7 +244,7 @@ class Mail
      * @param mixed $bcc : email address(es), accept both array and string
      * @access public
      */
-    public function Bcc( $bcc )
+    public function bcc( $bcc )
     {
         if( is_array( $bcc ) )
         {
@@ -253,7 +256,7 @@ class Mail
         }
 
         if( $this->checkAddress == true )
-            $this->CheckAdresses( $this->abcc );
+            $this->checkAdresses( $this->abcc );
     }
 
 
@@ -270,7 +273,7 @@ class Mail
      * @param mixed $charset
      * @access public
      */
-    public function Body( $body, $charset = "" )
+    public function body( $body, $charset = "" )
     {
         $this->body = $body;
 
@@ -291,7 +294,7 @@ class Mail
      * @param mixed $org
      * @access public
      */
-    public function Organization( $org )
+    public function organization( $org )
     {
         if( trim( $org != "" ) )
             $this->xheaders['Organization'] = $org;
@@ -307,7 +310,7 @@ class Mail
      * @example $mail->Priority(1) ; => Highest
      * @access public
      */
-    public function Priority( $priority )
+    public function priority( $priority )
     {
         if( !intval( $priority ) )
             return false;
@@ -329,7 +332,7 @@ class Mail
      * @param string $disposition : instruct the Mailclient to display the file if possible ("inline") or always as a link ("attachment") possible values are "inline", "attachment"
      * @access public
      */
-    public function Attach( $filename, $filetype = "", $disposition = "inline" )
+    public function attach( $filename, $filetype = "", $disposition = "inline" )
     {
         // TODO : si filetype="", alors chercher dans un tablo de MT connus / extension du fichier
         if( $filetype == "" )
@@ -347,9 +350,9 @@ class Mail
      * Send the email
      * @access public
      */
-    public function Send()
+    public function send()
     {
-        $this->BuildMail();
+        $this->buildMail();
         $this->strTo = implode( ", ", $this->sendto );
         $res = @mail( $this->strTo, $this->xheaders['Subject'], $this->fullBody, $this->headers );
     }
@@ -364,9 +367,9 @@ class Mail
      * @access public
      * @return Mail
      */
-    public function Get()
+    public function get()
     {
-        $this->BuildMail();
+        $this->buildMail();
         $mail = "To: " . $this->strTo . "\n";
         $mail .= $this->headers . "\n";
         $mail .= $this->fullBody;
@@ -383,11 +386,11 @@ class Mail
      * @return if unvalid, output an error message and exit, this may -should- be customized
      * @access private
      */
-    private function CheckAdresses( $aad )
+    private function checkAdresses( $aad )
     {
         for( $i = 0; $i < count( $aad ); $i++ )
         {
-            if( !$this->ValidEmail( $aad[$i] ) )
+            if( !$this->validEmail( $aad[$i] ) )
             {
                 echo "Class Mail, method Mail : invalid address $aad[$i]";
                 exit;
@@ -405,7 +408,7 @@ class Mail
      * @return true if email adress is ok
      * @access private
      */
-    private function ValidEmail( $address )
+    private function validEmail( $address )
     {
         if( preg_match( "/^[0-9a-z]+(([\.\-_])[0-9a-z]+)*@[0-9a-z]+(([\.\-])[0-9a-z-]+)*\.[a-z]{2,4}$/i", $address ) )
         {
@@ -425,7 +428,7 @@ class Mail
      * Build the email message
      * @access private
      */
-    private function BuildMail()
+    private function buildMail()
     {
         // build the headers
         $this->headers = "";
@@ -476,7 +479,7 @@ class Mail
 
 
     /**
-     * 
+     *
      * Check and encode attach file(s) . internal use only
      * @access private
      */
