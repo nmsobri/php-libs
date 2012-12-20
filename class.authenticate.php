@@ -3,7 +3,7 @@
 /*
  * Class to authenticate a user
  * @author slier
- * 
+ *
  */
 
 class Authentication
@@ -14,7 +14,7 @@ class Authentication
      * @var Crud
      * @access private
      */
-    private $db = false;
+    private $db = null;
 
 
 
@@ -23,7 +23,7 @@ class Authentication
      * @var Session
      * @access private
      */
-    private $ses = false;
+    private $session = null;
 
 
 
@@ -32,16 +32,24 @@ class Authentication
      * @var Cookie
      * @access private
      */
-    private $cookie = false;
+    private $cookie = null;
 
 
 
     /**
-     * Store Table Name Used For Authentication
-     * @var string
+     * Store stdClass object using for login
+     * @access private
+     * @var StdClass
+     */
+    private $login_param = null;
+
+
+
+    /**
+     * Store result from querying the database
      * @access private
      */
-    private $table = null;
+    private $login_data = null;
 
 
 
@@ -50,152 +58,130 @@ class Authentication
      * @var string
      * @access private
      */
-    private $cookSesName = 'auth';
+    private $auth_name = 'auth';
 
 
 
     /**
-     * Cached passed in username
-     * @var string
-     * @var access private
+     * Store hash for encryption/decryption
+     * @var type
      */
-    private $username = null;
+    private $encryption_key = '9D(v56xv0_7F15m8Y$ZuSQ5FG1#Mx^';
 
 
 
     /**
-     * Cached passed in password
-     * @var string
-     * @var access private
-     */
-    private $password = null;
-
-
-
-    /**
-     * Store Username Coulmn In The Database
-     * @var string
+     * Store hashing, for auth checking
      * @access private
-     */
-    public $usernameField = 'username';
-
-
-
-    /**
-     * Store Password Column In The Database
      * @var string
-     * @access private
      */
-    public $passwordField = 'password';
-
+    private $hash = '6cSNeQPq8qkcWzUBUe/LF1wPyC3iKJpO';
 
 
 
     /**
      * Construction Method
      * @access public
-     * @param Crud $db instance of crud class
-     * @param Session $ses instance of session class
+     * @param Session $session instance of session class
      * @param Cookie $cookie instance of cookie class
-     * @param mixed $tableName table name use to store user credential
      * @return Authentication
      */
-    public function __construct( Crud $db, Session $ses, Cookie $cookie, $tableName )
+    public function __construct( Session $session, Cookie $cookie )
+    {
+        $this->session = $session;
+        $this->cookie = $cookie;
+    }
+
+
+
+    /**
+     *
+     * @access public
+     * @param Pdo $db Pdo object
+     * @param stdClass $obj       instance of stdClass
+     * @param stdClass::query     query to run
+     * @param stdClass::bind      value to bind to placeholder inside query
+     * @param stdClass::remember  whether to use cookie to store auth result
+     * @return boolean
+     */
+    public function login( PDO $db, stdClass $obj )
     {
         $this->db = $db;
-        $this->ses = $ses;
-        $this->cookie = $cookie;
-        $this->table = $tableName;
+        $this->login_param = $obj;
+        return $this->isAuth();
     }
-
 
 
 
     /**
-     * Method To Perform Login And Then Call isAuthenticated To Verify Wether User Who Try To Login is Authenticated
+     * Check wether is authenticated
      * @access public
-     * @param mixed $username
-     * @param mixed $password
-     * @param mixed $rememberMe
      * @return boolean
      */
-    public function login( $username, $password, $rememberMe = false )
+    public function isAuth()
     {
-        $this->username = $username;
-        $this->password = $password;
-
-        if ( $this->isAuthenticated() )
+        if ( !is_null( $this->login_param ) )
         {
-            $userId = $this->db->query( "Select id from users where username='{$this->username}'" )->execute();
-            $userId = $userId[ 0 ][ 'id' ];
+            $this->login_data = $this->db->query( $this->login_param->query, $this->bind() )->execute();
 
-            $this->ses->regenerateSessionId();
-            $this->ses->set( $this->cookSesName, array( 'userId' => $userId, 'username' => $username, 'password' => $password ) );
-
-            if ( $rememberMe )
+            if ( count( $this->login_data ) == 1 )
             {
-                $cookieData = serialize( array( 'username' => $username, 'password' => $password ) );  /* Need to serialize cause cookie cant store an array (aka cast it to string) */
-                $this->cookie->set( $this->cookSesName, $cookieData );
+                $this->saveHash();
+                return true;
             }
-
-            return true;
         }
         else
         {
-            return false;
-        }
-    }
+            if ( $this->session->check( $this->auth_name ) and $this->checkHash() )
+            {
+                return true;
+            }
 
+            if ( $this->cookie->check( $this->auth_name ) and $this->checkHash() )
+            {
+                $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 
     /**
-     * Method To Check Wether User Is Verified To Access Resource
+     * Return login data
+     * Typically database data
      * @access public
-     * @return boolean
+     * @return mixed
      */
-    public function isAuthenticated()
+    public function getLoginData()
     {
-        if ( $this->cookie->check( $this->cookSesName ) ) //come from cookie
-        {
-            if ( !$this->ses->check( $this->cookSesName ) )
-            {
-                $cookieData = $this->cookie->get( $this->cookSesName );
-                $cookieData = unserialize( $cookieData );
-                $this->ses->set( $this->cookSesName, $cookieData );
-            }
-        }
-
-        if ( $this->ses->check( $this->cookSesName ) ) //come from session
-        {
-            $sessionData = $this->ses->get( $this->cookSesName );
-            $username = $sessionData[ 'username' ];
-            $password = $sessionData[ 'password' ];
-        }
-
-        if ( $this->username && $this->password ) //come from login form
-        {
-            $username = $this->username;
-            $password = $this->password;
-        }
-
-        if ( !$username and !$password )
-        {
-            return false; //return false in none of the above variable dosent exist
-        }
-
-        $recordFound = $this->db->select( $this->table )->where( "{$this->usernameField}='{$username}' and {$this->passwordField}='{$password}'" )->total_row()->execute();
-
-        if ( $recordFound == 1 )
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return $this->login_data;
     }
 
+
+
+    /**
+     * Store hash for encryption/decryption
+     * @access public
+     * @param string $hash
+     */
+    public function setEncryptionKey( $hash )
+    {
+        $this->encryption_key = $hash;
+    }
+
+
+
+    /**
+     * Store hash for auth checking
+     * @access public
+     * @param type $hash
+     */
+    public function setHashKey( $hash )
+    {
+        $this->hash = $hash;
+    }
 
 
 
@@ -206,23 +192,155 @@ class Authentication
      */
     public function logout()
     {
-        $this->ses->del( $this->cookSesName );
-        $this->ses->unsetSession();
-        $this->cookie->del( $this->cookSesName );
+        $this->session->del( $this->auth_name );
+        $this->session->unsetSession();
+        $this->cookie->del( $this->auth_name );
 
-        if ( !$this->ses->check( $this->cookSesName ) and !$this->cookie->check( $this->cookSesName ) )
-        {
+        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) )
             return true;
+        else
+            return false;
+    }
+
+
+
+    /**
+     * Bind a value to Pdo placeholder
+     * @access protected
+     * @return array
+     */
+    protected function bind()
+    {
+        $bind = NULL;
+
+        if ( isset( $this->login_param->bind ) )
+        {
+            if ( is_array( $this->login_param->bind ) )
+            {
+                $bind = $this->login_param->bind;
+            }
+            else
+            {
+                $bind = array( $this->login_param->bind );
+            }
         }
         else
         {
-            return false;
+            $bind = array( );
+        }
+        return $bind;
+    }
+
+
+
+    /**
+     * Create hashing for auth data
+     * @access protected
+     * @return array
+     */
+    protected function createHash()
+    {
+        $auth_key = '';
+
+        foreach ( $this->login_data[ 0 ] as $data )
+        {
+            $auth_key .= $data;
+        }
+
+        $data = array( );
+        $data[ 'key' ] = $this->encode( $auth_key );
+        $data[ 'hash' ] = $this->encode( strrev( $this->hash . $auth_key . $this->hash ) );
+
+        return $data;
+    }
+
+
+
+    /**
+     * Save hash auth data to session/cookie
+     * @access protected
+     * @return void
+     */
+    protected function saveHash()
+    {
+
+        $this->session->set( $this->auth_name, $this->createHash() );
+
+        if ( $this->login_param->remember )
+        {
+            $this->cookie->set( $this->auth_name, $this->createHash() );
         }
     }
 
 
 
+    /**
+     * Check auth hash from session/cookie against recreation hash
+     * @access protected
+     * @return boolean
+     */
+    protected function checkHash()
+    {
+
+        if ( $this->session->check( $this->auth_name ) )
+        {
+            $auth_data = $this->session->get( $this->auth_name );
+            $auth_key = $this->decode( $auth_data[ 'key' ] );
+            $auth_hash = strrev( $this->decode( $auth_data[ 'hash' ] ) );
+
+            if ( $this->hash . $auth_key . $this->hash == $auth_hash )
+            {
+                return true;
+            }
+        }
+
+        if ( $this->cookie->check( $this->auth_name ) and $this->checkHash() )
+        {
+            $auth_data = $this->cookie->get( $this->auth_name );
+            $auth_key = $this->decode( $auth_data[ 'key' ] );
+            $auth_hash = strrev( $this->decode( $auth_data[ 'hash' ] ) );
+
+            if ( $this->hash . $auth_key . $this->hash == $auth_hash )
+            {
+                $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    /**
+     * Encode string
+     * @access protected
+     * @param string $string
+     * @return string
+     */
+    protected function encode( $string )
+    {
+        $encrypted = base64_encode( mcrypt_encrypt( MCRYPT_RIJNDAEL_256, md5( $this->encryption_key ), $string, MCRYPT_MODE_CBC, md5( md5( $this->encryption_key ) ) ) );
+        return $encrypted;
+    }
+
+
+
+    /**
+     * Decode string
+     * @param string $string
+     * @return string
+     */
+    public function decode( $string )
+    {
+        $decrypted = rtrim( mcrypt_decrypt( MCRYPT_RIJNDAEL_256, md5( $this->encryption_key ), base64_decode( $string ), MCRYPT_MODE_CBC, md5( md5( $this->encryption_key ) ) ), "\0" );
+        return $decrypted;
+    }
+
+
 
 }
+
+
+
 
 ?>
