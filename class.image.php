@@ -10,8 +10,8 @@
 #  Example  :
 #  include('class.image.php');
 #  $obj = new Image('input.jpg', array('.jpg','.png'));
-#  $obj->resizeImage(150, 100, 0);
-#  $obj->saveImage('output.jpg', 100);
+#  $obj->resize(150, 100, 0);
+#  $obj->save('output.jpg', 100);
 #
 # ========================================================================#
 
@@ -25,30 +25,38 @@ Class Image
     protected $imageResized;
     protected $extensions = array( '.jpg', '.jpeg', '.png', '.gif' );
 
-    public function __construct($file, array $extensions = null)
+
+
+    /**
+     *
+     * @param string $file image file name
+     * @param array $extensions allowable extension
+     * @throws Exception
+     */
+    public function __construct( $file, array $extensions = null )
     {
-        $this->extensions = !is_null($extensions) ? $extensions : $this->extensions;
+        $this->extensions = !is_null( $extensions ) ? $extensions : $this->extensions;
 
         try
         {
-            if ( !$this->isFile($file) )
+            if ( !$this->isFile( $file ) )
             {
-                throw new Exception('File does not exist');
+                throw new Exception( 'File does not exist' );
             }
 
-            if ( !$this->isAllowedExtensions($file) )
+            if ( !$this->isAllowedExtensions( $file ) )
             {
-                throw new Exception('File extension is not allowed');
+                throw new Exception( 'File extension is not allowed' );
             }
 
             /* Open up the file */
-            $this->image = $this->openImage($file);
+            $this->image = $this->openImage( $file );
 
             /* Get width and height */
-            $this->width = imagesx($this->image);
-            $this->height = imagesy($this->image);
+            $this->width = imagesx( $this->image );
+            $this->height = imagesy( $this->image );
         }
-        catch ( Exception $e )
+        catch( Exception $e )
         {
             echo $e->getMessage();
         }
@@ -59,28 +67,28 @@ Class Image
     /**
      *
      * Resize the image
-     * @param int $newWidth
-     * @param int $newHeight
-     * @param string $option 
+     * @param int $newWidth new width of an image
+     * @param int $newHeight new height of an image
+     * @param string $option how to resize, Posibble value [exact,portrait,landscape,auto,crop]
      */
-    public function resize($newWidth, $newHeight, $option = "auto")
+    public function resize( $newWidth, $newHeight, $option = "auto" )
     {
         // *** Get optimal width and height - based on $option
-        $optionArray = $this->getDimensions($newWidth, $newHeight, $option);
+        $optionArray = $this->getDimensions( $newWidth, $newHeight, $option );
 
         $optimalWidth = $optionArray[ 'optimalWidth' ];
         $optimalHeight = $optionArray[ 'optimalHeight' ];
 
 
         // *** Resample - create image canvas of x, y size
-        $this->imageResized = imagecreatetruecolor($optimalWidth, $optimalHeight);
-        imagecopyresampled($this->imageResized, $this->image, 0, 0, 0, 0, $optimalWidth, $optimalHeight, $this->width, $this->height);
+        $this->imageResized = imagecreatetruecolor( $optimalWidth, $optimalHeight );
+        imagecopyresampled( $this->imageResized, $this->image, 0, 0, 0, 0, $optimalWidth, $optimalHeight, $this->width, $this->height );
 
 
         // *** if option is 'crop', then crop too
         if ( $option == 'crop' )
         {
-            $this->crop($optimalWidth, $optimalHeight, $newWidth, $newHeight);
+            $this->crop( $optimalWidth, $optimalHeight, $newWidth, $newHeight );
         }
     }
 
@@ -90,13 +98,13 @@ Class Image
      *
      * Save the image
      * @param type $savePath
-     * @param type $imageQuality 
+     * @param type $imageQuality
      */
-    public function save($savePath, $imageQuality = "100")
+    public function save( $savePath, $imageQuality = "100" )
     {
         /* Get extension */
-        $extension = strrchr($savePath, '.');
-        $extension = strtolower($extension);
+        $extension = strrchr( $savePath, '.' );
+        $extension = strtolower( $extension );
 
         switch ( $extension )
         {
@@ -104,27 +112,27 @@ Class Image
             case '.jpeg':
                 if ( imagetypes() & IMG_JPG )
                 {
-                    imagejpeg($this->imageResized, $savePath, $imageQuality);
+                    imagejpeg( $this->imageResized, $savePath, $imageQuality );
                 }
                 break;
 
             case '.gif':
                 if ( imagetypes() & IMG_GIF )
                 {
-                    imagegif($this->imageResized, $savePath);
+                    imagegif( $this->imageResized, $savePath );
                 }
                 break;
 
             case '.png':
                 /* Scale quality from 0-100 to 0-9 */
-                $scaleQuality = round(($imageQuality / 100) * 9);
+                $scaleQuality = round( ($imageQuality / 100) * 9 );
 
                 /* Invert quality setting as 0 is best, not 9 */
                 $invertScaleQuality = 9 - $scaleQuality;
 
                 if ( imagetypes() & IMG_PNG )
                 {
-                    imagepng($this->imageResized, $savePath, $invertScaleQuality);
+                    imagepng( $this->imageResized, $savePath, $invertScaleQuality );
                 }
                 break;
 
@@ -132,7 +140,7 @@ Class Image
                 break;
         }
 
-        imagedestroy($this->imageResized);
+        imagedestroy( $this->imageResized );
     }
 
 
@@ -141,26 +149,26 @@ Class Image
      *
      * Create blank image
      * @param type $fileName
-     * @return boolean 
+     * @return boolean
      */
-    protected function openImage($fileName)
+    protected function openImage( $fileName )
     {
         /* Get extension */
-        $extension = $this->getExtension($fileName);
+        $extension = $this->getExtension( $fileName );
 
         switch ( $extension )
         {
             case '.jpg':
             case '.jpeg':
-                $img = @imagecreatefromjpeg($fileName);
+                $img = @imagecreatefromjpeg( $fileName );
                 break;
 
             case '.gif':
-                $img = @imagecreatefromgif($fileName);
+                $img = @imagecreatefromgif( $fileName );
                 break;
 
             case '.png':
-                $img = @imagecreatefrompng($fileName);
+                $img = @imagecreatefrompng( $fileName );
                 break;
 
             default:
@@ -178,9 +186,9 @@ Class Image
      * @param int $newWidth
      * @param int $newHeight
      * @param string $option
-     * @return array 
+     * @return array
      */
-    protected function getDimensions($newWidth, $newHeight, $option)
+    protected function getDimensions( $newWidth, $newHeight, $option )
     {
 
         switch ( $option )
@@ -190,25 +198,25 @@ Class Image
                 $optimalHeight = $newHeight;
                 break;
             case 'portrait':
-                $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+                $optimalWidth = $this->getSizeByFixedHeight( $newHeight );
                 $optimalHeight = $newHeight;
                 break;
             case 'landscape':
                 $optimalWidth = $newWidth;
-                $optimalHeight = $this->getSizeByFixedWidth($newWidth);
+                $optimalHeight = $this->getSizeByFixedWidth( $newWidth );
                 break;
             case 'auto':
-                $optionArray = $this->getSizeByAuto($newWidth, $newHeight);
+                $optionArray = $this->getSizeByAuto( $newWidth, $newHeight );
                 $optimalWidth = $optionArray[ 'optimalWidth' ];
                 $optimalHeight = $optionArray[ 'optimalHeight' ];
                 break;
             case 'crop':
-                $optionArray = $this->getOptimalCrop($newWidth, $newHeight);
+                $optionArray = $this->getOptimalCrop( $newWidth, $newHeight );
                 $optimalWidth = $optionArray[ 'optimalWidth' ];
                 $optimalHeight = $optionArray[ 'optimalHeight' ];
                 break;
         }
-        return array( 'optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight );
+        return array( 'optimalWidth'  => $optimalWidth, 'optimalHeight' => $optimalHeight );
     }
 
 
@@ -217,9 +225,9 @@ Class Image
      *
      * Get optimal width when height is fixed
      * @param type $newHeight
-     * @return int 
+     * @return int
      */
-    protected function getSizeByFixedHeight($newHeight)
+    protected function getSizeByFixedHeight( $newHeight )
     {
         $ratio = $this->width / $this->height;
         $newWidth = $newHeight * $ratio;
@@ -232,9 +240,9 @@ Class Image
      *
      * Get optimal height when width is fixed
      * @param type $newWidth
-     * @return int 
+     * @return int
      */
-    protected function getSizeByFixedWidth($newWidth)
+    protected function getSizeByFixedWidth( $newWidth )
     {
         $ratio = $this->height / $this->width;
         $newHeight = $newWidth * $ratio;
@@ -248,33 +256,33 @@ Class Image
      * Get optimal width and height when resize is auto
      * @param type $newWidth
      * @param type $newHeight
-     * @return int 
+     * @return int
      */
-    protected function getSizeByAuto($newWidth, $newHeight)
+    protected function getSizeByAuto( $newWidth, $newHeight )
     {
         if ( $this->height < $this->width )
-        // *** Image to be resized is wider (landscape)
+// *** Image to be resized is wider (landscape)
         {
             $optimalWidth = $newWidth;
-            $optimalHeight = $this->getSizeByFixedWidth($newWidth);
+            $optimalHeight = $this->getSizeByFixedWidth( $newWidth );
         }
         elseif ( $this->height > $this->width )
-        // *** Image to be resized is taller (portrait)
+// *** Image to be resized is taller (portrait)
         {
-            $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+            $optimalWidth = $this->getSizeByFixedHeight( $newHeight );
             $optimalHeight = $newHeight;
         }
         else
-        // *** Image to be resizerd is a square
+// *** Image to be resizerd is a square
         {
             if ( $newHeight < $newWidth )
             {
                 $optimalWidth = $newWidth;
-                $optimalHeight = $this->getSizeByFixedWidth($newWidth);
+                $optimalHeight = $this->getSizeByFixedWidth( $newWidth );
             }
             else if ( $newHeight > $newWidth )
             {
-                $optimalWidth = $this->getSizeByFixedHeight($newHeight);
+                $optimalWidth = $this->getSizeByFixedHeight( $newHeight );
                 $optimalHeight = $newHeight;
             }
             else
@@ -285,7 +293,7 @@ Class Image
             }
         }
 
-        return array( 'optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight );
+        return array( 'optimalWidth'  => $optimalWidth, 'optimalHeight' => $optimalHeight );
     }
 
 
@@ -294,9 +302,9 @@ Class Image
      * Get the optimal width and height for cropping
      * @param type $newWidth
      * @param type $newHeight
-     * @return type 
+     * @return type
      */
-    protected function getOptimalCrop($newWidth, $newHeight)
+    protected function getOptimalCrop( $newWidth, $newHeight )
     {
 
         $heightRatio = $this->height / $newHeight;
@@ -314,7 +322,7 @@ Class Image
         $optimalHeight = $this->height / $optimalRatio;
         $optimalWidth = $this->width / $optimalRatio;
 
-        return array( 'optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight );
+        return array( 'optimalWidth'  => $optimalWidth, 'optimalHeight' => $optimalHeight );
     }
 
 
@@ -325,9 +333,9 @@ Class Image
      * @param int $optimalWidth
      * @param int $optimalHeight
      * @param int $newWidth
-     * @param int $newHeight 
+     * @param int $newHeight
      */
-    protected function crop($optimalWidth, $optimalHeight, $newWidth, $newHeight)
+    protected function crop( $optimalWidth, $optimalHeight, $newWidth, $newHeight )
     {
         /* Find center - this will be used for the crop */
         $cropStartX = ( $optimalWidth / 2) - ( $newWidth / 2 );
@@ -335,8 +343,8 @@ Class Image
 
         $crop = $this->imageResized;
         /* Now crop from center to exact requested size */
-        $this->imageResized = imagecreatetruecolor($newWidth, $newHeight);
-        imagecopyresampled($this->imageResized, $crop, 0, 0, $cropStartX, $cropStartY, $newWidth, $newHeight, $newWidth, $newHeight);
+        $this->imageResized = imagecreatetruecolor( $newWidth, $newHeight );
+        imagecopyresampled( $this->imageResized, $crop, 0, 0, $cropStartX, $cropStartY, $newWidth, $newHeight, $newWidth, $newHeight );
     }
 
 
@@ -344,24 +352,24 @@ Class Image
     /**
      *
      * Check file existence
-     * @return boolean 
+     * @return boolean
      */
-    protected function isFile($file)
+    protected function isFile( $file )
     {
-        return file_exists($file);
+        return file_exists( $file );
     }
 
 
 
     /**
-     * 
+     *
      * Get file extension
      * @param string $file
-     * @return string 
+     * @return string
      */
-    protected function getExtension($file)
+    protected function getExtension( $file )
     {
-        return strtolower(strrchr($file, '.'));
+        return strtolower( strrchr( $file, '.' ) );
     }
 
 
@@ -370,12 +378,12 @@ Class Image
      *
      * Get file name
      * @param type $file
-     * @return type 
+     * @return type
      */
-    protected function getFileName($file)
+    protected function getFileName( $file )
     {
-        $file = str_replace('\\', '/', $file);
-        return substr($file, strrpos($file, '/') + 1);
+        $file = str_replace( '\\', '/', $file );
+        return substr( $file, strrpos( $file, '/' ) + 1 );
     }
 
 
@@ -384,14 +392,14 @@ Class Image
      *
      * Check is uploaded image is in allowed extension
      * @param type $file
-     * @return boolean 
+     * @return boolean
      */
-    protected function isAllowedExtensions($file)
+    protected function isAllowedExtensions( $file )
     {
-        $fileName = $this->getFileName($file);
-        $fileExtension = $this->getExtension($fileName);
+        $fileName = $this->getFileName( $file );
+        $fileExtension = $this->getExtension( $fileName );
 
-        if ( in_array($fileExtension, $this->extensions) )
+        if ( in_array( $fileExtension, $this->extensions ) )
         {
             return true;
         }
@@ -404,5 +412,8 @@ Class Image
 
 
 }
+
+
+
 
 ?>
