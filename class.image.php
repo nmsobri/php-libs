@@ -73,19 +73,19 @@ Class Image
      */
     public function resize( $newWidth, $newHeight, $option = "auto" )
     {
-        // *** Get optimal width and height - based on $option
+        /* Get optimal width and height - based on $option*/
         $optionArray = $this->getDimensions( $newWidth, $newHeight, $option );
 
         $optimalWidth = $optionArray[ 'optimalWidth' ];
         $optimalHeight = $optionArray[ 'optimalHeight' ];
 
 
-        // *** Resample - create image canvas of x, y size
+        /* Resample - create image canvas of x, y size*/
         $this->imageResized = imagecreatetruecolor( $optimalWidth, $optimalHeight );
         imagecopyresampled( $this->imageResized, $this->image, 0, 0, 0, 0, $optimalWidth, $optimalHeight, $this->width, $this->height );
 
 
-        // *** if option is 'crop', then crop too
+        /*if option is 'crop', then crop too*/
         if ( $option == 'crop' )
         {
             $this->crop( $optimalWidth, $optimalHeight, $newWidth, $newHeight );
@@ -260,20 +260,18 @@ Class Image
      */
     protected function getSizeByAuto( $newWidth, $newHeight )
     {
-        if ( $this->height < $this->width )
-// *** Image to be resized is wider (landscape)
+
+        if ( $this->height < $this->width ) /* Image to be resized is wider (landscape) */
         {
             $optimalWidth = $newWidth;
             $optimalHeight = $this->getSizeByFixedWidth( $newWidth );
         }
-        elseif ( $this->height > $this->width )
-// *** Image to be resized is taller (portrait)
+        elseif ( $this->height > $this->width ) /* Image to be resized is taller (portrait) */
         {
             $optimalWidth = $this->getSizeByFixedHeight( $newHeight );
             $optimalHeight = $newHeight;
         }
-        else
-// *** Image to be resizerd is a square
+        else /* Image to be resizerd is a square */
         {
             if ( $newHeight < $newWidth )
             {
@@ -287,7 +285,7 @@ Class Image
             }
             else
             {
-                // *** Sqaure being resized to a square
+                /* Sqaure being resized to a square*/
                 $optimalWidth = $newWidth;
                 $optimalHeight = $newHeight;
             }
