@@ -44,6 +44,7 @@ class Database extends PDO
      * @access public
      * @param string $sql raw query
      * @param mixed $bind value to bind
+     * @return \Database for chaining
      * @example query('select * from user')
      * @example query('select * from user where age > ? and level > ? ', array( $age, $level ) )
      * @example query('select * from user where age > :age and level > :level ', array( ':age' => $age, ':level' => $level ) )
@@ -61,6 +62,8 @@ class Database extends PDO
     /**
      * Query to select data
      * @access public
+     * @param string $table table name
+     * @param string $column series of column name
      */
     public function select( $table, $column = '*' )
     {
@@ -145,6 +148,8 @@ class Database extends PDO
     /**
      * Delete a record from a table
      * @access public
+     * @param string $table table name
+     * @return \Database for chaining
      */
     public function delete( $table )
     {
@@ -154,6 +159,10 @@ class Database extends PDO
 
 
 
+    /**
+     * Wheter to get total fo result of the query
+     * @return Database
+     */
     public function totalrow()
     {
         $this->count = true;
@@ -168,6 +177,7 @@ class Database extends PDO
      * @access public
      * @param string $where raw sql condition
      * @param mixed $bind value to bind
+     * @return \Database for chaining
      * @example where( "username = ? and password = ?", array( $username, $password ) )
      * @example where( "username = :username and password = :password", array( ':username' => $username, ':password' => $password ) )
      */
@@ -180,6 +190,9 @@ class Database extends PDO
         else
         {
             $this->bind( $bind );
+                    var_dump( '---------DEBUG--------' );
+        var_dump($this->bind);
+        var_dump( '---------DEBUG -------' );
             $this->where = ' WHERE ' . $where;
             return $this;
         }
@@ -190,6 +203,8 @@ class Database extends PDO
     /**
      *
      * Setup order by clause
+     * @param string $order sorting the result
+     * @return \Database for chaining
      */
     public function orderby( $order )
     {
@@ -202,6 +217,10 @@ class Database extends PDO
     /**
      *
      * Setup limit clause
+     * @access public
+     * @param int $start index of startting row
+     * @param int $limit how much to fetch
+     * @return \Database for chaining
      */
     public function limit( $start, $limit )
     {
@@ -226,6 +245,8 @@ class Database extends PDO
     /**
      *
      * Execute the query
+     * @access public
+     * @return void
      */
     public function execute()
     {
@@ -261,6 +282,9 @@ class Database extends PDO
     /**
      *
      * Build bind parameter
+     * @access protected
+     * @param array $bind
+     * @return void
      */
     protected function bind( $bind )
     {
@@ -273,9 +297,19 @@ class Database extends PDO
         {
             if ( is_array( $bind ) )
             {
-                foreach ( $bind as $key=>$val )
+                if ( $this->isAssoc( $bind ) )
                 {
-                    $this->bind[ $key] = $val;
+                    foreach ( $bind as $key => $val )
+                    {
+                        $this->bind[ $key ] = $val;
+                    }
+                }
+                else
+                {
+                    foreach ( $bind as $key => $val )
+                    {
+                        $this->bind[ ] = $val;
+                    }
                 }
             }
             else
@@ -283,6 +317,24 @@ class Database extends PDO
                 $this->bind[ ] = $bind;
             }
         }
+    }
+
+
+
+    /**
+     * Check if an array is an associative array
+     * @access protected
+     * @param array $arr
+     * @return boolean
+     */
+    protected function isAssoc( $arr )
+    {
+        foreach ( array_keys( $arr ) as $key )
+        {
+            if ( !is_int( $key ) )
+                return true;
+        }
+        return false;
     }
 
 
