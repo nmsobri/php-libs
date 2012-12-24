@@ -190,9 +190,6 @@ class Database extends PDO
         else
         {
             $this->bind( $bind );
-                    var_dump( '---------DEBUG--------' );
-        var_dump($this->bind);
-        var_dump( '---------DEBUG -------' );
             $this->where = ' WHERE ' . $where;
             return $this;
         }
