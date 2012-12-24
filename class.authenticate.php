@@ -192,9 +192,9 @@ class Authentication
      */
     public function logout()
     {
-        $this->session->del( $this->auth_name );
+        $this->session->delete( $this->auth_name );
         $this->session->unsetSession();
-        $this->cookie->del( $this->auth_name );
+        $this->cookie->delete( $this->auth_name );
 
         if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) )
             return true;

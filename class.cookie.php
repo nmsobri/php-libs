@@ -104,7 +104,7 @@ class Cookie
      * @return bool
      *
      */
-    public function del( $name, $remove_from_global = true, $path = '/', $domain = false )
+    public function delete( $name, $remove_from_global = true, $path = '/', $domain = false )
     {
         $returnVal = false;
         if ( !headers_sent() )
