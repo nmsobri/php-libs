@@ -150,7 +150,7 @@ class Image
      */
     public function getFileName()
     {
-        return pathinfo( $this->file, PATHINFO_FILENAME );
+        return pathinfo( $this->file, PATHINFO_BASENAME );
     }
 
 
