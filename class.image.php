@@ -1,56 +1,51 @@
 <?php
 
-# ========================================================================#
-#
-#  Author   : Slier
-#  Version  : 1.0
-#  Date     : 17-Jan-10
-#  Purpose  :  Resizes and saves image
-#  Requires : Requires PHP5, GD library.
-#  Example  :
-#  include('class.image.php');
-#  $obj = new Image('input.jpg', array('.jpg','.png'));
-#  $obj->resize(150, 100, 0);
-#  $obj->save('output.jpg', 100);
-#
-# ========================================================================#
-
-Class Image
+/**
+ *
+ * @example
+ * $obj = new Image('input.jpg', array('jpg','png'));
+ * $obj->resize(150, 100, 0);
+ * $obj->save('output.jpg', 100);
+ */
+class Image
 {
-    /* Class variables */
 
     protected $image;
     protected $width;
     protected $height;
     protected $imageResized;
-    protected $extensions = array( '.jpg', '.jpeg', '.png', '.gif' );
+    protected $file = null;
+    protected $extensions = array( 'jpg', 'png', 'gif' );
 
 
 
     /**
      *
-     * @param string $file image file name
-     * @param array $extensions allowable extension
+     * @access public
+     * @param string $file path to file, if from upload form it would be $_FILES['html_index']['tmp_name']
+     * @param array $extensions
      * @throws Exception
+     * @return void
      */
     public function __construct( $file, array $extensions = null )
     {
+        $this->file = $file;
         $this->extensions = !is_null( $extensions ) ? $extensions : $this->extensions;
 
         try
         {
-            if ( !$this->isFile( $file ) )
+            if ( !$this->isFile() )
             {
                 throw new Exception( 'File does not exist' );
             }
 
-            if ( !$this->isAllowedExtensions( $file ) )
+            if ( !$this->isAllowedExtensions() )
             {
                 throw new Exception( 'File extension is not allowed' );
             }
 
             /* Open up the file */
-            $this->image = $this->openImage( $file );
+            $this->image = $this->openImage();
 
             /* Get width and height */
             $this->width = imagesx( $this->image );
@@ -67,25 +62,27 @@ Class Image
     /**
      *
      * Resize the image
-     * @param int $newWidth new width of an image
-     * @param int $newHeight new height of an image
-     * @param string $option how to resize, Posibble value [exact,portrait,landscape,auto,crop]
+     * @access public
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param string $option exact|portrait|landscape|auto|crop
+     * @return void
      */
     public function resize( $newWidth, $newHeight, $option = "auto" )
     {
-        /* Get optimal width and height - based on $option*/
+        // *** Get optimal width and height - based on $option
         $optionArray = $this->getDimensions( $newWidth, $newHeight, $option );
 
         $optimalWidth = $optionArray[ 'optimalWidth' ];
         $optimalHeight = $optionArray[ 'optimalHeight' ];
 
 
-        /* Resample - create image canvas of x, y size*/
+        // *** Resample - create image canvas of x, y size
         $this->imageResized = imagecreatetruecolor( $optimalWidth, $optimalHeight );
         imagecopyresampled( $this->imageResized, $this->image, 0, 0, 0, 0, $optimalWidth, $optimalHeight, $this->width, $this->height );
 
 
-        /*if option is 'crop', then crop too*/
+        // *** if option is 'crop', then crop too
         if ( $option == 'crop' )
         {
             $this->crop( $optimalWidth, $optimalHeight, $newWidth, $newHeight );
@@ -97,33 +94,32 @@ Class Image
     /**
      *
      * Save the image
+     * @access public
      * @param type $savePath
      * @param type $imageQuality
+     * @return image
      */
     public function save( $savePath, $imageQuality = "100" )
     {
-        /* Get extension */
-        $extension = strrchr( $savePath, '.' );
-        $extension = strtolower( $extension );
-
+        $extension = pathinfo( $savePath, PATHINFO_EXTENSION );
         switch ( $extension )
         {
-            case '.jpg':
-            case '.jpeg':
+            case 'jpg':
+            case 'jpeg':
                 if ( imagetypes() & IMG_JPG )
                 {
                     imagejpeg( $this->imageResized, $savePath, $imageQuality );
                 }
                 break;
 
-            case '.gif':
+            case 'gif':
                 if ( imagetypes() & IMG_GIF )
                 {
                     imagegif( $this->imageResized, $savePath );
                 }
                 break;
 
-            case '.png':
+            case 'png':
                 /* Scale quality from 0-100 to 0-9 */
                 $scaleQuality = round( ($imageQuality / 100) * 9 );
 
@@ -147,28 +143,42 @@ Class Image
 
     /**
      *
-     * Create blank image
-     * @param type $fileName
-     * @return boolean
+     * Get file name
+     * @access public
+     * @param type $file
+     * @return string
      */
-    protected function openImage( $fileName )
+    public function getFileName()
+    {
+        return pathinfo( $this->file, PATHINFO_FILENAME );
+    }
+
+
+
+    /**
+     *
+     * Create blank image
+     * @access protected
+     * @param type $this->file
+     * @return image|boolean
+     */
+    protected function openImage()
     {
         /* Get extension */
-        $extension = $this->getExtension( $fileName );
+        $extension = $this->getExtension();
 
         switch ( $extension )
         {
-            case '.jpg':
-            case '.jpeg':
-                $img = @imagecreatefromjpeg( $fileName );
+            case 'jpg':
+                $img = @imagecreatefromjpeg( $this->file );
                 break;
 
-            case '.gif':
-                $img = @imagecreatefromgif( $fileName );
+            case 'gif':
+                $img = @imagecreatefromgif( $this->file );
                 break;
 
-            case '.png':
-                $img = @imagecreatefrompng( $fileName );
+            case 'png':
+                $img = @imagecreatefrompng( $this->file );
                 break;
 
             default:
@@ -183,6 +193,7 @@ Class Image
     /**
      *
      * Get the optimal size for width and height of an image based on option
+     * @access protected
      * @param int $newWidth
      * @param int $newHeight
      * @param string $option
@@ -224,6 +235,7 @@ Class Image
     /**
      *
      * Get optimal width when height is fixed
+     * @access protected
      * @param type $newHeight
      * @return int
      */
@@ -239,6 +251,7 @@ Class Image
     /**
      *
      * Get optimal height when width is fixed
+     * @access protected
      * @param type $newWidth
      * @return int
      */
@@ -254,24 +267,27 @@ Class Image
     /**
      *
      * Get optimal width and height when resize is auto
+     * @access protected
      * @param type $newWidth
      * @param type $newHeight
      * @return int
      */
     protected function getSizeByAuto( $newWidth, $newHeight )
     {
-
-        if ( $this->height < $this->width ) /* Image to be resized is wider (landscape) */
+        if ( $this->height < $this->width )
+        // *** Image to be resized is wider (landscape)
         {
             $optimalWidth = $newWidth;
             $optimalHeight = $this->getSizeByFixedWidth( $newWidth );
         }
-        elseif ( $this->height > $this->width ) /* Image to be resized is taller (portrait) */
+        elseif ( $this->height > $this->width )
+        // *** Image to be resized is taller (portrait)
         {
             $optimalWidth = $this->getSizeByFixedHeight( $newHeight );
             $optimalHeight = $newHeight;
         }
-        else /* Image to be resizerd is a square */
+        else
+        // *** Image to be resizerd is a square
         {
             if ( $newHeight < $newWidth )
             {
@@ -285,7 +301,7 @@ Class Image
             }
             else
             {
-                /* Sqaure being resized to a square*/
+                // *** Sqaure being resized to a square
                 $optimalWidth = $newWidth;
                 $optimalHeight = $newHeight;
             }
@@ -298,9 +314,10 @@ Class Image
 
     /**
      * Get the optimal width and height for cropping
+     * @access protected
      * @param type $newWidth
      * @param type $newHeight
-     * @return type
+     * @return array
      */
     protected function getOptimalCrop( $newWidth, $newHeight )
     {
@@ -328,10 +345,12 @@ Class Image
     /**
      *
      * Crop the image
+     * @access protected
      * @param int $optimalWidth
      * @param int $optimalHeight
      * @param int $newWidth
      * @param int $newHeight
+     * @return void
      */
     protected function crop( $optimalWidth, $optimalHeight, $newWidth, $newHeight )
     {
@@ -350,11 +369,12 @@ Class Image
     /**
      *
      * Check file existence
+     * @access protected
      * @return boolean
      */
-    protected function isFile( $file )
+    protected function isFile()
     {
-        return file_exists( $file );
+        return file_exists( $this->file );
     }
 
 
@@ -362,26 +382,44 @@ Class Image
     /**
      *
      * Get file extension
+     * @access protected
      * @param string $file
      * @return string
      */
-    protected function getExtension( $file )
+    protected function getExtension()
     {
-        return strtolower( strrchr( $file, '.' ) );
-    }
+        $ext = getimagesize( $this->file );
+        $ext = $ext[ 2 ];
 
+        switch ( $ext )
+        {
+            case IMAGETYPE_GIF:
+                return 'gif';
+                break;
 
+            case IMAGETYPE_JPEG:
+                return 'jpg';
+                break;
 
-    /**
-     *
-     * Get file name
-     * @param type $file
-     * @return type
-     */
-    protected function getFileName( $file )
-    {
-        $file = str_replace( '\\', '/', $file );
-        return substr( $file, strrpos( $file, '/' ) + 1 );
+            case IMAGETYPE_PNG:
+                return 'png';
+                break;
+
+            case IMAGETYPE_BMP :
+                return 'bmp';
+                break;
+
+            case IMAGETYPE_ICO:
+                return 'ico';
+                break;
+
+            case IMAGETYPE_PSD :
+                return 'psd';
+                break;
+
+            default:
+                return false;
+        }
     }
 
 
@@ -389,13 +427,12 @@ Class Image
     /**
      *
      * Check is uploaded image is in allowed extension
-     * @param type $file
+     * @access protected
      * @return boolean
      */
-    protected function isAllowedExtensions( $file )
+    protected function isAllowedExtensions()
     {
-        $fileName = $this->getFileName( $file );
-        $fileExtension = $this->getExtension( $fileName );
+        $fileExtension = $this->getExtension();
 
         if ( in_array( $fileExtension, $this->extensions ) )
         {
