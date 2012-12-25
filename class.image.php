@@ -142,6 +142,60 @@ class Image
 
 
     /**
+     * Output image to browser
+     * @access public
+     * @param int $imageQuality
+     * @return resource
+     */
+    public function output( $imageQuality = 100 )
+    {
+        $mime = getimagesize( $this->file );
+        $mime = $mime[ 'mime' ];
+
+
+        $extension = $this->getExtension();
+
+        switch ( $extension )
+        {
+            case 'jpg':
+            case 'jpeg':
+                if ( imagetypes() & IMG_JPG )
+                {
+                    header( 'Content-Type:' . $mime );
+                    imagejpeg( $this->imageResized, null, $imageQuality );
+                }
+                break;
+
+            case 'gif':
+                if ( imagetypes() & IMG_GIF )
+                {
+                    header( 'Content-Type:' . $mime );
+                    imagegif( $this->imageResized );
+                }
+                break;
+
+            case 'png':
+                /* Scale quality from 0-100 to 0-9 */
+                $scaleQuality = round( ($imageQuality / 100) * 9 );
+
+                /* Invert quality setting as 0 is best, not 9 */
+                $invertScaleQuality = 9 - $scaleQuality;
+
+                if ( imagetypes() & IMG_PNG )
+                {
+                    header( 'Content-Type:' . $mime );
+                    imagepng( $this->imageResized, null, $invertScaleQuality );
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
+
+    /**
      *
      * Get file name
      * @access public
