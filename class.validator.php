@@ -768,7 +768,7 @@ class FileValidator extends ValidatorStrategy
         {
             if ( $this->data[ 'required' ] )
             {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 12, $this->data[ 'field' ] );
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 22, $this->data[ 'field' ] );
                 return false;
             }
             else
