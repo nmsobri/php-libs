@@ -79,7 +79,7 @@ abstract class ValidatorStrategy
         $msg[ 3 ] = 'Field ' . $field . ' contains error.';
         $msg[ 4 ] = 'Date in field ' . $field . ' is invalid.';
         $msg[ 5 ] = 'Email in field ' . $field . ' is invalid.';
-        $msg[ 6 ] = 'Field ' . $field . ' is invalid.';
+        $msg[ 6 ] = 'Field ' . $field . ' contain invalid character.';
         $msg[ 7 ] = 'Field ' . $field . ' is too long.';
         $msg[ 8 ] = 'Url in field ' . $field . ' is invalid.';
         $msg[ 9 ] = 'Html code detected in field ' . $field . '.';
@@ -95,6 +95,8 @@ abstract class ValidatorStrategy
         $msg[ 19 ] = 'Field ' . $field . ' cannot contain spaces';
         $msg[ 20 ] = 'Field ' . $field . ' can only contain texts and spaces';
         $msg[ 21 ] = 'Field ' . $field . ' can only have texts';
+        $msg[ 22 ] = 'File ' . $field . ' is empty';
+
         return $msg[ $num ];
     }
 
@@ -115,6 +117,7 @@ class CheckBoxValidator extends ValidatorStrategy
      * @param mixed $name
      * @param mixed $value
      * @param str $attr['message'] custom error message
+     * @param str $attr['required'] mark as mandatory
      * @param str $attr['field'] use to donate field name in error message instead of using POST key data
      * @example new CheckBoxValidator( 'subcribe' , $_POST['subscribe'], array( 'message' => '*' ) )
      */
@@ -123,8 +126,8 @@ class CheckBoxValidator extends ValidatorStrategy
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
         $this->data[ 'value' ] = $value;
-        $this->data[ 'type' ] = 'checkbox';
         $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
+        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
     }
 
@@ -147,8 +150,15 @@ class CheckBoxValidator extends ValidatorStrategy
         }
         else
         {
-            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 11, $this->data[ 'field' ] );
-            return false;
+            if ( $this->data[ 'required' ] )
+            {
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 11, $this->data[ 'field' ] );
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 
@@ -168,21 +178,22 @@ class CompareValidator extends ValidatorStrategy
      * @access public
      * @param mixed $name name of the field
      * @param mixed $value value of the field
+     * @param mixed $comparisonValue value of the field to compare
+     * @param mixed $comparisonField name of the field to compare
+     * @param bool  $attr['required']
+     * @param mixed $attr['field'] custom field name in error message ( @default $name )
      * @param mixed $attr['field_comparison'] comparison field name
-     * @param bool $attr['required']
      * @param mixed $attr['empty_message'] error message if field is empty
      * @param mixed $attr['unmatch_message'] - error message if this field is not equal with comparison field
-     * @param mixed $attr['field'] custom field name in error message ( @default $name )
-     * @example new CompareValidator( 'new_pass' , $_POST['password'], $_POST['repeat_password'], 'Repeat Password', array( 'empty_message' => 'Repeat password is empty', 'unmatch_message' => 'Repeat password dosent match password' ) )
+     * @example new CompareValidator( 'repeat_pass' , $_POST['repeat_password'], $_POST['password'], 'Password', array( 'empty_message' => 'Repeat password is empty', 'unmatch_message' => 'Repeat password dosent match password' ) )
      */
-    public function __construct( $name, $value, $compareValue, $comparsionField, $attr = null )
+    public function __construct( $name, $value, $comparisonValue, $comparisonField, $attr = null )
     {
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
         $this->data[ 'to_compare' ] = $value;
-        $this->data[ 'compare_with' ] = $compareValue;
-        $this->data[ 'field_comparison' ] = ( array_key_exists( 'field_comparison', $attr ) ) ? $attr[ 'field_comparison' ] : $comparsionField;
-        $this->data[ 'type' ] = 'compare_field';
+        $this->data[ 'compare_with' ] = $comparisonValue;
+        $this->data[ 'field_comparison' ] = ( array_key_exists( 'field_comparison', $attr ) ) ? $attr[ 'field_comparison' ] : $comparisonField;
         $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'empty_message' ] = ( array_key_exists( 'empty_message', $attr ) ) ? $attr[ 'empty_message' ] : null;
         $this->data[ 'unmatch_message' ] = ( array_key_exists( 'unmatch_message', $attr ) ) ? $attr[ 'unmatch_message' ] : null;
@@ -263,7 +274,6 @@ class DateValidator extends ValidatorStrategy
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
         $this->data[ 'value' ] = $value;
-        $this->data[ 'type' ] = 'date';
         $this->data[ 'version' ] = ( array_key_exists( 'version', $attr ) ) ? $attr[ 'version' ] : 'us';
         $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
@@ -345,7 +355,6 @@ class EmailValidator extends ValidatorStrategy
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
         $this->data[ 'value' ] = $value;
-        $this->data[ 'type' ] = 'email';
         $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
         $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
@@ -423,7 +432,6 @@ class NumberValidator extends ValidatorStrategy
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
         $this->data[ 'value' ] = $value;
-        $this->data[ 'type' ] = 'number';
         $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'decimal' ] = ( array_key_exists( 'decimal', $attr ) ) ? $attr[ 'decimal' ] : 0;
         $this->data[ 'min_length' ] = ( array_key_exists( 'min_length', $attr ) ) ? $attr[ 'min_length' ] : 0;
@@ -592,6 +600,7 @@ class RadioValidator extends ValidatorStrategy
      * @param mixed $name
      * @param mixed $value
      * @param mixed $attr['message']
+     * @param mixed $attr['required']
      * @param mixed $attr['field'] donate field name in error message ( @default $name )
      * @example new RadioValidator( 'gender', $_POST['gender'], array( 'message' => '*' ) )
      */
@@ -600,8 +609,8 @@ class RadioValidator extends ValidatorStrategy
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
         $this->data[ 'value' ] = $value;
-        $this->data[ 'type' ] = 'radio';
         $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
+        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
     }
 
@@ -624,8 +633,15 @@ class RadioValidator extends ValidatorStrategy
         }
         else
         {
-            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 13, $this->data[ 'field' ] );
-            return false;
+            if ( $this->data[ 'required' ] )
+            {
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 13, $this->data[ 'field' ] );
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 
@@ -656,7 +672,6 @@ class RegexValidator extends ValidatorStrategy
 
         $this->data[ 'value' ] = $value;
         $this->data[ 'regex' ] = $regex;
-        $this->data[ 'type' ] = 'regex';
         $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
         $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
@@ -708,6 +723,68 @@ class RegexValidator extends ValidatorStrategy
 
 
 
+class FileValidator extends ValidatorStrategy
+{
+
+    /**
+     *
+     * Validation for select field
+     * @access public
+     * @param string $name
+     * @param mixed $array['html_field_name']['$_FILES_index']
+     * @param string $attr['field']
+     * @param string $attr['message']
+     * @param string $attr['required']
+     * @example new FileValidator( 'user_image' , $_FILES['image']['name'], array( 'message' => 'File is empty' ) )
+     */
+    public function __construct( $name, $value, $attr = null )
+    {
+        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+
+        $this->data[ 'value' ] = $value;
+        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
+        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
+        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+    }
+
+
+
+    /**
+     *
+     * Validation for file
+     * @access protected
+     * @param mixed $name
+     * @param mixed $this->data[ 'value' ]
+     * @param mixed $this->data[ 'message' ]
+     * @return boolean
+     */
+    public function isValid()
+    {
+        if ( !empty( $this->data[ 'value' ] ) )
+        {
+            return true;
+        }
+        else
+        {
+            if ( $this->data[ 'required' ] )
+            {
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 12, $this->data[ 'field' ] );
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+    }
+
+
+
+}
+
+
+
+
 class SelectValidator extends ValidatorStrategy
 {
 
@@ -718,6 +795,7 @@ class SelectValidator extends ValidatorStrategy
      * @param mixed $name
      * @param mixed $value
      * @param mixed $attr['message']
+     * @param mixed $attr['required']
      * @param str $attr['field'] donate field name in error message ( @default $name )
      * @example new SelectValidator( 'country' , $_POST['country'], array( 'message' => '*' ) )
      */
@@ -726,8 +804,8 @@ class SelectValidator extends ValidatorStrategy
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
         $this->data[ 'value' ] = $value;
-        $this->data[ 'type' ] = 'select';
         $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
+        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
     }
 
@@ -750,8 +828,15 @@ class SelectValidator extends ValidatorStrategy
         }
         else
         {
-            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 12, $this->data[ 'field' ] );
-            return false;
+            if ( $this->data[ 'required' ] )
+            {
+                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 12, $this->data[ 'field' ] );
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 
@@ -787,7 +872,6 @@ class TextValidator extends ValidatorStrategy
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
         $this->data[ 'value' ] = $value;
-        $this->data[ 'type' ] = 'text';
         $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
         $this->data[ 'allow_num' ] = ( array_key_exists( 'allow_num', $attr ) ) ? ( boolean ) $attr[ 'allow_num' ] : false;
         $this->data[ 'allow_space' ] = ( array_key_exists( 'allow_space', $attr ) ) ? ( boolean ) $attr[ 'allow_space' ] : false;
@@ -1140,25 +1224,15 @@ class Validator
      */
     public function isValid()
     {
-        $error = false;
+        $this->isEror = false;
 
         foreach ( $this->validators as $name => $validator )
         {
             if ( !$validator->isValid() )
-            {
-                $error = true;
-            }
+                $this->isEror = true;
         }
 
-        if ( $error )
-        {
-            $this->isEror = true;
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return ($this->isEror) ? false : true;
     }
 
 
@@ -1184,7 +1258,7 @@ class Validator
      * Typical use is login system, all input passed validation, but somehow no valid user is found
      * So use this method to mark overall process as invalid
      * @access public
-     * @param string $message custom error message
+     * @param boolean $type
      */
     public function invalidateValidation( $message )
     {
