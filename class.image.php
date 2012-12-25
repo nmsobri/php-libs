@@ -99,7 +99,7 @@ class Image
      * @param type $imageQuality
      * @return image
      */
-    public function save( $savePath, $imageQuality = "100" )
+    public function save( $savePath, $imageQuality = 100 )
     {
         $extension = pathinfo( $savePath, PATHINFO_EXTENSION );
         switch ( $extension )
