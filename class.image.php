@@ -211,6 +211,51 @@ class Image
 
     /**
      *
+     * Get file extension
+     * @access public
+     * @param string $file
+     * @return string
+     */
+    public function getExtension()
+    {
+        $ext = getimagesize( $this->file );
+        $ext = $ext[ 2 ];
+
+        switch ( $ext )
+        {
+            case IMAGETYPE_GIF:
+                return 'gif';
+                break;
+
+            case IMAGETYPE_JPEG:
+                return 'jpg';
+                break;
+
+            case IMAGETYPE_PNG:
+                return 'png';
+                break;
+
+            case IMAGETYPE_BMP :
+                return 'bmp';
+                break;
+
+            case IMAGETYPE_ICO:
+                return 'ico';
+                break;
+
+            case IMAGETYPE_PSD :
+                return 'psd';
+                break;
+
+            default:
+                return false;
+        }
+    }
+
+
+
+    /**
+     *
      * Create blank image
      * @access protected
      * @param type $this->file
@@ -429,51 +474,6 @@ class Image
     protected function isFile()
     {
         return file_exists( $this->file );
-    }
-
-
-
-    /**
-     *
-     * Get file extension
-     * @access protected
-     * @param string $file
-     * @return string
-     */
-    protected function getExtension()
-    {
-        $ext = getimagesize( $this->file );
-        $ext = $ext[ 2 ];
-
-        switch ( $ext )
-        {
-            case IMAGETYPE_GIF:
-                return 'gif';
-                break;
-
-            case IMAGETYPE_JPEG:
-                return 'jpg';
-                break;
-
-            case IMAGETYPE_PNG:
-                return 'png';
-                break;
-
-            case IMAGETYPE_BMP :
-                return 'bmp';
-                break;
-
-            case IMAGETYPE_ICO:
-                return 'ico';
-                break;
-
-            case IMAGETYPE_PSD :
-                return 'psd';
-                break;
-
-            default:
-                return false;
-        }
     }
 
 
