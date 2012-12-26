@@ -131,9 +131,10 @@ class Mail
      * Add 'from' address
      * @param string $address
      */
-    function from( $address )
+    function from( $address, $name )
     {
         $this->From = $address;
+        $this->FromName = $name;
     }
 
 
