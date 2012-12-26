@@ -63,7 +63,7 @@ class Mail
 
 
     // Sets mailer to use SMTP
-    function IsSMTP()
+    function isSmtp()
     {
         $this->mailer = "smtp";
     }
@@ -71,7 +71,7 @@ class Mail
 
 
     // Sets mailer to use PHP mail() function
-    function IsMail()
+    function isMail()
     {
         $this->mailer = "mail";
     }
@@ -79,7 +79,7 @@ class Mail
 
 
     // Sets mailer to directly use $sendmail program
-    function IsSendmail()
+    function isSendmail()
     {
         $this->mailer = "sendmail";
     }
@@ -94,11 +94,55 @@ class Mail
 
 
 
+    /**
+     * Set priority of sending
+     * @param int $priority
+     */
+    function priority( $priority )
+    {
+        $this->Priority = $priority;
+    }
+
+
+
+    /**
+     * Set body of mail
+     * @param string $body
+     */
+    function body( $body )
+    {
+        $this->Body = $body;
+    }
+
+
+
+    /**
+     * Set subject of mail
+     * @param string $subject
+     */
+    function subject( $subject )
+    {
+        $this->Subject = $subject;
+    }
+
+
+
+    /**
+     * Add 'from' address
+     * @param string $address
+     */
+    function from( $address )
+    {
+        $this->From = $address;
+    }
+
+
+
     /////////////////////////////////////////////////
     // RECIPIENT METHODS
     /////////////////////////////////////////////////
     // Add a "to" address
-    function AddAddress( $address, $name = "" )
+    function to( $address, $name = "" )
     {
         $cur = count( $this->to );
         $this->to[ $cur ][ 0 ] = trim( $address );
@@ -108,7 +152,7 @@ class Mail
 
 
     // Add a "cc" address
-    function AddCC( $address, $name = "" )
+    function addCc( $address, $name = "" )
     {
         $cur = count( $this->cc );
         $this->cc[ $cur ][ 0 ] = trim( $address );
@@ -118,7 +162,7 @@ class Mail
 
 
     // Add a "bcc" address
-    function AddBCC( $address, $name = "" )
+    function addBcc( $address, $name = "" )
     {
         $cur = count( $this->bcc );
         $this->bcc[ $cur ][ 0 ] = trim( $address );
@@ -128,7 +172,7 @@ class Mail
 
 
     // Add a "Reply-to" address
-    function AddReplyTo( $address, $name = "" )
+    function addReplyTo( $address, $name = "" )
     {
         $cur = count( $this->ReplyTo );
         $this->ReplyTo[ $cur ][ 0 ] = trim( $address );
@@ -141,34 +185,34 @@ class Mail
     // MAIL SENDING METHODS
     /////////////////////////////////////////////////
     // Create message and assign to mailer
-    function Send()
+    function send()
     {
         if ( count( $this->to ) < 1 )
-            $this->error_handler( "You must provide at least one recipient email address" );
+            $this->errorHandler( "You must provide at least one recipient email address" );
 
-        $header = $this->create_header();
-        $body = $this->create_body();
+        $header = $this->createHeader();
+        $body = $this->createBody();
 
         // Choose the mailer
         if ( $this->mailer == "sendmail" )
-            $this->sendmail_send( $header, $body );
+            $this->sendmailSend( $header, $body );
         elseif ( $this->mailer == "mail" )
-            $this->mail_send( $header, $body );
+            $this->mailSend( $header, $body );
         elseif ( $this->mailer == "smtp" )
-            $this->smtp_send( $header, $body );
+            $this->smtpSend( $header, $body );
         else
-            $this->error_handler( sprintf( "%s mailer is not supported", $this->mailer ) );
+            $this->errorHandler( sprintf( "%s mailer is not supported", $this->mailer ) );
     }
 
 
 
     // Send using the $sendmail program
-    function sendmail_send( $header, $body )
+    function sendmailSend( $header, $body )
     {
         $sendmail = sprintf( "%s -f %s -t", $this->sendmail, $this->From );
 
         if ( !$mail = popen( $sendmail, "w" ) )
-            $this->error_handler( sprintf( "Could not open %s", $this->sendmail ) );
+            $this->errorHandler( sprintf( "Could not open %s", $this->sendmail ) );
 
         fputs( $mail, $header );
         fputs( $mail, $body );
@@ -178,7 +222,7 @@ class Mail
 
 
     // Send via the PHP mail() function
-    function mail_send( $header, $body )
+    function mailSend( $header, $body )
     {
         // Create mail recipient list
         $to = $this->to[ 0 ][ 0 ]; // no extra comma
@@ -190,14 +234,14 @@ class Mail
             $to .= sprintf( ",%s", $this->bcc[ $x ][ 0 ] );
 
         if ( !mail( $to, $this->Subject, $body, $header ) )
-            $this->error_handler( "Could not instantiate mail()" );
+            $this->errorHandler( "Could not instantiate mail()" );
     }
 
 
 
     // Send message via SMTP using PhpSMTP
     // PhpSMTP written by Chris Ryan
-    function smtp_send( $header, $body )
+    function smtpSend( $header, $body )
     {
         $smtp = new Smtp;
         $smtp->do_debug = $this->SMTPDebug;
@@ -208,7 +252,7 @@ class Mail
         $connection = false;
         while ( $x < count( $hosts ) )
         {
-            if ( $smtp->Connect( $hosts[ $x ], $this->Port, $this->Timeout ) )
+            if ( $smtp->connect( $hosts[ $x ], $this->Port, $this->Timeout ) )
             {
                 $connection = true;
                 break;
@@ -217,20 +261,20 @@ class Mail
             $x++;
         }
         if ( !$connection )
-            $this->error_handler( "SMTP Error: could not connect to SMTP host server(s)" );
+            $this->errorHandler( "SMTP Error: could not connect to SMTP host server(s)" );
 
-        $smtp->Hello( $this->Helo );
-        $smtp->Mail( sprintf( "<%s>", $this->From ) );
+        $smtp->hello( $this->Helo );
+        $smtp->mail( sprintf( "<%s>", $this->From ) );
 
         for ( $x = 0; $x < count( $this->to ); $x++ )
-            $smtp->Recipient( sprintf( "<%s>", $this->to[ $x ][ 0 ] ) );
+            $smtp->recipient( sprintf( "<%s>", $this->to[ $x ][ 0 ] ) );
         for ( $x = 0; $x < count( $this->cc ); $x++ )
-            $smtp->Recipient( sprintf( "<%s>", $this->cc[ $x ][ 0 ] ) );
+            $smtp->recipient( sprintf( "<%s>", $this->cc[ $x ][ 0 ] ) );
         for ( $x = 0; $x < count( $this->bcc ); $x++ )
-            $smtp->Recipient( sprintf( "<%s>", $this->bcc[ $x ][ 0 ] ) );
+            $smtp->recipient( sprintf( "<%s>", $this->bcc[ $x ][ 0 ] ) );
 
-        $smtp->Data( sprintf( "%s%s", $header, $body ) );
-        $smtp->Quit();
+        $smtp->data( sprintf( "%s%s", $header, $body ) );
+        $smtp->quit();
     }
 
 
@@ -239,7 +283,7 @@ class Mail
     // MESSAGE CREATION METHODS
     /////////////////////////////////////////////////
     // Creates recipient headers
-    function addr_append( $type, $addr )
+    function addrAppend( $type, $addr )
     {
         $addr_str = "";
         $addr_str .= sprintf( "%s: %s <%s>", $type, $addr[ 0 ][ 1 ], $addr[ 0 ][ 0 ] );
@@ -291,23 +335,23 @@ class Mail
 
 
     // Assembles and returns the message header
-    function create_header()
+    function createHeader()
     {
         $header = array( );
         $header[ ] = sprintf( "From: %s <%s>\n", $this->FromName, trim( $this->From ) );
         $header[ ] = $from;
-        $header[ ] = $this->addr_append( "To", $this->to );
+        $header[ ] = $this->addrAppend( "To", $this->to );
         if ( count( $this->cc ) > 0 )
-            $header[ ] = $this->addr_append( "cc", $this->cc );
+            $header[ ] = $this->addrAppend( "cc", $this->cc );
         if ( count( $this->bcc ) > 0 )
-            $header[ ] = $this->addr_append( "bcc", $this->bcc );
+            $header[ ] = $this->addrAppend( "bcc", $this->bcc );
         if ( count( $this->ReplyTo ) > 0 )
-            $header[ ] = $this->addr_append( "Reply-to", $this->ReplyTo );
+            $header[ ] = $this->addrAppend( "Reply-to", $this->ReplyTo );
         $header[ ] = sprintf( "Subject: %s\n", trim( $this->Subject ) );
         $header[ ] = sprintf( "Return-Path: %s\n", trim( $this->From ) );
         $header[ ] = sprintf( "X-Priority: %d\n", $this->Priority );
         $header[ ] = sprintf( "X-Mailer: phpmailer [version .9]\n" );
-        $header[ ] = sprintf( "Content-Transfer-Encoding: %s\n", $this->$Encoding );
+        $header[ ] = sprintf( "Content-Transfer-Encoding: %s\n", $this->Encoding );
         // $header[] = sprintf("Content-Length: %d\n", (strlen($this->Body) * 7));
         if ( count( $this->attachment ) > 0 )
         {
@@ -326,14 +370,14 @@ class Mail
 
 
     // Assembles and returns the message body
-    function create_body()
+    function createBody()
     {
         // wordwrap the message body if set
         if ( $this->WordWrap )
             $this->Body = $this->wordwrap( $this->Body, $this->WordWrap );
 
         if ( count( $this->attachment ) > 0 )
-            $body = $this->attach_all();
+            $body = $this->attachAll();
         else
             $body = $this->Body;
 
@@ -346,10 +390,10 @@ class Mail
     // ATTACHMENT METHODS
     /////////////////////////////////////////////////
     // Check if attachment is valid and add to list
-    function AddAttachment( $path )
+    function addAttachment( $path )
     {
         if ( !is_file( $path ) )
-            $this->error_handler( sprintf( "Could not find %s file on filesystem", $path ) );
+            $this->errorHandler( sprintf( "Could not find %s file on filesystem", $path ) );
 
         // Separate file name from full path
         $separator = "/";
@@ -375,7 +419,7 @@ class Mail
 
 
     // Attach text and binary attachments to body
-    function attach_all()
+    function attachAll()
     {
         // Return text of body
         $mime = array( );
@@ -394,7 +438,7 @@ class Mail
             $mime[ ] = sprintf( "name=\"%s\"\n", $filename );
             $mime[ ] = "Content-Transfer-Encoding: base64\n";
             $mime[ ] = sprintf( "Content-Disposition: attachment; filename=\"%s\"\n\n", $filename );
-            $mime[ ] = sprintf( "%s\n\n", $this->encode_file( $path ) );
+            $mime[ ] = sprintf( "%s\n\n", $this->encodeFile( $path ) );
         }
         $mime[ ] = sprintf( "\n--Boundary-=%s--\n", $this->boundary );
 
@@ -404,10 +448,10 @@ class Mail
 
 
     // Encode attachment in base64 format
-    function encode_file( $path )
+    function encodeFile( $path )
     {
         if ( !$fd = fopen( $path, "r" ) )
-            $this->error_handler( "File Error: Could not open file %s", $path );
+            $this->errorHandler( "File Error: Could not open file %s", $path );
         $file = fread( $fd, filesize( $path ) );
 
         // chunk_split is found in PHP >= 3.0.6
@@ -423,7 +467,7 @@ class Mail
     // MISCELLANEOUS METHODS
     /////////////////////////////////////////////////
     // Print out error and exit
-    function error_handler( $msg )
+    function errorHandler( $msg )
     {
         if ( $this->MailerDebug == true )
         {
@@ -484,7 +528,7 @@ class Smtp
      * Initialize the class so that the data is in a known state.
      */
 
-    function SMTP()
+    function Smtp()
     {
         $this->smtp_conn = 0;
         $this->error = null;
@@ -513,7 +557,7 @@ class Smtp
      * SMTP CODE FAILURE: 421
      */
 
-    function Connect( $host, $port = 0, $tval = 30 )
+    function connect( $host, $port = 0, $tval = 30 )
     {
         # set the error val to null so there is no confusion
         $this->error = null;
@@ -559,7 +603,7 @@ class Smtp
         socket_set_timeout( $this->smtp_conn, 1, 0 );
 
         # get any announcement stuff
-        $announce = $this->get_lines();
+        $announce = $this->getLines();
 
         # set the timeout  of any socket functions at 1/10 of a second
         socket_set_timeout( $this->smtp_conn, 0, 100000 );
@@ -580,7 +624,7 @@ class Smtp
      * Returns true if connected to a server otherwise false
      */
 
-    function Connected()
+    function connected()
     {
         if ( !empty( $this->smtp_conn ) )
         {
@@ -594,7 +638,7 @@ class Smtp
                     echo "SMTP -> NOTICE:" . $this->CRLF .
                     "EOF caught while checking if connected";
                 }
-                $this->Close();
+                $this->close();
                 return false;
             }
             return true; # everything looks good
@@ -612,7 +656,7 @@ class Smtp
      * first trying to use QUIT.
      */
 
-    function Close()
+    function close()
     {
         $this->error = null; # so there is no confusion
         $this->helo_rply = null;
@@ -650,7 +694,7 @@ class Smtp
      * SMTP CODE ERROR  : 500,501,503,421
      */
 
-    function Data( $msg_data )
+    function data( $msg_data )
     {
         $this->error = null; # so no confusion is caused
 
@@ -663,7 +707,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "DATA" . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -754,7 +798,7 @@ class Smtp
         # over with aleady
         fputs( $this->smtp_conn, $this->CRLF . "." . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -797,7 +841,7 @@ class Smtp
      * SMTP CODE ERROR  : 500,501,502,504,421
      */
 
-    function Expand( $name )
+    function expand( $name )
     {
         $this->error = null; # so no confusion is caused
 
@@ -810,7 +854,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "EXPN " . $name . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -857,7 +901,7 @@ class Smtp
      * SMTP CODE ERROR  : 500, 501, 504, 421
      */
 
-    function Hello( $host = "" )
+    function hello( $host = "" )
     {
         $this->error = null; # so no confusion is caused
 
@@ -879,7 +923,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "HELO " . $host . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -976,7 +1020,7 @@ class Smtp
      * SMTP CODE SUCCESS: 500,501,421
      */
 
-    function Mail( $from )
+    function mail( $from )
     {
         $this->error = null; # so no confusion is caused
 
@@ -989,7 +1033,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "MAIL FROM:" . $from . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -1026,7 +1070,7 @@ class Smtp
      * SMTP CODE ERROR  : 500, 421
      */
 
-    function Noop()
+    function noop()
     {
         $this->error = null; # so no confusion is caused
 
@@ -1039,7 +1083,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "NOOP" . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -1077,7 +1121,7 @@ class Smtp
      * SMTP CODE ERROR  : 500
      */
 
-    function Quit( $close_on_error = true )
+    function quit( $close_on_error = true )
     {
         $this->error = null; # so there is no confusion
 
@@ -1092,7 +1136,7 @@ class Smtp
         fputs( $this->smtp_conn, "quit" . $this->CRLF );
 
         # get any good-bye messages
-        $byemsg = $this->get_lines();
+        $byemsg = $this->getLines();
 
         if ( $this->do_debug >= 2 )
         {
@@ -1119,7 +1163,7 @@ class Smtp
 
         if ( empty( $e ) || $close_on_error )
         {
-            $this->Close();
+            $this->close();
         }
 
         return $rval;
@@ -1140,7 +1184,7 @@ class Smtp
      * SMTP CODE ERROR  : 500,501,503,421
      */
 
-    function Recipient( $to )
+    function recipient( $to )
     {
         $this->error = null; # so no confusion is caused
 
@@ -1153,7 +1197,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "RCPT TO:" . $to . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -1192,7 +1236,7 @@ class Smtp
      * SMTP CODE ERROR  : 500,501,504,421
      */
 
-    function Reset()
+    function reset()
     {
         $this->error = null; # so no confusion is caused
 
@@ -1205,7 +1249,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "RSET" . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -1249,7 +1293,7 @@ class Smtp
      * SMTP CODE SUCCESS: 500,501,502,421
      */
 
-    function Send( $from )
+    function send( $from )
     {
         $this->error = null; # so no confusion is caused
 
@@ -1262,7 +1306,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "SEND FROM:" . $from . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -1305,7 +1349,7 @@ class Smtp
      * SMTP CODE SUCCESS: 500,501,502,421
      */
 
-    function SendAndMail( $from )
+    function sendAndMail( $from )
     {
         $this->error = null; # so no confusion is caused
 
@@ -1318,7 +1362,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "SAML FROM:" . $from . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -1361,7 +1405,7 @@ class Smtp
      * SMTP CODE SUCCESS: 500,501,502,421
      */
 
-    function SendOrMail( $from )
+    function sendOrMail( $from )
     {
         $this->error = null; # so no confusion is caused
 
@@ -1374,7 +1418,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "SOML FROM:" . $from . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -1414,7 +1458,7 @@ class Smtp
      * SMTP CODE ERROR  : 500, 503
      */
 
-    function Turn()
+    function turn()
     {
         $this->error = array( "error" => "This method, TURN, of the SMTP " .
             "is not implemented" );
@@ -1441,7 +1485,7 @@ class Smtp
      * SMTP CODE ERROR  : 500,501,502,421
      */
 
-    function Verify( $name )
+    function verify( $name )
     {
         $this->error = null; # so no confusion is caused
 
@@ -1454,7 +1498,7 @@ class Smtp
 
         fputs( $this->smtp_conn, "VRFY " . $name . $this->CRLF );
 
-        $rply = $this->get_lines();
+        $rply = $this->getLines();
         $code = substr( $rply, 0, 3 );
 
         if ( $this->do_debug >= 2 )
@@ -1494,7 +1538,7 @@ class Smtp
      * need to read anything else.
      */
 
-    function get_lines()
+    function getLines()
     {
         $data = "";
         while ( $str = fgets( $this->smtp_conn, 515 ) )
