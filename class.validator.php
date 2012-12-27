@@ -236,8 +236,6 @@ class CompareValidator extends ValidatorStrategy
             if ( $this->data[ 'to_compare' ] != $this->data[ 'compare_with' ] )
             {
                 $this->messages = ( $this->data[ 'unmatch_message' ] ) ? $this->data[ 'unmatch_message' ] : $this->errorText( 2, $this->data[ 'field' ], $this->data[ 'field_comparison' ] );
-                var_dump( $this->data[ 'field_comparasion' ] );
-
                 return false;
             }
             else
