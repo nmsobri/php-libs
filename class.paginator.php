@@ -39,6 +39,24 @@ class Pagination
      * @var int
      * @access protected
      */
+    protected $prevPage;
+
+
+
+    /**
+     *
+     * @var int
+     * @access protected
+     */
+    protected $nextPage;
+
+
+
+    /**
+     *
+     * @var int
+     * @access protected
+     */
     protected $totalPages;
 
 
@@ -79,7 +97,6 @@ class Pagination
 
 
 
-
     /**
      *
      * Constructor Method
@@ -96,7 +113,6 @@ class Pagination
         $this->init();
         $this->paginate();
     }
-
 
 
 
@@ -127,8 +143,8 @@ class Pagination
         }
 
 
-        $prev_page = $this->currentPage - 1;
-        $next_page = $this->currentPage + 1;
+        $this->prevPage = $this->currentPage - 1;
+        $this->nextPage = $this->currentPage + 1;
 
         if ( $_GET )
         {
@@ -148,7 +164,6 @@ class Pagination
 
 
 
-
     /**
      *
      * Method to create pagination link
@@ -159,7 +174,7 @@ class Pagination
     {
         if ( $this->totalPages > 1 )
         {
-            $this->return = ($this->currentPage != 1 And $this->totalItems >= 1) ? "<a class=\"paginate\" href=\"{$_SERVER[ 'PHP_SELF' ]}?page=$prev_page&ipp=$this->itemsPerPage$this->queryString\">&laquo; Previous</a> " : "<span class=\"inactive\" href=\"#\">&laquo; Previous</span> ";
+            $this->return = ($this->currentPage != 1 And $this->totalItems >= 1) ? "<a class=\"paginate\" href=\"{$_SERVER[ 'PHP_SELF' ]}?page=$this->prevPage&ipp=$this->itemsPerPage$this->queryString\">&laquo; Previous</a> " : "<span class=\"inactive\" href=\"#\">&laquo; Previous</span> ";
 
             $this->start_range = $this->currentPage - floor( $this->midRange / 2 );
             $this->end_range = $this->currentPage + floor( $this->midRange / 2 );
@@ -196,10 +211,9 @@ class Pagination
                 }
             }
 
-            $this->return .= ( ($this->currentPage != $this->totalPages And $this->totalItems >= 1) ) ? "<a class=\"paginate\" href=\"{$_SERVER[ 'PHP_SELF' ]}?page=$next_page&ipp=$this->itemsPerPage$this->queryString\">Next &raquo;</a>\n" : "<span class=\"inactive\" href=\"#\">Next &raquo;</span>\n";
+            $this->return .= ( ($this->currentPage != $this->totalPages And $this->totalItems >= 1) ) ? "<a class=\"paginate\" href=\"{$_SERVER[ 'PHP_SELF' ]}?page=$this->nextPage&ipp=$this->itemsPerPage$this->queryString\">Next &raquo;</a>\n" : "<span class=\"inactive\" href=\"#\">Next &raquo;</span>\n";
         }
     }
-
 
 
 
@@ -233,7 +247,6 @@ class Pagination
 
 
 
-
     /**
      *
      * Method to create selection menu for jump to page
@@ -257,7 +270,6 @@ class Pagination
 
 
 
-
     /**
      *
      * Method to show the pagination link
@@ -268,7 +280,6 @@ class Pagination
     {
         return $this->return;
     }
-
 
 
 
@@ -286,7 +297,6 @@ class Pagination
 
 
 
-
     /**
      *
      * Method to get current page number
@@ -298,7 +308,6 @@ class Pagination
     {
         return $this->itemsPerPage;
     }
-
 
 
 
