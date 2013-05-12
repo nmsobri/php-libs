@@ -416,14 +416,17 @@ class Form
      * @access public
      * @param string $action
      * @param bool $isUpload
+     * @param mixed $attr
      * @return string
      */
-    public function formStart( $action, $isUpload )
+    public function formStart( $action, $isUpload, $attr = array() )
     {
         $isUpload = ( boolean ) $isUpload;
         $formName = 'Form' . ++self::$instance;
-        $formStart = '';
-        $formStart = '<form name="' . $formName . '" method="' . $this->formMethod . '" action="' . $action . '"';
+        $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $formName . 'Id';
+        $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $formName . 'Class';
+
+        $formStart = '<form name="' . $formName . '" id="'. $id. '" class="'. $class . '" method="' . $this->formMethod . '" action="' . $action . '"';
         $formStart .= ( $isUpload ) ? ' enctype="multipart/form-data">' : '>';
         $formStart .= PHP_EOL;
         return $formStart;
