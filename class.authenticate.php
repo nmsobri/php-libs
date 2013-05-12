@@ -100,7 +100,7 @@ class Authentication
      * @param Pdo $db Pdo object
      * @param stdClass $obj       instance of stdClass
      * @param stdClass::query     query to run
-     * @param stdClass::bind      value to bind to placeholder inside query
+     * @param stdClass::bind      array|single value to bind to placeholder inside query
      * @param stdClass::remember  whether to use cookie to store auth result
      * @return boolean
      */
