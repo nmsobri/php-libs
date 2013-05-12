@@ -24,6 +24,9 @@ class Database extends PDO
     {
         try
         {
+            if(!preg_match('#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#',$dsn)){
+                throw new PDOException('Invalid dsn, dsn should be in the following format [dbtype:host=localhost;dbname=db_name]');
+            }
             $this->db = new PDO( $dsn, $username, $password );
             $this->db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         }
