@@ -123,6 +123,7 @@ class Form
      * @param mixed $attr['id']
      * @param mixed $attr['class']
      * @param mixed $attr['placeholder']
+     * @param mixed $attr['disabled']
      * @return string
      */
     public function password( $name, $attr = array() )
@@ -132,9 +133,10 @@ class Form
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr[ 'id' ] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr[ 'class' ] : $name . 'Class';
         $placeholder = ( array_key_exists( 'placeholder', $attr ) ) ? $attr[ 'placeholder' ] : '';
+        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
 
         $password = '';
-        $password .= '<input type="password" name="' . $name . '" id="' . $id . '" class="' . $class . ' placeholder="'. $placeholder . '"' . '">';
+        $password .= '<input type="password" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled. ' placeholder="'. $placeholder . '"' . '>';
         $password .= PHP_EOL;
         return $password;
     }
