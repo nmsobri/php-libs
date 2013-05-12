@@ -17,14 +17,12 @@ class Authentication
     private $db = null;
 
 
-
     /**
      * Store Session Object
      * @var Session
      * @access private
      */
     private $session = null;
-
 
 
     /**
@@ -35,7 +33,6 @@ class Authentication
     private $cookie = null;
 
 
-
     /**
      * Store stdClass object using for login
      * @access private
@@ -44,13 +41,11 @@ class Authentication
     private $login_param = null;
 
 
-
     /**
      * Store result from querying the database
      * @access private
      */
     private $login_data = null;
-
 
 
     /**
@@ -61,13 +56,11 @@ class Authentication
     private $auth_name = 'auth';
 
 
-
     /**
      * Store hash for encryption/decryption
      * @var type
      */
     private $encryption_key = '9D(v56xv0_7F15m8Y$ZuSQ5FG1#Mx^';
-
 
 
     /**
@@ -76,7 +69,6 @@ class Authentication
      * @var string
      */
     private $hash = '6cSNeQPq8qkcWzUBUe/LF1wPyC3iKJpO';
-
 
 
     /**
@@ -93,7 +85,6 @@ class Authentication
     }
 
 
-
     /**
      *
      * @access public
@@ -103,14 +94,30 @@ class Authentication
      * @param stdClass::bind      array|single value to bind to placeholder inside query
      * @param stdClass::remember  whether to use cookie to store auth result
      * @return boolean
+     *
+     * @example1
+     * $obj->query = "SELECT * FROM users WHERE username=? AND password=?"
+     * $obj->bind = array($username, $password)
+
+     * @example2
+     * $obj->query = "SELECT * FROM users WHERE username=:age AND password=:password"
+     * $obj->bind = array(':username'=>$username, ':password'=>$password)
      */
     public function login( PDO $db, stdClass $obj )
     {
         $this->db = $db;
         $this->login_param = $obj;
+
+        if ( !isset( $this->login_param->bind ) ) {
+            $this->login_param->bind = array();
+        }
+
+        if ( !isset( $this->login_param->remember ) ) {
+            $this->login_param->remember = false;
+        }
+
         return $this->isAuth();
     }
-
 
 
     /**
@@ -120,32 +127,25 @@ class Authentication
      */
     public function isAuth()
     {
-        if ( !is_null( $this->login_param ) )
-        {
+        if ( !is_null( $this->login_param ) ) {
             $this->login_data = $this->db->query( $this->login_param->query, $this->bind() )->execute();
 
-            if ( count( $this->login_data ) == 1 )
-            {
+            if ( count( $this->login_data ) == 1 ) {
                 $this->saveHash();
                 return true;
             }
-        }
-        else
-        {
-            if ( $this->session->check( $this->auth_name ) and $this->checkHash() )
-            {
+        } else {
+            if ( $this->session->check( $this->auth_name ) and $this->checkHash() ) {
                 return true;
             }
 
-            if ( $this->cookie->check( $this->auth_name ) and $this->checkHash() )
-            {
+            if ( $this->cookie->check( $this->auth_name ) and $this->checkHash() ) {
                 $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
                 return true;
             }
         }
         return false;
     }
-
 
 
     /**
@@ -160,7 +160,6 @@ class Authentication
     }
 
 
-
     /**
      * Store hash for encryption/decryption
      * @access public
@@ -170,7 +169,6 @@ class Authentication
     {
         $this->encryption_key = $hash;
     }
-
 
 
     /**
@@ -184,7 +182,6 @@ class Authentication
     }
 
 
-
     /**
      * Method To Logout User
      * @access public
@@ -196,12 +193,9 @@ class Authentication
         $this->session->unsetSession();
         $this->cookie->delete( $this->auth_name );
 
-        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) )
-            return true;
-        else
+        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) ) return true; else
             return false;
     }
-
 
 
     /**
@@ -213,24 +207,15 @@ class Authentication
     {
         $bind = NULL;
 
-        if ( isset( $this->login_param->bind ) )
-        {
-            if ( is_array( $this->login_param->bind ) )
-            {
-                $bind = $this->login_param->bind;
-            }
-            else
-            {
-                $bind = array( $this->login_param->bind );
-            }
+        if ( is_array( $this->login_param->bind ) ) {
+            $bind = $this->login_param->bind;
         }
-        else
-        {
-            $bind = array( );
+        else {
+            $bind = array( $this->login_param->bind );
         }
+
         return $bind;
     }
-
 
 
     /**
@@ -242,18 +227,16 @@ class Authentication
     {
         $auth_key = '';
 
-        foreach ( $this->login_data[ 0 ] as $data )
-        {
+        foreach ( $this->login_data[0] as $data ) {
             $auth_key .= $data;
         }
 
-        $data = array( );
-        $data[ 'key' ] = $this->encode( $auth_key );
-        $data[ 'hash' ] = $this->encode( strrev( $this->hash . $auth_key . $this->hash ) );
+        $data = array();
+        $data['key'] = $this->encode( $auth_key );
+        $data['hash'] = $this->encode( strrev( $this->hash . $auth_key . $this->hash ) );
 
         return $data;
     }
-
 
 
     /**
@@ -266,12 +249,10 @@ class Authentication
 
         $this->session->set( $this->auth_name, $this->createHash() );
 
-        if ( $this->login_param->remember )
-        {
+        if ( $this->login_param->remember ) {
             $this->cookie->set( $this->auth_name, $this->createHash() );
         }
     }
-
 
 
     /**
@@ -282,33 +263,28 @@ class Authentication
     protected function checkHash()
     {
 
-        if ( $this->session->check( $this->auth_name ) )
-        {
+        if ( $this->session->check( $this->auth_name ) ) {
             $auth_data = $this->session->get( $this->auth_name );
-            $auth_key = $this->decode( $auth_data[ 'key' ] );
-            $auth_hash = strrev( $this->decode( $auth_data[ 'hash' ] ) );
+            $auth_key = $this->decode( $auth_data['key'] );
+            $auth_hash = strrev( $this->decode( $auth_data['hash'] ) );
 
-            if ( $this->hash . $auth_key . $this->hash == $auth_hash )
-            {
+            if ( $this->hash . $auth_key . $this->hash == $auth_hash ) {
                 return true;
             }
         }
 
-        if ( $this->cookie->check( $this->auth_name ) and $this->checkHash() )
-        {
+        if ( $this->cookie->check( $this->auth_name ) and $this->checkHash() ) {
             $auth_data = $this->cookie->get( $this->auth_name );
-            $auth_key = $this->decode( $auth_data[ 'key' ] );
-            $auth_hash = strrev( $this->decode( $auth_data[ 'hash' ] ) );
+            $auth_key = $this->decode( $auth_data['key'] );
+            $auth_hash = strrev( $this->decode( $auth_data['hash'] ) );
 
-            if ( $this->hash . $auth_key . $this->hash == $auth_hash )
-            {
+            if ( $this->hash . $auth_key . $this->hash == $auth_hash ) {
                 $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
                 return true;
             }
         }
         return false;
     }
-
 
 
     /**
@@ -324,7 +300,6 @@ class Authentication
     }
 
 
-
     /**
      * Decode string
      * @param string $string
@@ -337,10 +312,7 @@ class Authentication
     }
 
 
-
 }
-
-
 
 
 ?>
