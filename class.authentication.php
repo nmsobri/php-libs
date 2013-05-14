@@ -138,7 +138,7 @@ class Authentication
 
             if ( count( $this->login_data ) > 0 ) {
                 $this->saveHash();
-                return $this->login_data;
+                return true;
             }
         }
         else {
@@ -147,10 +147,9 @@ class Authentication
             }
 
             if ( $this->cookie->check( $this->auth_name ) ) {
-                $result = $this->checkHash();
-                if ( $result ) {
+                if ( $this->checkHash() ) {
                     $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
-                    return $result;
+                    return true;
                 }
             }
         }
@@ -212,8 +211,7 @@ class Authentication
         $this->session->unsetSession();
         $this->cookie->delete( $this->auth_name );
 
-        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) )
-            return true;
+        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) ) return true;
         else
             return false;
     }
