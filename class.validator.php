@@ -865,7 +865,7 @@ class TextValidator extends ValidatorStrategy
      * @example new TextValidator( 'name', $_POST['name'], array( 'min_length' => 3, 'max_length' => 10 ) ) check for text that length in the range of 3-10
      * @example new TextValidator( 'name', $_POST['name'], array( 'min_length' => 3, 'max_length' => 10, 'allow_num' => true ) ) check for text that length equal to 10 and can contain number in it
      */
-    public function __construct( $name, $value, $attr = null )
+    public function __construct( $name, $value, $attr = array() )
     {
         $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
 
@@ -1186,7 +1186,7 @@ class Validator
      * @access protected
      * @var array
      */
-    protected $validators;
+    protected $validators = array();
 
 
 
@@ -1224,10 +1224,13 @@ class Validator
     {
         $this->isEror = false;
 
-        foreach ( $this->validators as $name => $validator )
+        if( count( $this->validators ) > 0)
         {
-            if ( !$validator->isValid() )
-                $this->isEror = true;
+            foreach ( $this->validators as $name => $validator )
+            {
+                if ( !$validator->isValid() )
+                    $this->isEror = true;
+            }
         }
 
         return ($this->isEror) ? false : true;
