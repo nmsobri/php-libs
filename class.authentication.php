@@ -57,6 +57,13 @@ class Authentication
 
 
     /**
+     * Store auth data from database;
+     * @var null $auth_data
+     */
+    private $auth_data = null;
+
+
+    /**
      * Hash for encryption/decryption
      * @var type
      */
@@ -150,6 +157,15 @@ class Authentication
         return false;
     }
 
+    public function getAuthData()
+    {
+        if ( $this->auth_data == null ) {
+            $this->checkHash();
+        }
+
+        return $this->auth_data;
+    }
+
 
     /**
      * Return login data
@@ -196,7 +212,8 @@ class Authentication
         $this->session->unsetSession();
         $this->cookie->delete( $this->auth_name );
 
-        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) ) return true;
+        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) )
+            return true;
         else
             return false;
     }
@@ -261,28 +278,29 @@ class Authentication
      */
     protected function checkHash()
     {
-
         if ( $this->session->check( $this->auth_name ) ) {
             $auth_data = $this->session->get( $this->auth_name );
             $auth_key = $auth_data['key'];
             $auth_hash = strrev( $this->decode( $auth_data['hash'] ) );
 
             if ( $this->hash . $auth_key . $this->hash == $auth_hash ) {
-                return unserialize( $this->decode( $auth_key ) );
+                $this->auth_data = unserialize( $this->decode( $auth_key ) );
+                return true;
             }
         }
 
-        if ( $this->cookie->check( $this->auth_name ) and $this->checkHash() ) {
+        if ( $this->cookie->check( $this->auth_name ) ) {
             $auth_data = $this->cookie->get( $this->auth_name );
             $auth_key = $auth_data['key'];
             $auth_hash = strrev( $this->decode( $auth_data['hash'] ) );
 
             if ( $this->hash . $auth_key . $this->hash == $auth_hash ) {
                 $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
-                return unserialize( $this->decode( $auth_key ) );
-
+                $this->auth_data = unserialize( $this->decode( $auth_key ) );
+                return true;
             }
         }
+        $this->auth_data = null;
         return false;
     }
 
