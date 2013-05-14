@@ -156,6 +156,10 @@ class Authentication
         return false;
     }
 
+    /**
+     * Get auth data from session
+     * @return array
+     */
     public function getAuthData()
     {
         if ( $this->auth_data == null ) {
