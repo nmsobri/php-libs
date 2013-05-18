@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Class Database
+ * @author slier
+ */
+
 class Database extends PDO
 {
 
@@ -12,39 +17,31 @@ class Database extends PDO
     protected $count = null;
 
 
-
     /**
-     * Constructor method
-     * @access public
      * @param string $dsn mysql:host=localhost;dbname=db_name
      * @param string $username
      * @param string $password
      */
     public function __construct( $dsn, $username, $password )
     {
-        try
-        {
-            if(!preg_match('#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#',$dsn)){
-                throw new PDOException('Invalid dsn, dsn should be in the following format [dbtype:host=localhost;dbname=db_name]');
+        try {
+            if ( !preg_match( '#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#', $dsn ) ) {
+                throw new PDOException( 'Invalid dsn, dsn should be in the following format [dbtype:host=localhost;dbname=db_name]' );
             }
             $this->db = new PDO( $dsn, $username, $password );
             $this->db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-        }
-        catch( PDOException $e )
-        {
+        } catch ( PDOException $e ) {
             $msg = "Message: {$e->getMessage()}";
-            $msg .="\nFile:   {$e->getFile()}";
-            $msg .="\nLine:   {$e->getLine()}";
+            $msg .= "\nFile:   {$e->getFile()}";
+            $msg .= "\nLine:   {$e->getLine()}";
             echo nl2br( $msg );
             exit(); /* cause pdo is stupid , its not stopping execution flow on exception */
         }
     }
 
 
-
     /**
-     * Runn raw query
-     * @access public
+     * Run raw query
      * @param string $sql raw query
      * @param mixed $bind value to bind
      * @return \Database for chaining
@@ -61,12 +58,11 @@ class Database extends PDO
     }
 
 
-
     /**
      * Query to select data
-     * @access public
      * @param string $table table name
      * @param string $column series of column name
+     * @return Database for chaining
      */
     public function select( $table, $column = '*' )
     {
@@ -76,32 +72,28 @@ class Database extends PDO
     }
 
 
-
     /**
      * Insert a value into a table
-     * @access public
      * @param string $table table name
      * @param mixed $data data to insert
      * @param mixed $bind value to bind
+     *
      * @example insert('users', array( array( 'username'=> '?', 'password'=> '?' ) ), array( $username, $password ) )
      * @example insert('users', array( array( 'username'=> ':username', 'password'=> ':password' ) ), array( ':username' => $username, ':password' => $password ) )
      * @return Database for chaining
      */
-    public function insert( $table, $data = array( ), $bind = null )
+    public function insert( $table, $data = array(), $bind = null )
     {
         $columns = null;
         $values = null;
         $this->bind( $bind );
 
-        foreach ( $data as $key => $val )
-        {
+        foreach ( $data as $key => $val ) {
             $columns .= $key . ',';
-            if ( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) )
-            {
+            if ( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) ) {
                 $values .= $val . ',';
             }
-            else
-            {
+            else {
                 $values .= '"' . $val . '"' . ',';
             }
         }
@@ -114,29 +106,26 @@ class Database extends PDO
     }
 
 
-
     /**
      * Update a value in a table
-     * @access public
      * @param string $table table name
      * @param mixed $data data to update
      * @param mixed $bind value to bind
+     *
      * @example update('users', array( array( 'username'=> '?', 'password'=> '?' ) ), array( $username, $password ) )
      * @example update('users', array( array( 'username'=> ':username', 'password'=> ':password' ) ), array( ':username' => $username, ':password' => $password ) )
+     * @return Database for chaining
      */
-    public function update( $table, $data = array( ), $bind = null )
+    public function update( $table, $data = array(), $bind = null )
     {
         $segment = null;
         $this->bind( $bind );
 
-        foreach ( $data as $key => $val )
-        {
-            if ( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) )
-            {
+        foreach ( $data as $key => $val ) {
+            if ( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) ) {
                 $segment .= $key . '=' . $val . ',';
             }
-            else
-            {
+            else {
                 $segment .= $key . '="' . $val . '",';
             }
         }
@@ -147,10 +136,8 @@ class Database extends PDO
     }
 
 
-
     /**
      * Delete a record from a table
-     * @access public
      * @param string $table table name
      * @return \Database for chaining
      */
@@ -161,10 +148,9 @@ class Database extends PDO
     }
 
 
-
     /**
-     * Wheter to get total fo result of the query
-     * @return Database
+     * Whether to get total fo result of the query
+     * @return Database for chaining
      */
     public function totalrow()
     {
@@ -173,25 +159,21 @@ class Database extends PDO
     }
 
 
-
     /**
-     *
      * Setup where clause
-     * @access public
      * @param string $where raw sql condition
      * @param mixed $bind value to bind
-     * @return \Database for chaining
+     * @throws PDOException
      * @example where( "username = ? and password = ?", array( $username, $password ) )
      * @example where( "username = :username and password = :password", array( ':username' => $username, ':password' => $password ) )
+     * @return \Database for chaining
      */
     public function where( $where, $bind = null )
     {
-        if ( preg_match( '/where/i', $this->query ) )
-        {
-            throw new Exception( 'There is a where clause already in the sql statement' );
+        if ( preg_match( '/where/i', $this->query ) ) {
+            throw new PDOException( 'There is a where clause already in the sql statement' );
         }
-        else
-        {
+        else {
             $this->bind( $bind );
             $this->where = ' WHERE ' . $where;
             return $this;
@@ -199,9 +181,7 @@ class Database extends PDO
     }
 
 
-
     /**
-     *
      * Setup order by clause
      * @param string $order sorting the result
      * @return \Database for chaining
@@ -213,12 +193,10 @@ class Database extends PDO
     }
 
 
-
     /**
      *
      * Setup limit clause
-     * @access public
-     * @param int $start index of startting row
+     * @param int $start index of starting row
      * @param int $limit how much to fetch
      * @return \Database for chaining
      */
@@ -229,10 +207,8 @@ class Database extends PDO
     }
 
 
-
     /**
      * Method to get last insert id From insert statement
-     * @access public
      * @return int
      */
     public function getLastInsertId()
@@ -241,84 +217,66 @@ class Database extends PDO
     }
 
 
-
     /**
      *
      * Execute the query
-     * @access public
      * @return void
      */
     public function execute()
     {
-        try
-        {
+        try {
             $sql = $this->query . $this->where . $this->order . $this->limit;
             $stmt = $this->db->prepare( $sql );
             $stmt->execute( $this->bind );
             $count = $this->count; //cache this value cause if use directly, statement below will always make $this->count = null
             $this->query = $this->where = $this->order = $this->limit = $this->count = $this->bind = null;
 
-            if ( preg_match( '/^sel/i', trim( $sql ) ) )
-            {
-                return ($count) ? count( $stmt->fetchAll( PDO::FETCH_ASSOC ) ) : $stmt->fetchAll( PDO::FETCH_ASSOC );
+            if ( preg_match( '/^sel/i', trim( $sql ) ) ) {
+                return ( $count ) ? count( $stmt->fetchAll( PDO::FETCH_ASSOC ) ) : $stmt->fetchAll( PDO::FETCH_ASSOC );
             }
-            else
-            {
+            else {
                 return $stmt->rowCount();
             }
-        }
-        catch( PDOException $e )
-        {
+        } catch ( PDOException $e ) {
             $msg = "Message: {$e->getMessage()}";
-            $msg .="\nFile:   {$e->getFile()}";
-            $msg .="\nLine:   {$e->getLine()}";
+            $msg .= "\nFile:   {$e->getFile()}";
+            $msg .= "\nLine:   {$e->getLine()}";
             echo nl2br( $msg );
             exit();
         }
     }
 
 
-
     /**
      *
      * Build bind parameter
-     * @access protected
-     * @param array $bind
+     * @param mixed $bind
      * @return void
      */
     protected function bind( $bind )
     {
-        if ( is_null( $this->bind ) )
-        {
-            $this->bind = array( );
+        if ( is_null( $this->bind ) ) {
+            $this->bind = array();
         }
 
-        if ( !empty( $bind ) )
-        {
-            if ( is_array( $bind ) )
-            {
-                if ( $this->isAssoc( $bind ) )
-                {
-                    foreach ( $bind as $key => $val )
-                    {
-                        $this->bind[ $key ] = $val;
+        if ( !empty( $bind ) ) {
+            if ( is_array( $bind ) ) {
+                if ( $this->isAssoc( $bind ) ) {
+                    foreach ( $bind as $key => $val ) {
+                        $this->bind[$key] = $val;
                     }
                 }
-                else
-                {
-                    foreach ( $bind as $key => $val )
-                    {
-                        $this->bind[ ] = $val;
+                else {
+                    foreach ( $bind as $key => $val ) {
+                        $this->bind[] = $val;
                     }
                 }
             }
-            else
-            {
-                $this->bind[ ] = $bind;
+            else {
+                $this->bind[] = $bind;
             }
         }
     }
-
 
 
     /**
@@ -329,19 +287,14 @@ class Database extends PDO
      */
     protected function isAssoc( $arr )
     {
-        foreach ( array_keys( $arr ) as $key )
-        {
-            if ( !is_int( $key ) )
-                return true;
+        foreach ( array_keys( $arr ) as $key ) {
+            if ( !is_int( $key ) ) return true;
         }
         return false;
     }
 
 
-
 }
-
-
 
 
 ?>

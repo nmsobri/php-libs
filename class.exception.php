@@ -5,7 +5,7 @@
  * Note:When Using This Class..U dont Need to Use Try Catch Block
  * @author slier
  */
-class GenerealException
+class GeneralException
 {
 
     /**
@@ -21,9 +21,8 @@ class GenerealException
 
 
     /**
-     * @access public
      * @param Exception $e
-     * @return mixed
+     * @return void
      */
     public function exceptionHandler( Exception $e )
     {

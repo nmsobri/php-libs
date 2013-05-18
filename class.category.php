@@ -12,14 +12,30 @@
 class Category
 {
 
+    /**
+     * Store Pdo instance
+     * @var Pdo
+     */
     protected $db;
+
+    /**
+     * Store table name for categories
+     * @var string
+     */
     protected $tableName;
+
+    /**
+     * Later..
+     * @var PDOStatement
+     */
     protected $categories;
 
 
-
-
-    public function __construct( Crud $db, $tableName )
+    /**
+     * @param Pdo $db
+     * @param string $tableName
+     */
+    public function __construct( Pdo $db, $tableName )
     {
         $this->db = $db;
         $this->tableName = $tableName;
@@ -27,47 +43,36 @@ class Category
     }
 
 
-
-
     /**
      * Build multidimensional array of categories to pass to Form object
-     * @return array 
+     * @return mixed
      */
-    function build()
+    public function build()
     {
-        static $collections = array( );
+        static $collections = array();
         $rootCategory = $this->rootNodes();
 
-        foreach ( $rootCategory as $x => $parent )
-        {
-            foreach ( $this->categories as $y => $child )
-            {
-                if ( $parent[ 'id' ] == $child[ 'parent' ] )
-                {
-                    if ( @is_null( $collections[ $parent[ 'title' ] ] ) )
-                    {
-                        $collections[ $parent[ 'title' ] ] = array( );
+        foreach ( $rootCategory as $x => $parent ) {
+            foreach ( $this->categories as $y => $child ) {
+                if ( $parent['id'] == $child['parent'] ) {
+                    if ( @is_null( $collections[$parent['title']] ) ) {
+                        $collections[$parent['title']] = array();
                     }
-                    if ( $this->hasChild( $child[ 'id' ] ) )
-                    {
-                        $collections[ $parent[ 'title' ] ][ $this->padding( 3 ) . $child[ 'title' ] ] = $this->buildChild( $child[ 'id' ], 3, 1 );
+                    if ( $this->hasChild( $child['id'] ) ) {
+                        $collections[$parent['title']][$this->padding( 3 ) . $child['title']] = $this->buildChild( $child['id'], 3, 1 );
                     }
-                    else
-                    {
-                        $collections[ $parent[ 'title' ] ][ $child[ 'title' ] ] = $child[ 'title' ];
+                    else {
+                        $collections[$parent['title']][$child['title']] = $child['title'];
                     }
                 }
             }
             /* This part is for root category that dosent have child */
-            if ( @is_null( $collections[ $parent[ 'title' ] ] ) )
-            {
-                $collections[ $parent[ 'title' ] ] = $parent[ 'title' ];
+            if ( @is_null( $collections[$parent['title']] ) ) {
+                $collections[$parent['title']] = $parent['title'];
             }
         }
         return $collections;
     }
-
-
 
 
     /**
@@ -86,17 +91,14 @@ class Category
     }
 
 
-
-
     /**
      * Update category
-     * @access public
      * @param int $id
      * @param string $title
-     * @param int $parent_id
-     * @param string $desc
+     * @param string $description
+     * @param int $parent
      * @notes pass php null, to pass NULL datatypes for mysql
-     * @return array
+     * @return mixed
      */
     public function update( $id, $title, $description, $parent )
     {
@@ -106,11 +108,8 @@ class Category
     }
 
 
-
-
     /**
      * Delete category
-     * @access public
      * @param int $id
      * @return int
      */
@@ -124,19 +123,15 @@ class Category
     }
 
 
-
-
     /**
      * Check if current node has child
-     * @param int $id
-     * @return array 
+     * @param int $id node
+     * @return boolean
      */
     protected function hasChild( $id )
     {
-        foreach ( $this->categories as $key => $val )
-        {
-            if ( $id == $val[ 'parent' ] )
-            {
+        foreach ( $this->categories as $key => $val ) {
+            if ( $id == $val['parent'] ) {
                 return true;
             }
         }
@@ -144,49 +139,41 @@ class Category
     }
 
 
-
-
-    /*
+    /**
      * Get root category
+     * @return mixed
      */
-
     protected function rootNodes()
     {
-        $rootCategory = array( );
+        $rootCategory = array();
 
-        foreach ( $this->categories as $key => $val )
-        {
-            if ( is_null( $val[ 'parent' ] ) )
-            {
-                $rootCategory[ $key ] = $this->categories[ $key ];
+        foreach ( $this->categories as $key => $val ) {
+            if ( is_null( $val['parent'] ) ) {
+                $rootCategory[$key] = $this->categories[$key];
             }
         }
         return $rootCategory;
     }
 
 
-
-
     /**
      * Build child for root category
      * @param int $id
-     * @return array 
+     * @param $parentPad
+     * @param $childPad
+     * @return mixed
      */
     protected function buildChild( $id, $parentPad, $childPad )
     {
-        $stack = array( );
+        $stack = array();
 
-        foreach ( $this->categories as $key => $val )
-        {
-            if ( $id == $val[ 'parent' ] )
-            {
-                if ( $this->hasChild( $val[ 'id' ] ) )
-                {
-                    $stack[ $this->padding( $parentPad + 2 ) . $val[ 'title' ] ] = $this->buildChild( $val[ 'id' ], $parentPad + 2, $childPad + 2 );
+        foreach ( $this->categories as $key => $val ) {
+            if ( $id == $val['parent'] ) {
+                if ( $this->hasChild( $val['id'] ) ) {
+                    $stack[$this->padding( $parentPad + 2 ) . $val['title']] = $this->buildChild( $val['id'], $parentPad + 2, $childPad + 2 );
                 }
-                else
-                {
-                    $stack[ $val[ 'title' ] ] = $this->padding( $childPad ) . $val[ 'title' ];
+                else {
+                    $stack[$val['title']] = $this->padding( $childPad ) . $val['title'];
                 }
             }
         }
@@ -194,25 +181,20 @@ class Category
     }
 
 
-
-
     /**
      * Get all child under this node
-     * @param int $id
-     * @return array 
+     * @param int $id node
+     * @return mixed
      */
     protected function nodeChild( $id )
     {
-        static $childs = array( );
+        static $childs = array();
 
-        foreach ( $this->categories as $key => $val )
-        {
-            if ( $id == $val[ 'parent' ] )
-            {
-                if ( $this->hasChild( $val[ 'id' ] ) )
-                {
-                    array_push( $childs, $val[ 'id' ] );
-                    $this->nodeChild( $val[ 'id' ] );
+        foreach ( $this->categories as $key => $val ) {
+            if ( $id == $val['parent'] ) {
+                if ( $this->hasChild( $val['id'] ) ) {
+                    array_push( $childs, $val['id'] );
+                    $this->nodeChild( $val['id'] );
                 }
             }
         }
@@ -220,20 +202,16 @@ class Category
     }
 
 
-
-
     /**
      * Padding Nodes
      * @param int $times
-     * @param str $pad
-     * @return type 
+     * @param string $pad
+     * @return string
      */
     protected function padding( $times, $pad = "&nbsp;" )
     {
         return str_repeat( $pad, $times );
     }
-
-
 
 
 }

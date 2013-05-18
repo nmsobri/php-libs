@@ -9,18 +9,14 @@ class Session
 {
 
     /**
-     *
-     * @var array
-     * @access private
+     * @var Session
      */
-    private $_sess;
-
+    private $session;
 
 
     /**
      *
      * Constructor method
-     * @access public
      * @param string $sessionLimiter
      * @param int $sessionExpired
      *
@@ -34,10 +30,9 @@ class Session
     }
 
 
-
     /**
      * Free all session variables
-     * @access public
+     * @return void
      */
     public function unsetSession()
     {
@@ -45,10 +40,9 @@ class Session
     }
 
 
-
     /**
      * Destroys A Session And All Data Registered To A Session
-     * @access public
+     * @return void
      */
     public function destroySession()
     {
@@ -56,10 +50,9 @@ class Session
     }
 
 
-
     /**
      * Get The Current Session Id
-     * @access public
+     * @return void
      */
     public function getSessionId()
     {
@@ -67,11 +60,9 @@ class Session
     }
 
 
-
     /**
-     *
      * Regenerate Session Id
-     * @access public
+     * @return void
      */
     public function regenerateSessionId()
     {
@@ -79,201 +70,142 @@ class Session
     }
 
 
-
     /**
-     *
      * Setting session data
      * Produce $_SESSION[$name]=$value
-     * @access public
-     * @param mixed $name
+     * @param string $name
      * @param mixed $value
+     * @return void
      */
     public function set( $name, $value )
     {
-        $this->_sess[ $name ] = $value;
+        $this->session[$name] = $value;
     }
 
 
-
     /**
-     *
-     * Set session so that only exist on one request
-     * @access public
-     * @param mixed $keys
+     * Set session so that only exist on next request
+     * @param string $key
      * @param mixed $val
+     * @return void
      */
     public function flash( $key, $val )
     {
-        $_SESSION[ 'flash' ][ $key ] = 'new';
+        $_SESSION['flash'][$key] = 'new';
         $this->set( $key, $val );
     }
 
 
-
     /**
-     *
      * Set session so it keep exist on only for next request
      * If this method is call without parameter,all flash session var will be keep for next request
-     * @access public
      * @param mixed $keys
+     * @return void
      */
     public function keepFlash( $keys = null )
     {
-        $keys = ( $keys === null ) ? array_keys( $_SESSION[ 'flash' ] ) : func_get_args();
+        $keys = ( $keys === null ) ? array_keys( $_SESSION['flash'] ) : func_get_args();
 
-        foreach ( $keys as $key )
-        {
-            if ( isset( $_SESSION[ 'flash' ][ $key ] ) )
-            {
-                $_SESSION[ 'flash' ][ $key ] = 'new';
+        foreach ( $keys as $key ) {
+            if ( isset( $_SESSION['flash'][$key] ) ) {
+                $_SESSION['flash'][$key] = 'new';
             }
         }
     }
-
 
 
     /**
      * Clear flash session
      * If this method is call without parameter,all flash session will be deleted
-     * @param type $keys key in flash session to be search
+     * @param string $needles key in flash session to be search
      */
     public function clearFlash( $needles = null )
     {
         $needles = ( $needles === null ) ? null : func_get_args();
-        $haystacks = array_keys( $_SESSION[ 'flash' ] );
+        $haystacks = array_keys( $_SESSION['flash'] );
 
-        if ( !is_null( $needles ) )
-        {
-            foreach ( $haystacks as $haystack )
-            {
-                foreach ( $_SESSION[ $haystack ] as $ses_key => $ses_val )
-                {
-                    foreach ( $needles as $needle )
-                    {
-                        if ( $needle == $ses_key )
-                        {
-                            unset( $_SESSION[ $haystack ][ $ses_key ] );
+        if ( !is_null( $needles ) ) {
+            foreach ( $haystacks as $haystack ) {
+                foreach ( $_SESSION[$haystack] as $ses_key => $ses_val ) {
+                    foreach ( $needles as $needle ) {
+                        if ( $needle == $ses_key ) {
+                            unset( $_SESSION[$haystack][$ses_key] );
                         }
                     }
                 }
             }
         }
-        else
-        {
-            foreach ( $haystacks as $haystack )
-            {
-                unset( $_SESSION[ 'flash' ][ $haystack ], $_SESSION[ $haystack ] );
+        else {
+            foreach ( $haystacks as $haystack ) {
+                unset( $_SESSION['flash'][$haystack], $_SESSION[$haystack] );
             }
         }
     }
 
 
-
     /**
-     *
      * Delete Session Variable
-     * @access public
      * @param string $name
+     * @return void
      */
     public function delete( $name )
     {
-        unset( $this->_sess[ $name ] );
+        unset( $this->session[$name] );
     }
-
 
 
     /**
      *
      * Get Session Variable
-     * @access public
-     * @param mixed $name
+     * @param string $name
      * @return mixed
      */
     public function get( $name )
     {
-        if ( isset( $this->_sess[ $name ] ) )
-        {
-            return $this->_sess[ $name ];
+        if ( isset( $this->session[$name] ) ) {
+            return $this->session[$name];
         }
     }
 
 
-
     /**
-     *
      * Check For Existence Of Session Variable
-     * @access public
-     * @param mixed $name
+     * @param string $name
      * @return bool
      */
     public function check( $name )
     {
-        return isset( $this->_sess[ $name ] ) ? true : false;
+        return isset( $this->session[$name] ) ? true : false;
     }
 
 
-
     /**
-     *
      * Get All Session List
-     * @access public
      * @return array
      */
     public function getSessionList()
     {
-        return array_keys( $this->_sess );
+        return array_keys( $this->session );
     }
 
 
-
     /**
-     *
-     * Get Total Count Of Session Variable
-     * @access public
-     * @return int
-     */
-    public function getSessionCount()
-    {
-        $i = 0;
-        if ( is_dir( $this->_path ) )
-        {
-            if ( $dir = opendir( $this->_path ) )
-            {
-                while ( false !== ( $file = readdir( $dir ) ) )
-                {
-                    // cek apakah prefix dari nama = sess_ dan yang pasti size nya > 0
-                    if ( eregi( "sess_", $file ) )
-                    {
-                        $i++;
-                    }
-                }
-            }
-        }
-        return $i;
-    }
-
-
-
-    /**
-     *
      * Start the session
      * @access private
      */
     private function startSession()
     {
         session_start();
-        $this->_sess = &$_SESSION;
+        $this->session = & $_SESSION;
     }
 
 
-
     /**
-     *
      * Set how long cached page in client cache should be store
-     * Dosent affect session lifetime
+     * Does not affect session lifetime
      * Use in conjunction with session_cache_limiter != 'nocache'
-     * @access private
      * @param mixed $delay
+     * @return void
      */
     private function setSessionExpired( $delay )
     {
@@ -281,13 +213,11 @@ class Session
     }
 
 
-
     /**
-     *
-     * Set session cache limiter wether to permit client to cache page content or not
+     * Set session cache limiter whether to permit client to cache page content or not
      * @possible value public, private, private_no_expire, nocache
-     * @access private
      * @param mixed $limit
+     * @return void
      */
     private function setSessionLimiter( $limit )
     {
@@ -295,46 +225,37 @@ class Session
     }
 
 
-
     /**
-     *
      * Init session flash data
-     * @access private
+     * @return void
      */
     private function initFlashData()
     {
-        if ( !isset( $_SESSION[ 'flash' ] ) )
-        {
-            $_SESSION[ 'flash' ] = array( );
+        if ( !isset( $_SESSION['flash'] ) ) {
+            $_SESSION['flash'] = array();
         }
         $this->expireFlash();
     }
 
 
-
     /**
      * Expire flash session data
-     * @access private
+     * @return void
      */
     private function expireFlash()
     {
         static $run;
-        if ( $run === TRUE )
-            return;
+        if ( $run === TRUE ) return;
 
-        if ( !empty( $_SESSION[ 'flash' ] ) )
-        {
-            foreach ( $_SESSION[ 'flash' ] as $key => $state )
-            {
-                if ( $state === 'old' )
-                {
+        if ( !empty( $_SESSION['flash'] ) ) {
+            foreach ( $_SESSION['flash'] as $key => $state ) {
+                if ( $state === 'old' ) {
                     #Flash has expired
-                    unset( $_SESSION[ 'flash' ][ $key ], $_SESSION[ $key ] );
+                    unset( $_SESSION['flash'][$key], $_SESSION[$key] );
                 }
-                else
-                {
+                else {
                     #Mark it old,so it expire in next request
-                    $_SESSION[ 'flash' ][ $key ] = 'old';
+                    $_SESSION['flash'][$key] = 'old';
                 }
             }
         }
@@ -342,12 +263,10 @@ class Session
     }
 
 
-
     /**
-     *
      * Redirect User
-     * @access public
-     * @param mixed $path
+     * @param string $path
+     * @return void
      */
     public function redirect( $path )
     {
@@ -356,10 +275,7 @@ class Session
     }
 
 
-
 }
-
-
 
 
 ?>

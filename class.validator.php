@@ -4,68 +4,56 @@ abstract class ValidatorStrategy
 {
 
     /**
-     *
      * Store validation name
-     * @access protected
      * @var string
      */
     protected $name = null;
 
 
-
     /**
-     *
      * Store form attributes
-     * @access protected
      * @var string
      */
-    protected $data = array( );
-
+    protected $data = array();
 
 
     /**
-     *
      * Store error msg
-     * @access protected
      * @var string
      */
     protected $messages = null;
 
 
-
     /**
-     *
      * Abstract function, implemented in child class
      */
     public abstract function isValid();
 
+
     /**
-     *
      * Get error message
-     * @access public
+     * @return array|null
      */
     public function getMessage()
     {
-        return (!is_null( $this->messages ) ) ? $this->messages : null;
+        return ( !is_null( $this->messages ) ) ? $this->messages : null;
     }
 
 
-
     /**
-     *
      * Set error message
-     * @access public
+     * @param string $field
+     * @param string $message
+     * @return void
      */
     public function setMessage( $field, $message )
     {
-        $this->messages = ( $message == null ) ? ( $this->data[ 'field' ] ) ? $this->errorText( 3, $this->data[ 'field' ] ) : $this->errorText( 3, $field )  : $message;
+        $this->messages = ( $message == null ) ? ( $this->data['field'] ) ? $this->errorText( 3, $this->data['field'] ) : $this->errorText( 3, $field ) : $message;
     }
 
 
-
     /**
-     *
-     * Method use to return appropriate error message
+     * Return error message
      * @param int $num
      * @param string $field
      * @param string $fieldname2
@@ -73,114 +61,95 @@ abstract class ValidatorStrategy
      */
     protected function errorText( $num, $field = null, $fieldname2 = null )
     {
-        $msg[ 0 ] = 'Please correct following errors:';
-        $msg[ 1 ] = 'Field ' . $field . ' is empty.';
-        $msg[ 2 ] = 'Field ' . $field . ' does not match field  ' . $fieldname2 . '.';
-        $msg[ 3 ] = 'Field ' . $field . ' contains error.';
-        $msg[ 4 ] = 'Date in field ' . $field . ' is invalid.';
-        $msg[ 5 ] = 'Email in field ' . $field . ' is invalid.';
-        $msg[ 6 ] = 'Field ' . $field . ' contain invalid character.';
-        $msg[ 7 ] = 'Field ' . $field . ' is too long.';
-        $msg[ 8 ] = 'Url in field ' . $field . ' is invalid.';
-        $msg[ 9 ] = 'Html code detected in field ' . $field . '.';
-        $msg[ 10 ] = 'Field ' . $field . ' does not match required length.';
-        $msg[ 11 ] = 'Checkbox ' . $field . ' is not marked.';
-        $msg[ 12 ] = 'Selection ' . $field . ' is not selected.';
-        $msg[ 13 ] = 'Radio ' . $field . ' is not marked.';
-        $msg[ 14 ] = 'Field ' . $field . ' cannot contain numbers.';
-        $msg[ 15 ] = 'Field ' . $field . ' does not match required length or contain numbers.';
-        $msg[ 16 ] = 'Field  ' . $field . ' can only contain numbers.';
-        $msg[ 17 ] = 'Field  ' . $field . ' does not match required length or contain texts.';
-        $msg[ 18 ] = 'Field ' . $field . ' does not match required length or does not contain valid decimal place or contain texts.';
-        $msg[ 19 ] = 'Field ' . $field . ' cannot contain spaces';
-        $msg[ 20 ] = 'Field ' . $field . ' can only contain texts and spaces';
-        $msg[ 21 ] = 'Field ' . $field . ' can only have texts';
-        $msg[ 22 ] = 'File ' . $field . ' is empty';
+        $msg[0] = 'Please correct following errors:';
+        $msg[1] = 'Field ' . $field . ' is empty.';
+        $msg[2] = 'Field ' . $field . ' does not match field  ' . $fieldname2 . '.';
+        $msg[3] = 'Field ' . $field . ' contains error.';
+        $msg[4] = 'Date in field ' . $field . ' is invalid.';
+        $msg[5] = 'Email in field ' . $field . ' is invalid.';
+        $msg[6] = 'Field ' . $field . ' contain invalid character.';
+        $msg[7] = 'Field ' . $field . ' is too long.';
+        $msg[8] = 'Url in field ' . $field . ' is invalid.';
+        $msg[9] = 'Html code detected in field ' . $field . '.';
+        $msg[10] = 'Field ' . $field . ' does not match required length.';
+        $msg[11] = 'Checkbox ' . $field . ' is not marked.';
+        $msg[12] = 'Selection ' . $field . ' is not selected.';
+        $msg[13] = 'Radio ' . $field . ' is not marked.';
+        $msg[14] = 'Field ' . $field . ' cannot contain numbers.';
+        $msg[15] = 'Field ' . $field . ' does not match required length or contain numbers.';
+        $msg[16] = 'Field  ' . $field . ' can only contain numbers.';
+        $msg[17] = 'Field  ' . $field . ' does not match required length or contain texts.';
+        $msg[18] = 'Field ' . $field . ' does not match required length or does not contain valid decimal place or contain texts.';
+        $msg[19] = 'Field ' . $field . ' cannot contain spaces';
+        $msg[20] = 'Field ' . $field . ' can only contain texts and spaces';
+        $msg[21] = 'Field ' . $field . ' can only have texts';
+        $msg[22] = 'File ' . $field . ' is empty';
 
-        return $msg[ $num ];
+        return $msg[$num];
     }
 
 
-
 }
-
-
 
 
 class CheckBoxValidator extends ValidatorStrategy
 {
 
     /**
-     *
      * Validation for checkbox field
      * @access public
      * @param mixed $name
      * @param mixed $value
-     * @param str $attr['message'] custom error message
-     * @param str $attr['required'] mark as mandatory
-     * @param str $attr['field'] use to donate field name in error message instead of using POST key data
+     * @param mixed $attr['message'] custom error message
+     * @param mixed $attr['required'] mark as mandatory
+     * @param mixed $attr['field'] use to donate field name in error message instead of using POST key data
      * @example new CheckBoxValidator( 'subcribe' , $_POST['subscribe'], array( 'message' => '*' ) )
      */
     public function __construct( $name, $value, $attr = null )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'value' ] = $value;
-        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['value'] = $value;
+        $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
 
 
-
     /**
-     *
-     * Validation for checkbox
-     * @access protected
-     * @param mixed $name
-     * @param mixed $value
-     * @param mixed $this->data[ 'message' ]
-     * @return boolean
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( isset( $this->data[ 'value' ] ) )
-        {
+        if ( isset( $this->data['value'] ) ) {
             return true;
         }
-        else
-        {
-            if ( $this->data[ 'required' ] )
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 11, $this->data[ 'field' ] );
+        else {
+            if ( $this->data['required'] ) {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 11, $this->data['field'] );
                 return false;
             }
-            else
-            {
+            else {
                 return true;
             }
         }
     }
 
 
-
 }
-
-
 
 
 class CompareValidator extends ValidatorStrategy
 {
 
     /**
-     *
      * Validation to compare two field for equality
-     * @access public
-     * @param mixed $name name of the field
+     * @param string $name name of the field
      * @param mixed $value value of the field
      * @param mixed $comparisonValue value of the field to compare
      * @param mixed $comparisonField name of the field to compare
-     * @param bool  $attr['required']
+     * @param bool $attr['required']
      * @param mixed $attr['field'] custom field name in error message ( @default $name )
      * @param mixed $attr['field_comparison'] comparison field name
      * @param mixed $attr['empty_message'] error message if field is empty
@@ -189,237 +158,175 @@ class CompareValidator extends ValidatorStrategy
      */
     public function __construct( $name, $value, $comparisonValue, $comparisonField, $attr = null )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'to_compare' ] = $value;
-        $this->data[ 'compare_with' ] = $comparisonValue;
-        $this->data[ 'field_comparison' ] = ( array_key_exists( 'field_comparison', $attr ) ) ? $attr[ 'field_comparison' ] : $comparisonField;
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'empty_message' ] = ( array_key_exists( 'empty_message', $attr ) ) ? $attr[ 'empty_message' ] : null;
-        $this->data[ 'unmatch_message' ] = ( array_key_exists( 'unmatch_message', $attr ) ) ? $attr[ 'unmatch_message' ] : null;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['to_compare'] = $value;
+        $this->data['compare_with'] = $comparisonValue;
+        $this->data['field_comparison'] = ( array_key_exists( 'field_comparison', $attr ) ) ? $attr['field_comparison'] : $comparisonField;
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['empty_message'] = ( array_key_exists( 'empty_message', $attr ) ) ? $attr['empty_message'] : null;
+        $this->data['unmatch_message'] = ( array_key_exists( 'unmatch_message', $attr ) ) ? $attr['unmatch_message'] : null;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
-
 
 
     /**
-     *
-     * Validation for comparing two field
-     * @access protected
-     * @param mixed $name
-     * @param mixed $to_compare
-     * @param mixed $compare_with
-     * @param mixed $comparisonFieldName
-     * @param str $this->data[ 'required' ]
-     * @param mixed $this->data[ 'empty_message' ]
-     * @param mixed $this->data[ 'unmatch_message' ]
-     * @return boolean
-     * @example to set custom msg through setCustomMsg()::setCustomMsg(array('fieldname'=>array('empty'=>'*','notMatch'=>'**')))
-     * @info index 'empty' donate msg when field are empty and index 'notMatch' donate msg when comparing field are not macth
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( $this->data[ 'to_compare' ] == '' )
-        {
-            if ( $this->data[ 'required' ] == true )
-            {
-                $this->messages = ( $this->data[ 'empty_message' ] ) ? $this->data[ 'empty_message' ] : $this->errorText( 1, $this->data[ 'field' ] );
+        if ( $this->data['to_compare'] == '' ) {
+            if ( $this->data['required'] == true ) {
+                $this->messages = ( $this->data['empty_message'] ) ? $this->data['empty_message'] : $this->errorText( 1, $this->data['field'] );
                 return false;
             }
-            else
-            {
+            else {
                 return true;
             }
         }
-        else
-        {
-            if ( $this->data[ 'to_compare' ] != $this->data[ 'compare_with' ] )
-            {
-                $this->messages = ( $this->data[ 'unmatch_message' ] ) ? $this->data[ 'unmatch_message' ] : $this->errorText( 2, $this->data[ 'field' ], $this->data[ 'field_comparison' ] );
+        else {
+            if ( $this->data['to_compare'] != $this->data['compare_with'] ) {
+                $this->messages = ( $this->data['unmatch_message'] ) ? $this->data['unmatch_message'] : $this->errorText( 2, $this->data['field'], $this->data['field_comparison'] );
                 return false;
             }
-            else
-            {
+            else {
                 return true;
             }
         }
     }
 
 
-
 }
-
-
 
 
 class DateValidator extends ValidatorStrategy
 {
 
     /**
-     *
      * Validation for date field
-     * @access public
-     * @param mixed $name
+     * @param string $name
      * @param mixed $value
-     * @param str $attr['version'] version of date
+     * @param string $attr['version'] version of date
      * @param bool $attr['required'] is required
-     * @param mixed $attr['message'] custom error message
-     * @param mixed $attr['field'] custom filed name ( @default $name )
+     * @param string $attr['message'] custom error message
+     * @param string $attr['field'] custom filed name ( @default $name )
      * @example new DateValidator( 'dob', $_POST['dob'], array( 'message' => '*' ) )
      */
     public function __construct( $name, $value, $attr = null )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'value' ] = $value;
-        $this->data[ 'version' ] = ( array_key_exists( 'version', $attr ) ) ? $attr[ 'version' ] : 'us';
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['value'] = $value;
+        $this->data['version'] = ( array_key_exists( 'version', $attr ) ) ? $attr['version'] : 'us';
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
-
 
 
     /**
-     *
-     * Validation for date
-     * @access protected
-     * @param mixed $name
-     * @param mixed $this->data[ 'value' ]
-     * @param mixed $this->data[ 'version' ]
-     * @param str $this->data[ 'required' ]
-     * @param mixed $this->data[ 'message' ]
-     * @return boolean
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( $this->data[ 'value' ] == '' )
-        {
-            if ( $this->data[ 'required' ] == true )
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
+        if ( $this->data['value'] == '' ) {
+            if ( $this->data['required'] == true ) {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 1, $this->data['field'] );
                 return false;
             }
-            else
-            {
+            else {
                 return true;
             }
         }
-        else
-        {
-            if ( $this->data[ 'version' ] == 'eu' )
-            {
+        else {
+            if ( $this->data['version'] == 'eu' ) {
                 $pattern = "/^(0[1-9]|[1-2][0-9]|3[0-1])[-](0[1-9]|1[0-2])[-](19|20)[0-9]{2}$/";
             }
-            else
-            {
+            else {
                 $pattern = "/^(19|20)[0-9]{2}[-](0[1-9]|1[0-2])[-](0[1-9]|[1-2][0-9]|3[0-1])$/";
             }
-            if ( preg_match( $pattern, $this->data[ 'value' ] ) )
-            {
+            if ( preg_match( $pattern, $this->data['value'] ) ) {
                 return true;
             }
-            else
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 4, $this->data[ 'field' ] );
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 4, $this->data['field'] );
                 return false;
             }
         }
     }
 
 
-
 }
-
-
 
 
 class EmailValidator extends ValidatorStrategy
 {
 
     /**
-     *
      * Validation for email
-     * @access public
-     * @param mixed $name
+     * @param string $name
      * @param mixed $value
      * @param bool $attr['required']
-     * @param mixed $attr['message']
-     * @param mixed $attr['field'] field name in error message ( @default $name )
+     * @param string $attr['message'] custom message
+     * @param mixed $attr['field'] custom field name in error message ( @default $name )
      * @example new EmailValidator( 'email', $_POST['email'], array( 'message' => '*' ) )
      */
     public function __construct( $name, $value, $attr = null )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'value' ] = $value;
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['value'] = $value;
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
-
 
 
     /**
-     *
-     * Validation for email
-     * @access protected
-     * @param mixed $name
-     * @param mixed $this->data[ 'value' ]
-     * @param str $this->data[ 'required' ]
-     * @param mixed $this->data[ 'message' ]
-     * @return boolean
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( $this->data[ 'value' ] == '' )
-        {
-            if ( $this->data[ 'required' ] == true )
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
+        if ( $this->data['value'] == '' ) {
+            if ( $this->data['required'] == true ) {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 1, $this->data['field'] );
                 return false;
             }
-            else
-            {
+            else {
                 return true;
             }
         }
-        else
-        {
-            if ( preg_match( "/^[^\W\d](?:\w+)(?:\.\w+|\-\w+)*@(?:\w+)(\.[a-z]{2,6})+$/i", $this->data[ 'value' ] ) )
-            {
+        else {
+            if ( preg_match( "/^[^\W\d](?:\w+)(?:\.\w+|\-\w+)*@(?:\w+)(\.[a-z]{2,6})+$/i", $this->data['value'] ) ) {
                 return true;
             }
-            else
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 5, $this->data[ 'field' ] );
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 5, $this->data['field'] );
                 return false;
             }
         }
     }
 
 
-
 }
-
-
 
 
 class NumberValidator extends ValidatorStrategy
 {
 
     /**
-     *
      * Validation for number field
-     * @access public
      * @param mixed $name
      * @param mixed $value
-     * @param bool $attr['required']
-     * @param int $attr['decimal']
-     * @param int $attr['min_length']
-     * @param int $attr['max_length']
-     * @param mixed $attr['message']
-     * @param mixed $attr['field'] field name in error message ( @default $name )
+     * @param bool $attr['required'] mark mandatory
+     * @param int $attr['decimal'] decimal place
+     * @param int $attr['min_length'] minimum length
+     * @param int $attr['max_length'] maximum length
+     * @param mixed $attr['message'] custom message
+     * @param mixed $attr['field'] custom field name in error message ( @default $name )
      * @example new NumberValidator( 'age', $_POST['age'], array( 'min_length' => 2, 'max_length' => 0 ) ) check for number that length equal to 2
      * @example new NumberValidator( 'age', $_POST['age'], array( 'min_length' => 7, 'max_length' => 9 ) ) check for number that length in the range of 7-9
      * @example new NumberValidator( 'age', $_POST['age'], array( 'min_length' => 3, 'max_length' => 0 , 'decimal' => 2 ) ) check for number that length equal to 3 and have 2 decimal place (190.30)
@@ -427,309 +334,250 @@ class NumberValidator extends ValidatorStrategy
      */
     public function __construct( $name, $value, $attr = null )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'value' ] = $value;
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'decimal' ] = ( array_key_exists( 'decimal', $attr ) ) ? $attr[ 'decimal' ] : 0;
-        $this->data[ 'min_length' ] = ( array_key_exists( 'min_length', $attr ) ) ? $attr[ 'min_length' ] : 0;
-        $this->data[ 'max_length' ] = ( array_key_exists( 'max_length', $attr ) ) ? $attr[ 'max_length' ] : 0;
-        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['value'] = $value;
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['decimal'] = ( array_key_exists( 'decimal', $attr ) ) ? $attr['decimal'] : 0;
+        $this->data['min_length'] = ( array_key_exists( 'min_length', $attr ) ) ? $attr['min_length'] : 0;
+        $this->data['max_length'] = ( array_key_exists( 'max_length', $attr ) ) ? $attr['max_length'] : 0;
+        $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
 
 
-
     /**
-     *
-     * Validation for number
-     * @access protected
-     * @param mixed $name
-     * @param mixed $this->data[ 'value' ]
-     * @param str $this->data[ 'required' ]
-     * @param int $this->data[ 'decimal' ]
-     * @param int $this->data[ 'min_length' ]
-     * @param int $this->data[ 'max_length' ]
-     * @param mixed $this->data[ 'message' ]
-     * @return boolean
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( empty( $this->data[ 'value' ] ) )
-        {
+        if ( empty( $this->data['value'] ) ) {
             $this->checkRequired();
         }
-        else
-        {
-            if ( $this->data[ 'min_length' ] > 0 && $this->data[ 'max_length' ] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */
-            {
+        else {
+            if ( $this->data['min_length'] > 0 && $this->data['max_length'] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */ {
                 return $this->checkExactLength();
             }
-            elseif ( $this->data[ 'min_length' ] >= 0 && $this->data[ 'max_length' ] > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */
-            {
+            elseif ( $this->data['min_length'] >= 0 && $this->data['max_length'] > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */ {
                 return $this->checkVariableLength();
             }
-            else
-            {
+            else {
                 return $this->checkInfiniteLength();
             }
         }
     }
 
 
-
+    /**
+     * Check for field existence
+     * @return bool
+     */
     protected function checkRequired()
     {
-        if ( $this->data[ 'required' ] == true )
-        {
-            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
+        if ( $this->data['required'] == true ) {
+            $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 1, $this->data['field'] );
             return false;
         }
-        else
-        {
+        else {
             return true;
         }
     }
 
 
-
+    /**
+     * Check field for exact length
+     * @return bool
+     */
     protected function checkExactLength()
     {
-        if ( $this->data[ 'decimal' ] > 0 )
-        {
-            if ( preg_match( '/^[0-9]{' . $this->data[ 'min_length' ] . '}\.[0-9]{' . $this->data[ 'decimal' ] . '}$/i', $this->data[ 'value' ] ) )
-            {
+        if ( $this->data['decimal'] > 0 ) {
+            if ( preg_match( '/^[0-9]{' . $this->data['min_length'] . '}\.[0-9]{' . $this->data['decimal'] . '}$/i', $this->data['value'] ) ) {
                 return true;
             }
-            else
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 18, $this->data[ 'field' ] );
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 18, $this->data['field'] );
                 return false;
             }
         }
-        else
-        {
-            if ( preg_match( '/^[0-9]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
-            {
+        else {
+            if ( preg_match( '/^[0-9]{' . $this->data['min_length'] . '}$/i', $this->data['value'] ) ) {
                 return true;
             }
-            else
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 17, $this->data[ 'field' ] );
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 17, $this->data['field'] );
                 return false;
             }
         }
     }
 
 
-
+    /**
+     * Check field for range of length
+     * @return bool
+     */
     protected function checkVariableLength()
     {
-        if ( $this->data[ 'decimal' ] > 0 )
-        {
-            if ( preg_match( '/^[0-9]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}\.[0-9]{' . $this->data[ 'decimal' ] . '}$/i', $this->data[ 'value' ] ) )
-            {
+        if ( $this->data['decimal'] > 0 ) {
+            if ( preg_match( '/^[0-9]{' . $this->data['min_length'] . ',' . $this->data['max_length'] . '}\.[0-9]{' . $this->data['decimal'] . '}$/i', $this->data['value'] ) ) {
                 return true;
             }
-            else
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 18, $this->data[ 'field' ] );
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 18, $this->data['field'] );
                 return false;
             }
         }
-        else
-        {
-            if ( preg_match( '/^[0-9]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
-            {
+        else {
+            if ( preg_match( '/^[0-9]{' . $this->data['min_length'] . ',' . $this->data['max_length'] . '}$/i', $this->data['value'] ) ) {
                 return true;
             }
-            else
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 10, $this->data['field'] );
                 return false;
             }
         }
     }
 
 
-
+    /**
+     * Check field for infinite length
+     * @return bool
+     */
     protected function checkInfiniteLength()
     {
-        if ( $this->data[ 'decimal' ] > 0 )
-        {
-            if ( preg_match( '/^[0-9]+\.[0-9]{' . $this->data[ 'decimal' ] . '}$/i', $this->data[ 'value' ] ) )
-            {
+        if ( $this->data['decimal'] > 0 ) {
+            if ( preg_match( '/^[0-9]+\.[0-9]{' . $this->data['decimal'] . '}$/i', $this->data['value'] ) ) {
                 return true;
             }
-            else
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 18, $this->data[ 'field' ] );
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 18, $this->data['field'] );
                 return false;
             }
         }
-        else
-        {
-            if ( preg_match( '/^[0-9]+$/i', $this->data[ 'value' ] ) )
-            {
+        else {
+            if ( preg_match( '/^[0-9]+$/i', $this->data['value'] ) ) {
                 return true;
             }
-            else
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 16, $this->data[ 'field' ] );
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 16, $this->data['field'] );
                 return false;
             }
         }
     }
-
 
 
 }
-
-
 
 
 class RadioValidator extends ValidatorStrategy
 {
 
     /**
-     *
      * Validation for radio field
-     * @access public
-     * @param mixed $name
+     * @param string $name
      * @param mixed $value
-     * @param mixed $attr['message']
-     * @param mixed $attr['required']
-     * @param mixed $attr['field'] donate field name in error message ( @default $name )
+     * @param string $attr['message']
+     * @param bool $attr['required']
+     * @param string $attr['field'] donate field name in error message ( @default $name )
      * @example new RadioValidator( 'gender', $_POST['gender'], array( 'message' => '*' ) )
      */
     public function __construct( $name, $value, $attr = null )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'value' ] = $value;
-        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['value'] = $value;
+        $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
 
 
-
     /**
-     *
-     * Validation for radio
-     * @access protected
-     * @param mixed $name
-     * @param mixed $this->data[ 'value' ]
-     * @param mixed $this->data[ 'message' ]
-     * @return boolean
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( isset( $this->data[ 'value' ] ) )
-        {
+        if ( isset( $this->data['value'] ) ) {
             return true;
         }
-        else
-        {
-            if ( $this->data[ 'required' ] )
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 13, $this->data[ 'field' ] );
+        else {
+            if ( $this->data['required'] ) {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 13, $this->data['field'] );
                 return false;
             }
-            else
-            {
+            else {
                 return true;
             }
         }
     }
 
 
-
 }
-
-
 
 
 class RegexValidator extends ValidatorStrategy
 {
 
+
     /**
-     *
-     * Validation to perform custom validation using regex
-     * @access public
-     * @param mixed $name
-     * @param mixed $regex
+     * @param string $name
+     * @param mixed $value
+     * @param string $regex
      * @param bool $attr['required']
      * @param mixed $attr['message']
-     * @param mixed $attr['field'] -use to donate field name in error message instead of using POST key data
+     * @param mixed $attr['field'] customfield name in error message instead of using POST key data
      * @example new RegexValidator( 'gender', $_POST['gender'], '/[a-z]+$/', array( 'message' => '*' ) )
      */
     public function __construct( $name, $value, $regex, $attr = null )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'value' ] = $value;
-        $this->data[ 'regex' ] = $regex;
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['value'] = $value;
+        $this->data['regex'] = $regex;
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
 
 
-
     /**
-     *
-     * Validation using custom regex
-     * @access protected
-     * @param mixed $name
-     * @param mixed $this->data[ 'value' ]
-     * @param mixed $this->data[ 'regex' ]
-     * @param mixed $this->data[ 'required' ]
-     * @param mixed $this->data[ 'message' ]
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( $this->data[ 'value' ] == '' and $this->data[ 'required' ] == true )
-        {
-            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
+        if ( $this->data['value'] == '' and $this->data['required'] == true ) {
+            $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 1, $this->data['field'] );
             return false;
         }
 
-        if ( $this->data[ 'value' ] == '' and $this->data[ 'required' ] != true )
-        {
+        if ( $this->data['value'] == '' and $this->data['required'] != true ) {
             return true; //simply return true cause we dont care if this field is empty or not
         }
 
-        if ( $this->data[ 'value' ] != '' )
-        {
-            if ( preg_match( $this->data[ 'regex' ], $this->data[ 'value' ] ) )
-            {
+        if ( $this->data['value'] != '' ) {
+            if ( preg_match( $this->data['regex'], $this->data['value'] ) ) {
                 return true;
             }
-            else
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 6, $this->data[ 'field' ] );
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 6, $this->data['field'] );
                 return false;
             }
         }
     }
 
 
-
 }
-
-
 
 
 class FileValidator extends ValidatorStrategy
 {
 
     /**
-     *
      * Validation for select field
-     * @access public
      * @param string $name
-     * @param mixed $array['html_field_name']['$_FILES_index']
+     * @param mixed $value $_POST['html_field_name']['$_FILES_index']
      * @param string $attr['field']
      * @param string $attr['message']
      * @param string $attr['required']
@@ -737,257 +585,201 @@ class FileValidator extends ValidatorStrategy
      */
     public function __construct( $name, $value, $attr = null )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'value' ] = $value;
-        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['value'] = $value;
+        $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
 
 
-
     /**
-     *
-     * Validation for file
-     * @access protected
-     * @param mixed $name
-     * @param mixed $this->data[ 'value' ]
-     * @param mixed $this->data[ 'message' ]
-     * @return boolean
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( !empty( $this->data[ 'value' ] ) )
-        {
+        if ( !empty( $this->data['value'] ) ) {
             return true;
         }
-        else
-        {
-            if ( $this->data[ 'required' ] )
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 22, $this->data[ 'field' ] );
+        else {
+            if ( $this->data['required'] ) {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 22, $this->data['field'] );
                 return false;
             }
-            else
-            {
+            else {
                 return true;
             }
         }
     }
 
 
-
 }
-
-
 
 
 class SelectValidator extends ValidatorStrategy
 {
-
     /**
-     *
      * Validation for select field
-     * @access public
-     * @param mixed $name
+     * @param string $name
      * @param mixed $value
-     * @param mixed $attr['message']
-     * @param mixed $attr['required']
-     * @param str $attr['field'] donate field name in error message ( @default $name )
+     * @param $attr['message']
+     * @param $attr['required']
+     * @param $attr['field'] donate field name in error message ( @default $name )
      * @example new SelectValidator( 'country' , $_POST['country'], array( 'message' => '*' ) )
      */
     public function __construct( $name, $value, $attr = null )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'value' ] = $value;
-        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['value'] = $value;
+        $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
 
 
-
     /**
-     *
-     * Validation for select
-     * @access protected
-     * @param mixed $name
-     * @param mixed $this->data[ 'value' ]
-     * @param mixed $this->data[ 'message' ]
-     * @return boolean
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( !empty( $this->data[ 'value' ] ) )
-        {
+        if ( !empty( $this->data['value'] ) ) {
             return true;
         }
-        else
-        {
-            if ( $this->data[ 'required' ] )
-            {
-                $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 12, $this->data[ 'field' ] );
+        else {
+            if ( $this->data['required'] ) {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 12, $this->data['field'] );
                 return false;
             }
-            else
-            {
+            else {
                 return true;
             }
         }
     }
 
 
-
 }
-
-
 
 
 class TextValidator extends ValidatorStrategy
 {
 
     /**
-     *
      * Validation for text field
-     * @access public
-     * @param mixed $name
+     * @param string $name
      * @param mixed $value
-     * @param str $attr['required']
-     * @param str $attr['allow_num']
-     * @param str $attr['allow_space']
-     * @param int $attr['min_length']
-     * @param int $attr['max_length']
-     * @param str $attr['message']
-     * @param str $attr['field'] donate field name in error message ( @default $name )
+     * @param string $attr['required']
+     * @param string $attr['allow_num']
+     * @param string $attr['allow_space']
+     * @param string $attr['min_length']
+     * @param string $attr['max_length']
+     * @param string $attr['message']
+     * @param mixed $attr['field']
      * @example new TextValidator( 'name', $_POST['name'], array( 'min_length' => 10, 'max_length' => 0 ) ) check for text that length equal to 10
      * @example new TextValidator( 'name', $_POST['name'], array( 'min_length' => 3, 'max_length' => 10 ) ) check for text that length in the range of 3-10
      * @example new TextValidator( 'name', $_POST['name'], array( 'min_length' => 3, 'max_length' => 10, 'allow_num' => true ) ) check for text that length equal to 10 and can contain number in it
      */
     public function __construct( $name, $value, $attr = array() )
     {
-        $attr = (!is_null( $attr ) ) ? ( array ) $attr : array( );
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data[ 'value' ] = $value;
-        $this->data[ 'required' ] = ( array_key_exists( 'required', $attr ) ) ? ( boolean ) $attr[ 'required' ] : true;
-        $this->data[ 'allow_num' ] = ( array_key_exists( 'allow_num', $attr ) ) ? ( boolean ) $attr[ 'allow_num' ] : false;
-        $this->data[ 'allow_space' ] = ( array_key_exists( 'allow_space', $attr ) ) ? ( boolean ) $attr[ 'allow_space' ] : false;
-        $this->data[ 'min_length' ] = ( array_key_exists( 'min_length', $attr ) ) ? $attr[ 'min_length' ] : 0;
-        $this->data[ 'max_length' ] = ( array_key_exists( 'max_length', $attr ) ) ? $attr[ 'max_length' ] : 0;
-        $this->data[ 'message' ] = ( array_key_exists( 'message', $attr ) ) ? $attr[ 'message' ] : null;
-        $this->data[ 'field' ] = ( array_key_exists( 'field', $attr ) ) ? $attr[ 'field' ] : $name;
+        $this->data['value'] = $value;
+        $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
+        $this->data['allow_num'] = ( array_key_exists( 'allow_num', $attr ) ) ? ( boolean )$attr['allow_num'] : false;
+        $this->data['allow_space'] = ( array_key_exists( 'allow_space', $attr ) ) ? ( boolean )$attr['allow_space'] : false;
+        $this->data['min_length'] = ( array_key_exists( 'min_length', $attr ) ) ? $attr['min_length'] : 0;
+        $this->data['max_length'] = ( array_key_exists( 'max_length', $attr ) ) ? $attr['max_length'] : 0;
+        $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
+        $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
     }
 
 
-
     /**
-     *
-     * Validation for text field
-     * @access protected
-     * @param mixed $name
-     * @param mixed $this->data[ 'value' ]
-     * @param str $this->data[ 'required' ]
-     * @param str $this->data[ 'allow_num' ]
-     * @param int $this->data[ 'min_length' ]
-     * @param int $this->data[ 'max_length' ]
-     * @param mixed $this->data[ 'message' ]
-     * @return boolean
+     * Perform validation
+     * @return bool
      */
     public function isValid()
     {
-        if ( empty( $this->data[ 'value' ] ) )
-        {
+        if ( empty( $this->data['value'] ) ) {
             $this->checkrequired();
         }
-        else
-        {
-            if ( $this->data[ 'min_length' ] > 0 && $this->data[ 'max_length' ] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */
-            {
+        else {
+            if ( $this->data['min_length'] > 0 && $this->data['max_length'] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */ {
                 return $this->checkExactLength();
             }
-            elseif ( $this->data[ 'min_length' ] >= 0 && $this->data[ 'max_length' ] > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */
-            {
+            elseif ( $this->data['min_length'] >= 0 && $this->data['max_length'] > 0 ) /* if minLength == 0 or minLength > 0 ,check for range of length */ {
                 return $this->checkVariableLength();
             }
-            else /* we dont bother string length..just check wether we permit for num and space character */
-            {
+            else /* we dont bother string length..just check wether we permit for num and space character */ {
                 return $this->checkInfiniteLength();
             }
         }
     }
 
 
-
+    /**
+     * Check field for existence
+     * @return bool
+     */
     protected function checkrequired()
     {
-        if ( $this->data[ 'required' ] )
-        {
-            $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 1, $this->data[ 'field' ] );
+        if ( $this->data['required'] ) {
+            $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 1, $this->data['field'] );
             return false;
         }
-        else
-        {
+        else {
             return true;
             /* we dont bother with validation */
         }
     }
 
 
-
+    /**
+     * Check field for exact length
+     * @return bool
+     */
     protected function checkExactLength()
     {
 
-        if ( $this->data[ 'allow_num' ] )
-        {
-            if ( $this->data[ 'allow_space' ] )
-            {
-                if ( preg_match( '/^[a-zA-Z0-9\s]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
-                {
+        if ( $this->data['allow_num'] ) {
+            if ( $this->data['allow_space'] ) {
+                if ( preg_match( '/^[a-zA-Z0-9\s]{' . $this->data['min_length'] . '}$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 10, $this->data['field'] );
                     return false;
                 }
             }
-            else
-            {
-                if ( preg_match( '/^[a-zA-Z0-9]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
-                {
+            else {
+                if ( preg_match( '/^[a-zA-Z0-9]{' . $this->data['min_length'] . '}$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 10, $this->data['field'] );
                     return false;
                 }
             }
         }
-        else
-        {
-            if ( $this->data[ 'allow_space' ] )
-            {
-                if ( preg_match( '/^[a-zA-Z\s]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
-                {
+        else {
+            if ( $this->data['allow_space'] ) {
+                if ( preg_match( '/^[a-zA-Z\s]{' . $this->data['min_length'] . '}$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 15, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 15, $this->data['field'] );
                     return false;
                 }
             }
-            else
-            {
-                if ( preg_match( '/^[a-zA-Z]{' . $this->data[ 'min_length' ] . '}$/i', $this->data[ 'value' ] ) )
-                {
+            else {
+                if ( preg_match( '/^[a-zA-Z]{' . $this->data['min_length'] . '}$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 15, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 15, $this->data['field'] );
                     return false;
                 }
             }
@@ -995,59 +787,48 @@ class TextValidator extends ValidatorStrategy
     }
 
 
-
+    /**
+     * Check field for range of length
+     * @return bool
+     */
     protected function checkVariableLength()
     {
-        if ( $this->data[ 'allow_num' ] )
-        {
-            if ( $this->data[ 'allow_space' ] )
-            {
-                if ( preg_match( '/^[a-zA-Z0-9\s]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
-                {
+        if ( $this->data['allow_num'] ) {
+            if ( $this->data['allow_space'] ) {
+                if ( preg_match( '/^[a-zA-Z0-9\s]{' . $this->data['min_length'] . ',' . $this->data['max_length'] . '}$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 10, $this->data['field'] );
                     return false;
                 }
             }
-            else
-            {
-                if ( preg_match( '/^[a-zA-Z0-9]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
-                {
+            else {
+                if ( preg_match( '/^[a-zA-Z0-9]{' . $this->data['min_length'] . ',' . $this->data['max_length'] . '}$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 10, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 10, $this->data['field'] );
                     return false;
                 }
             }
         }
-        else
-        {
-            if ( $this->data[ 'allow_space' ] )
-            {
-                if ( preg_match( '/^[a-zA-Z\s]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
-                {
+        else {
+            if ( $this->data['allow_space'] ) {
+                if ( preg_match( '/^[a-zA-Z\s]{' . $this->data['min_length'] . ',' . $this->data['max_length'] . '}$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 15, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 15, $this->data['field'] );
                     return false;
                 }
             }
-            else
-            {
-                if ( preg_match( '/^[a-zA-Z]{' . $this->data[ 'min_length' ] . ',' . $this->data[ 'max_length' ] . '}$/i', $this->data[ 'value' ] ) )
-                {
+            else {
+                if ( preg_match( '/^[a-zA-Z]{' . $this->data['min_length'] . ',' . $this->data['max_length'] . '}$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 15, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 15, $this->data['field'] );
                     return false;
                 }
             }
@@ -1055,71 +836,57 @@ class TextValidator extends ValidatorStrategy
     }
 
 
-
+    /**
+     * Check field for infinite length
+     * @return bool
+     */
     protected function checkInfiniteLength()
     {
-        if ( $this->data[ 'allow_num' ] )
-        {
-            if ( $this->data[ 'allow_space' ] )
-            {
-                if ( preg_match( '/^[a-zA-Z0-9\s]+$/i', $this->data[ 'value' ] ) )
-                {
+        if ( $this->data['allow_num'] ) {
+            if ( $this->data['allow_space'] ) {
+                if ( preg_match( '/^[a-zA-Z0-9\s]+$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 6, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 6, $this->data['field'] );
                     return false;
                 }
             }
-            else
-            {
-                if ( preg_match( '/^[a-zA-Z0-9]+$/i', $this->data[ 'value' ] ) )
-                {
+            else {
+                if ( preg_match( '/^[a-zA-Z0-9]+$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 19, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 19, $this->data['field'] );
                     return false;
                 }
             }
         }
-        else
-        {
-            if ( $this->data[ 'allow_space' ] )
-            {
+        else {
+            if ( $this->data['allow_space'] ) {
 
-                if ( preg_match( '/^[a-zA-Z\s]+$/i', $this->data[ 'value' ] ) )
-                {
+                if ( preg_match( '/^[a-zA-Z\s]+$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 20, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 20, $this->data['field'] );
                     return false;
                 }
             }
-            else
-            {
-                if ( preg_match( '/^[a-zA-Z]+$/i', $this->data[ 'value' ] ) )
-                {
+            else {
+                if ( preg_match( '/^[a-zA-Z]+$/i', $this->data['value'] ) ) {
                     return true;
                 }
-                else
-                {
-                    $this->messages = ( $this->data[ 'message' ] ) ? $this->data[ 'message' ] : $this->errorText( 21, $this->data[ 'field' ] );
+                else {
+                    $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 21, $this->data['field'] );
                     return false;
                 }
             }
         }
     }
-
 
 
 }
-
-
 
 
 /**
@@ -1136,18 +903,14 @@ class ErrorValidator extends ValidatorStrategy
     protected $error_msg = null;
 
 
-
     /**
-     *
      * @param string $message
-     * @return void
      */
     public function __construct( $message )
     {
         $this->error_msg = $message;
         $this->isValid();
     }
-
 
 
     /**
@@ -1161,40 +924,28 @@ class ErrorValidator extends ValidatorStrategy
     }
 
 
-
 }
-
-
 
 
 class Validator
 {
 
     /**
-     *
      * Check status of validation
-     * @access protected
      * @var bool
      */
     protected $isEror = false;
 
 
-
     /**
-     *
      * Hold and array of ValidatorStrategy
-     * @access protected
      * @var array
      */
     protected $validators = array();
 
 
-
     /**
-     *
      * Constructor Method
-     * @access public
-     * @param mixed $data
      */
     public function __construct()
     {
@@ -1202,77 +953,65 @@ class Validator
     }
 
 
-
     /**
-     *
      * Add validator strategy
      * @param string $name
      * @param ValidatorStrategy $strategy
+     * @return void
      */
     public function addValidator( $name, ValidatorStrategy $strategy )
     {
-        $this->validators[ $name ] = $strategy;
+        $this->validators[$name] = $strategy;
     }
 
 
-
     /**
-     *
      * Perform the validation
+     * @return bool
      */
     public function isValid()
     {
         $this->isEror = false;
 
-        if( count( $this->validators ) > 0)
-        {
-            foreach ( $this->validators as $name => $validator )
-            {
-                if ( !$validator->isValid() )
-                    $this->isEror = true;
+        if ( count( $this->validators ) > 0 ) {
+            foreach ( $this->validators as $name => $validator ) {
+                if ( !$validator->isValid() ) $this->isEror = true;
             }
         }
 
-        return ($this->isEror) ? false : true;
+        return ( $this->isEror ) ? false : true;
     }
 
 
-
     /**
-     *
      * Custom method to mark any form field as invalidate (failed validation)
-     * @access public
-     * @param mixed $name
-     * @param mixed $customMsg
+     * @param string $field
+     * @param string $customMsg
+     * @return void
      */
     public function invalidateField( $field, $customMsg = null )
     {
-        $this->validators[ $field ]->setMessage( $field, $customMsg );
+        $this->validators[$field]->setMessage( $field, $customMsg );
         $this->isEror = true;
     }
 
 
-
     /**
-     *
      * Custom method to mark overall validation process as invalid
      * Typical use is login system, all input passed validation, but somehow no valid user is found
      * So use this method to mark overall process as invalid
-     * @access public
-     * @param boolean $type
+     * @param boolean $message
+     * @return void
      */
     public function invalidateValidation( $message )
     {
-        $this->validators[ ] = new ErrorValidator( $message );
+        $this->validators[] = new ErrorValidator( $message );
         $this->isEror = true;
     }
 
 
-
     /**
-     *
      * Method to check wether validation is successfull or fail
-     * @access public
      * @return bool
      */
     public function isError()
@@ -1281,37 +1020,29 @@ class Validator
     }
 
 
-
     /**
-     *
      * Method to get the erorr for particular/individual validator startegy
-     * @access public
-     * @param mixed $name
+     * @param string $name
      * @example $obj->getError('username')
      * @return string
      */
     public function getError( $name )
     {
-        return $this->validators[ $name ]->getMessage();
+        return $this->validators[$name]->getMessage();
     }
 
 
-
     /**
-     *
      * Method to populate error field
-     * @access public
      * @return array of message
      */
     public function getAllError()
     {
-        $message = array( );
+        $message = array();
 
-        foreach ( $this->validators as $key => $validator )
-        {
-            if ( $validator->getMessage() != null )
-            {
-                $message[ $key ] = $validator->getMessage();
+        foreach ( $this->validators as $key => $validator ) {
+            if ( $validator->getMessage() != null ) {
+                $message[$key] = $validator->getMessage();
             }
         }
 
@@ -1319,9 +1050,7 @@ class Validator
     }
 
 
-
     /**
-     *
      * Method to create block of error message (usualy used at the top of the form)
      * @param string $break
      * @return string of message
@@ -1331,10 +1060,8 @@ class Validator
         $return = null;
         $messages = $this->getAllError();
 
-        if ( count( $messages ) > 0 )
-        {
-            foreach ( $messages as $value )
-            {
+        if ( count( $messages ) > 0 ) {
+            foreach ( $messages as $value ) {
                 $return .= $value . $break . PHP_EOL;
             }
         }
@@ -1342,10 +1069,7 @@ class Validator
     }
 
 
-
 }
-
-
 
 
 ?>

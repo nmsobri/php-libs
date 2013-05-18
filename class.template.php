@@ -11,293 +11,230 @@ class Template
     const DS = DIRECTORY_SEPARATOR;
 
 
-
-
     /**
      * The variable property contains the variables
      * that can be used inside of the templates.
-     * @access private
      * @var array
      */
-    private $variables = array( );
-
+    private $variables = array();
 
 
     /**
      * The directory where the templates are stored
-     * @access private
      * @var string
      */
     private $templateDir = null;
 
 
-
     /**
      * Turns caching on or off
-     * @access private
-     * @var bool
-     * CURRENTLY CHACHING ONLY IMPLEMENTED IN display() METHOD.
+     * CURRENTLY CACHING ONLY IMPLEMENTED IN display() METHOD.
      * CURRENTLY THERE IS NO UNIQUE ID FOR CACHE TEMPLATE,SO IF U USE SAME LAYOUT FOR ALL PAGE, PROBABLY ALL PAGE GONNA GET SAME CONTENT DUE TO CACHE OUTPUT
      * TODO..MAKE TEMPLATE CACHING UNIQUE
+     * @var bool
      */
     private $caching = false;
 
 
-
     /**
      * The directory where the cache files will be saved.
-     * @access private
      * @var string
      */
     private $cacheDir = 'cache';
 
 
-
     /**
      * Lifetime of a cache file in seconds.
-     * @access private
      * @var int
      */
     private $cacheLifetime = 600;
 
 
-
     /**
-     * Boolean wether to compress final output
-     * @access private
-     * @var mixed
+     * Boolean whether to compress final output
+     * @var bool
      */
     private $useGzip = false;
 
 
-
-
     /**
      * Constructor Function
-     * @access public
      * @param string $templateDir
      *
      */
     public function __construct( $templateDir )
     {
-
         $this->setTemplateDir( $templateDir );
     }
 
 
-
-
     /**
-     *
      * Adds a variable that can be used by the templates.
      * Adds a new array index to the variable property.
      * This new array index will be treated as a variable by the templates.
-     * @access public
-     * @param string $name The variable name to use in the template
-     * @param string $value The content you assign to $name
-     * @access public
+     * @param string $name variable name to use in the template
+     * @param string $value content to assign
      * @see getVars, $variables
-     *
+     * @return void
      */
     public function set( $name, $value )
     {
-        $this->variables[ $name ] = $value;
+        $this->variables[$name] = $value;
     }
 
 
-
-
     /**
-     *
      * Get the value of variable with given name
-     * @access public
      * @param mixed $name
-     * @return string || null
-     *
+     * @return string|null
      */
     public function get( $name )
     {
-        return isset( $this->variables[ $name ] ) ? $this->variables[ $name ] : null;
+        return isset( $this->variables[$name] ) ? $this->variables[$name] : null;
     }
 
 
-
-
     /**
-     *
-     * Returns names of all the added variables
-     * @access public
-     * @return array
+     * Return names of all the added variables
      * @see addVar, $variables
+     * @return array
      */
     public function getVars()
     {
         $variables = array_keys( $this->variables );
-        return (!empty( $variables )) ? $variables : false;
+        return ( !empty( $variables ) ) ? $variables : false;
     }
 
 
-
-
     /**
-     *
-     * Outputs the final template output
-     * Fetches the final template output, and echoes it to the browser.
-     * @access public
-     * @param string $template_file Filename (with path) to the template you want to output
+     * Outputs/echo the template output
+     * Fetches template output, and echoes it to the browser.
+     * @param string $template_file
+     * @param array $data
      * @see fetch
-     *
+     * @return string
      */
-    public function display( $template_file, $data = array( ) )
+    public function display( $template_file, $data = array() )
     {
         $this->populateVar( $data );
         $output = $this->fetch( $template_file, $data );
 
-        if ( $this->caching == true )
-        {
+        if ( $this->caching == true ) {
             $this->addCache( $output, $template_file );
         }
 
-        if ( $this->useGzip )
-        {
-            /* Check wether browser support compress output */
-            if ( substr_count( $_SERVER[ 'HTTP_ACCEPT_ENCODING' ], 'gzip' ) )
-            {
-                if ( extension_loaded( 'zlib' ) )
-                {
+        if ( $this->useGzip ) {
+            #Check whether browser support compress output
+            if ( substr_count( $_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip' ) ) {
+                if ( extension_loaded( 'zlib' ) ) {
                     ob_start( 'ob_gzhandler' );
                 }
-                else
-                {
+                else {
                     ob_start();
                 }
             }
-            else
-            {
+            else {
                 ob_start();
             }
             echo $output;
             ob_end_flush();
         }
-        else
-        {
+        else {
             echo $output;
         }
     }
 
 
-
-
     /**
-     * 
-     * Fetch the final template output and returns it to caller
-     * @access public
-     * @param string $template_file Filename (with path) to the template you want to fetch
-     * @return string || false
+     * Fetch template output and returns it value
+     * @param string $template_file Filename (with path) to the template to fetch
+     * @param array $data
      * @see display
-     *
+     * @return string|false
      */
-    public function fetch( $template_file, $data = array( ) )
+    public function fetch( $template_file, $data = array() )
     {
         $this->populateVar( $data );
         $template_file = $this->templateDir . $template_file;
 
-        if ( $this->caching == true && $this->isCached( $template_file ) )
-        {
+        if ( $this->caching == true && $this->isCached( $template_file ) ) {
             $output = $this->getCache( $template_file );
         }
-        else
-        {
+        else {
             $output = $this->getOutput( $template_file );
         }
         return isset( $output ) ? $output : false;
     }
 
 
-
-
     /**
-     *
      * Fetch the template output, and return it to caller
-     * @access private
-     * @param string $template_file Filename (with path) to the template to be processed
-     * @return string || false
+     * @param string $template_file filename (with path) to the template to be processed
+     * @throws Exception
      * @see fetch, display
+     * @return string || false
      */
     private function getOutput( $template_file )
     {
         extract( $this->variables );
-        if ( file_exists( $template_file ) )
-        {
+        if ( file_exists( $template_file ) ) {
             ob_start();
             include( $template_file );
             $output = ob_get_contents();
             ob_end_clean();
         }
-        else
-        {
+        else {
             throw new Exception( "The template file '$template_file' does not exist" );
         }
-        return (!empty( $output )) ? $output : false;
+        return ( !empty( $output ) ) ? $output : false;
     }
 
 
-
-
     /**
-     *
      * Sets the template directory
-     * @access public
-     * @param string $dir Path to the template dir you want to use
+     * @param string $dir path to the template dir
+     * @throws Exception
+     * @return void
      */
     public function setTemplateDir( $dir )
     {
         $template_dir = $this->fixPath( $dir );
 
-        if ( is_dir( $template_dir ) )
-        {
+        if ( is_dir( $template_dir ) ) {
             $this->templateDir = $template_dir;
         }
-        else
-        {
+        else {
             throw new Exception( "The template directory '$dir' does not exist" );
         }
     }
 
 
-
-
     /**
-     *
      * Sets the cache directory
-     * @access public
-     * @param string $dir Path to the cache dir you want to use
+     * @param string $dir path to the cache dir you want to use
+     * @throws Exception
      * @see setCacheLifetime
+     * @return void
      */
     public function setCacheDir( $dir )
     {
         $cache_dir = $this->fixPath( $dir );
 
 
-        if ( is_dir( $cache_dir ) && is_writable( $cache_dir ) )
-        {
+        if ( is_dir( $cache_dir ) && is_writable( $cache_dir ) ) {
             $this->cacheDir = $cache_dir;
         }
-        else
-        {
+        else {
             throw new Exception( "The cache directory '$dir' either does not exist, or is not writable" );
         }
     }
 
 
-
-
     /**
-     *
-     * Sets how long the cache files should survive
-     * @access public
-     * @param INT $seconds Number of seconds the cache should survive
+     * Sets how long the cache files should exists
+     * @param int $seconds number of seconds the cache should survive
      * @see setCacheDir, isCached, setCaching
+     * @return void
      */
     public function setCacheLifetime( $seconds = 0 )
     {
@@ -305,31 +242,24 @@ class Template
     }
 
 
-
-
     /**
-     *
      * Turn caching on or off
-     * @access public
      * @param bool $state Set TRUE turns caching on, FALSE turns caching off
      * @see setCacheLifetime, isCached, setCacheDir
+     * @return void
      */
     public function setCaching( $state )
     {
-        if ( is_bool( $state ) )
-        {
+        if ( is_bool( $state ) ) {
             $this->caching = $state;
         }
     }
 
 
-
-
     /**
-     *
      * Turn on or off output compression
-     * @access public
-     * @param mixed $state
+     * @param bool $state
+     * @return void
      */
     public function setGzip( $state = true )
     {
@@ -337,172 +267,135 @@ class Template
     }
 
 
-
-
     /**
-     *
-     * Check wether cache directory is exist and writable
-     * @access private
+     * Check whether cache directory is exist and writable
      * @return bool
      */
     private function checkCacheDir()
     {
-        if ( is_dir( $this->cacheDir ) && is_writable( $this->cacheDir ) )
-        {
+        if ( is_dir( $this->cacheDir ) && is_writable( $this->cacheDir ) ) {
             return true;
         }
-        else
-        {
+        else {
             return false;
         }
     }
 
 
-
-
     /**
-     *
      * Checks if the template in $template is cached
-     * @access public
-     * @param string $file Filename of the template
-     * @return bool || Exception
+     * @param string $file filename of the template
      * @see setCacheLifetime, setCacheDir, setCaching
-     *
+     * @throws Exception
+     * @return bool|Exception
      */
     public function isCached( $file )
     {
-        if ( $this->checkCacheDir() )
-        {
+        if ( $this->checkCacheDir() ) {
             $this->cacheDir = $this->fixPath( $this->cacheDir );
 
             $cacheId = md5( basename( $file ) );
-
             $filename = $this->cacheDir . $cacheId . basename( $file );
 
-            if ( is_file( $filename ) )
-            {
+            if ( is_file( $filename ) ) {
                 clearstatcache();
                 /* time of file creation    current time-time file must exist
                   Current time must minus cached timed because current time always move,
-                  so need to minus the cached time to check wether file creation time is greater than current time-cahched time, cause creation time si static */
-                if ( filemtime( $filename ) > ( time() - $this->cacheLifetime ) )
-                {
+                  so need to minus the cached time to check whether file creation time is greater than current time-cached time, cause creation time is static */
+                if ( filemtime( $filename ) > ( time() - $this->cacheLifetime ) ) {
                     $isCached = true;
                 }
-                else
-                {
+                else {
                     $this->delCacheFile( $filename );
                     $isCached = false;
                 }
             }
             return $isCached;
         }
-        else
-        {
-            throw new Exception( 'Error with cache directory wether not exist or not writable' );
+        else {
+            throw new Exception( 'Error with cache directory whether not exist or not writable' );
         }
     }
 
 
-
-
     /**
-     *
-     * Makes a cache file
-     * @access private
-     * @param string $content The template output that will be saved in cache
-     * @param string $_SERVER['PHP_SELF'] The filename of the template that is being cached
-     * @param string $id The cache identification number/string of the template you want to fetch
-     * @return mixed
+     * Crate cache file
+     * @param string $content template output that will be saved in cache
+     * @param string $file filename of the template to cache
      * @see getCache, clearCache
+     * @throws Exception
+     * @return void|Exception
      */
     private function addCache( $content, $file )
     {
-        if ( $this->checkCacheDir() )
-        {
+        if ( $this->checkCacheDir() ) {
             $this->cacheDir = $this->fixPath( $this->cacheDir );
             $cacheId = md5( basename( $file ) );
             $filename = $this->cacheDir . $cacheId . basename( $file );
 
-            if ( file_put_contents( $filename, $content ) == FALSE )
-            {
+            if ( file_put_contents( $filename, $content ) == FALSE ) {
                 throw new Exception( "Unable to write to cache" );
             }
         }
-        else
-        {
-            throw new Exception( 'Error with cache directory wether not exist or not writable' );
+        else {
+            throw new Exception( 'Error with cache directory whether not exist or not writable' );
         }
     }
 
 
-
-
     /**
-     *
      * Returns the content of a cached file
-     * @access private
-     * @param string $file The filename of the template you want to fetch
+     * @param string $file filename of the template file to fetch
      * @example index.php?id=10
      * @example index.php?id=15
-     * @return string || bool || Exception
      * @see addCache, clearCache
+     * @throws Exception
+     * @return string|bool|Exception
      */
     private function getCache( $file )
     {
-        if ( $this->checkCacheDir() )
-        {
+        if ( $this->checkCacheDir() ) {
             $this->cacheDir = $this->fixPath( $this->cacheDir );
             $cacheId = md5( basename( $file ) );
             $filename = $this->cacheDir . $cacheId . basename( $file );
             $content = file_get_contents( $filename );
             return isset( $content ) ? $content : false;
         }
-        else
-        {
+        else {
             throw new Exception( 'Error with cache directory wether not exist or not writable' );
         }
     }
 
 
-
-
     /**
-     *
      * Deletes the stored cache files
-     * @access private
+     * @param string $file
      * @see addCache, getCache
+     * @throws Exception
+     * @return void
      */
     private function delCacheFile( $file )
     {
-        if ( file_exists( $file ) )
-        {
-            if ( is_writable( $file ) )
-            {
+        if ( file_exists( $file ) ) {
+            if ( is_writable( $file ) ) {
                 unlink( $file );
             }
-            else
-            {
+            else {
                 throw new Exception( "Unable to unlink {$file}" );
             }
         }
     }
 
 
-
-
     /**
-     *
      * Check if passed in array is an associative array
-     * @access private
+     * @param array $array
      * @return bool
      */
     private function isAssocArray( $array )
     {
-        foreach ( array_keys( $array ) as $key => $val )
-        {
-            if ( is_numeric( $val ) )
-            {
+        foreach ( array_keys( $array ) as $key => $val ) {
+            if ( is_numeric( $val ) ) {
 
                 return false;
             }
@@ -511,39 +404,30 @@ class Template
     }
 
 
-
-
     /**
-     *
      * Populate passed in variable to template so it become local to template
-     * @access private
+     * @param array $data
+     * @return void
+     * @throws Exception
      */
     private function populateVar( $data )
     {
-        if ( ( count( $data ) > 0 ) )
-        {
-            if ( !$this->isAssocArray( $data ) )
-            {
+        if ( ( count( $data ) > 0 ) ) {
+            if ( !$this->isAssocArray( $data ) ) {
                 throw new Exception( 'Array passed to template must be an associative array' );
             }
-            else
-            {
-                foreach ( $data as $key => $val )
-                {
-                    $this->variables[ $key ] = $val;
+            else {
+                foreach ( $data as $key => $val ) {
+                    $this->variables[$key] = $val;
                 }
             }
         }
     }
 
 
-
-
     /**
-     *
      * Fix end trailing slash
-     * Add trailing slah if dont exist, and do nothing if already exist
-     * @access private
+     * Add trailing slash if do not exist, and do nothing if already exist
      * @param string $path
      * @return string
      */
@@ -551,15 +435,12 @@ class Template
     {
         $fixPath = $path;
 
-        if ( substr( $path, -1 ) !== self::DS )
-        {
+        if ( substr( $path, -1 ) !== self::DS ) {
             $fixPath = $fixPath . self::DS;
         }
 
         return $fixPath;
     }
-
-
 
 
 }

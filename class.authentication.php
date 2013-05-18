@@ -12,7 +12,6 @@ class Authentication
     /**
      * Store Db Object
      * @var Database
-     * @access private
      */
     private $db = null;
 
@@ -20,7 +19,6 @@ class Authentication
     /**
      * Store Session Object
      * @var Session
-     * @access private
      */
     private $session = null;
 
@@ -28,14 +26,12 @@ class Authentication
     /**
      * Store Cookie Object
      * @var Cookie
-     * @access private
      */
     private $cookie = null;
 
 
     /**
      * Store stdClass object using for login
-     * @access private
      * @var StdClass
      */
     private $login_param = null;
@@ -43,7 +39,7 @@ class Authentication
 
     /**
      * Store result from querying the database
-     * @access private
+     * @var mixed
      */
     private $login_data = null;
 
@@ -51,28 +47,26 @@ class Authentication
     /**
      * Default Session And Cookie Name For Grouping Purpose
      * @var string
-     * @access private
      */
     private $auth_name = 'auth';
 
 
     /**
      * Store auth data from database;
-     * @var null $auth_data
+     * @var mixed
      */
     private $auth_data = null;
 
 
     /**
      * Hash for encryption/decryption
-     * @var type
+     * @var string
      */
     private $encryption_key = '9D(v56xv0_7F15m8Y$ZuSQ5FG1#Mx^';
 
 
     /**
      * Hash for auth checking
-     * @access private
      * @var string
      */
     private $hash = '6cSNeQPq8qkcWzUBUe/LF1wPyC3iKJpO';
@@ -81,8 +75,8 @@ class Authentication
     /**
      * Construction Method
      * @access public
-     * @param Session $session instance of session class
-     * @param Cookie $cookie instance of cookie class
+     * @param Session $session
+     * @param Cookie $cookie
      * @return Authentication
      */
     public function __construct( Session $session, Cookie $cookie )
@@ -93,19 +87,18 @@ class Authentication
 
 
     /**
+     * @param Pdo $db
+     * @param stdClass $obj
+     * @param stdClass::query query to run
+     * @param stdClass::bind array|single value to bind to placeholder inside query
+     * @param stdClass::remember whether to use cookie to store auth result
+     * @return boolean
      *
-     * @access public
-     * @param Pdo $db Pdo object
-     * @param stdClass $obj       instance of stdClass
-     * @param stdClass::query     query to run
-     * @param stdClass::bind      array|single value to bind to placeholder inside query
-     * @param stdClass::remember  whether to use cookie to store auth result
-     * @return boolean|array result of query from database
-     *
-     * @example1
+     * @example
      * $obj->query = "SELECT * FROM users WHERE username=? AND password=?"
      * $obj->bind = array($username, $password)
-     * @example2
+     *
+     * @example
      * $obj->query = "SELECT * FROM users WHERE username=:age AND password=:password"
      * $obj->bind = array(':username'=>$username, ':password'=>$password)
      */
@@ -127,9 +120,8 @@ class Authentication
 
 
     /**
-     * Check whether is authenticated
-     * @access public
-     * @return boolean|array result of query to database
+     * Check whether user is authenticate
+     * @return boolean
      */
     public function isAuth()
     {
@@ -158,7 +150,7 @@ class Authentication
 
     /**
      * Get auth data from session
-     * @return array
+     * @return mixed
      */
     public function getAuthData()
     {
@@ -173,7 +165,6 @@ class Authentication
     /**
      * Return login data
      * Typically database data
-     * @access public
      * @return mixed
      */
     public function getLoginData()
@@ -184,8 +175,8 @@ class Authentication
 
     /**
      * Store hash for encryption/decryption
-     * @access public
      * @param string $hash
+     * @return void
      */
     public function setEncryptionKey( $hash )
     {
@@ -195,8 +186,8 @@ class Authentication
 
     /**
      * Store hash for auth checking
-     * @access public
      * @param string $hash
+     * @return void
      */
     public function setHashKey( $hash )
     {
@@ -215,7 +206,8 @@ class Authentication
         $this->session->unsetSession();
         $this->cookie->delete( $this->auth_name );
 
-        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) ) return true;
+        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) )
+            return true;
         else
             return false;
     }
@@ -223,8 +215,7 @@ class Authentication
 
     /**
      * Bind a value to Pdo placeholder
-     * @access protected
-     * @return array
+     * @return mixed
      */
     protected function bind()
     {
@@ -244,7 +235,7 @@ class Authentication
     /**
      * Create hashing for auth data
      * @access protected
-     * @return array
+     * @return mixed
      */
     protected function createHash()
     {
@@ -259,12 +250,10 @@ class Authentication
 
     /**
      * Save hash auth data to session/cookie
-     * @access protected
      * @return void
      */
     protected function saveHash()
     {
-
         $this->session->set( $this->auth_name, $this->createHash() );
 
         if ( $this->login_param->remember ) {
@@ -275,7 +264,6 @@ class Authentication
 
     /**
      * Check auth hash from session/cookie against recreation hash
-     * @access protected
      * @return boolean
      */
     protected function checkHash()
@@ -309,7 +297,6 @@ class Authentication
 
     /**
      * Encode string
-     * @access protected
      * @param string $string
      * @return string
      */
