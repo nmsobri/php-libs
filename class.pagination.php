@@ -196,7 +196,7 @@ class Pagination
                     }
                 }
 
-                if ( $this->range[$this->midRange - 1] < $this->totalPages - 1 And $i == $this->range[$this->midRange - 1] ) {
+                if ( @$this->range[$this->midRange - 1] < $this->totalPages - 1 And $i == @$this->range[$this->midRange - 1] ) {
                     $this->return .= " ... ";
                 }
             }
@@ -233,7 +233,8 @@ class Pagination
                     $items .= '<option value="' . $ipp_opt . '">' . $ipp_opt . '</option>';
                 }
             }
-            return '<span class="paginate">Items per page:</span><select class="paginate" onchange="window.location=' . "'" . $_SERVER['PHP_SELF'] . "?page=1&ipp='+this[this.selectedIndex].value+'" . $this->queryString . "';return false>" . $items . '</select>';
+            var_dump( $this->queryString );
+            return '<span class="paginate">Items per page:</span><select class="paginate" onchange="window.location=' . "'" . $_SERVER['PHP_SELF'] . "?page=1&ipp='+this[this.selectedIndex].value+'" . $this->queryString . "';return false" . '">' . $items . '</select>';
         }
     }
 
@@ -254,7 +255,7 @@ class Pagination
                     $option .= '<option value="' . $i . '">' . $i . '</option>';
                 }
             }
-            return '<span class="paginate">Page:</span><select class="paginate" onchange="window.location=' . "'" . $_SERVER['PHP_SELF'] . "?page='+this[this.selectedIndex].value+'&ipp=" . $this->itemsPerPage . $this->queryString . "';return false>" . $option . '</select>';
+            return '<span class="paginate">Page:</span><select class="paginate" onchange="window.location=' . "'" . $_SERVER['PHP_SELF'] . "?page='+this[this.selectedIndex].value+'&ipp=" . $this->itemsPerPage . $this->queryString . "';return false". '">' . $option . '</select>';
         }
     }
 
@@ -292,3 +293,8 @@ class Pagination
 
 
 }
+
+
+?>
+
+
