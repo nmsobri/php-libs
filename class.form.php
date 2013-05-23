@@ -37,7 +37,8 @@ class Form
      * @param mixed $attr['id']
      * @param mixed $attr['class']
      * @param mixed $attr['placeholder']
-     * @param mixed $attr['disabled']
+     * @param mixed $attr['disabled'] remove from $_POST data
+     * @param mixed $attr['readonly']
      * @return string
      */
     public function text( $name, $defaultValue = '', $attr = array() )
@@ -49,11 +50,12 @@ class Form
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $placeholder = ( array_key_exists( 'placeholder', $attr ) ) ? $attr['placeholder'] : '';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
         $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         $text = '';
-        $text .= '<input type="text" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . ' placeholder="' . $placeholder . '"' . '>';
+        $text .= '<input type="text" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . $readonly . ' placeholder="' . $placeholder . '"' . '>';
         $text .= PHP_EOL;
         return $text;
     }
@@ -66,7 +68,8 @@ class Form
      * @param mixed $attr['id']
      * @param mixed $attr['class']
      * @param mixed $attr['placeholder']
-     * @param mixed $attr['disabled']
+     * @param mixed $attr['disabled'] remove from $_POST data
+     * @param mixed $attr['readonly']
      * @param mixed $attr['cols']
      * @param mixed $attr['rows']
      * @return string
@@ -80,13 +83,14 @@ class Form
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $placeholder = ( array_key_exists( 'placeholder', $attr ) ) ? $attr['placeholder'] : '';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
         $cols = ( array_key_exists( 'cols', $attr ) ) ? $attr['cols'] : 20;
         $rows = ( array_key_exists( 'rows', $attr ) ) ? $attr['rows'] : 3;
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
         $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         $textarea = '';
-        $textarea .= '<textarea name="' . $name . '" id="' . $id . '" class="' . $class . '" cols="' . $cols . '" rows="' . $rows . '" ' . $disabled . ' placeholder="' . $placeholder . '"' . '>';
+        $textarea .= '<textarea name="' . $name . '" id="' . $id . '" class="' . $class . '" cols="' . $cols . '" rows="' . $rows . '" ' . $disabled . $readonly . ' placeholder="' . $placeholder . '"' . '>';
         $textarea .= $value;
         $textarea .= '</textarea>';
         $textarea .= PHP_EOL;
@@ -101,7 +105,8 @@ class Form
      * @param mixed $attr['id']
      * @param mixed $attr['class']
      * @param mixed $attr['placeholder']
-     * @param mixed $attr['disabled']
+     * @param mixed $attr['disabled'] remove from $_POST data
+     * @param mixed $attr['readonly']
      * @return string
      */
     public function password( $name, $attr = array() )
@@ -112,9 +117,10 @@ class Form
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $placeholder = ( array_key_exists( 'placeholder', $attr ) ) ? $attr['placeholder'] : '';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
 
         $password = '';
-        $password .= '<input type="password" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled . ' placeholder="' . $placeholder . '"' . '>';
+        $password .= '<input type="password" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled . $readonly . ' placeholder="' . $placeholder . '"' . '>';
         $password .= PHP_EOL;
         return $password;
     }
@@ -128,7 +134,8 @@ class Form
      * @param string $selected marked option selected
      * @param mixed $attr['id']
      * @param mixed $attr['class']
-     * @param mixed $attr['disabled']
+     * @param mixed $attr['disabled'] remove from $_POST data
+     * @param mixed $attr['readonly']
      * @param mixed $attr['multiple']
      * @param mixed $attr['size']
      * @return string
@@ -158,6 +165,7 @@ class Form
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
         $multiple = ( array_key_exists( 'multiple', $attr ) ) ? $attr['multiple'] : null;
         $size = ( array_key_exists( 'size', $attr ) ) ? $attr['size'] : null;
         $selected = ( is_null( $selected ) ) ? '' : $selected;
@@ -194,7 +202,7 @@ class Form
         $select .= ( !is_null( $multiple ) ) ? ' multiple="multiple"' : '';
         $select .= ( !is_null( $size ) ) ? ' size="' . $size . '"' : '';
         $select .= ' id="' . $id . '" class="' . $class . '"';
-        $select .= $disabled . '>';
+        $select .= $disabled . $readonly . '>';
         $select .= PHP_EOL;
         $select .= $optionsList;
         $select .= '</select>';
@@ -211,7 +219,8 @@ class Form
      * @param bool $checked
      * @param mixed $attr['id']
      * @param mixed $attr['class']
-     * @param mixed $attr['disabled']
+     * @param mixed $attr['disabled'] remove from $_POST data
+     * @param mixed $attr['readonly']
      * @return string
      */
     public function radio( $name, $value, $checked = false, $attr = array() )
@@ -222,6 +231,7 @@ class Form
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
 
         $radio = '';
@@ -234,7 +244,7 @@ class Form
             $radio .= 'checked';
         }
 
-        $radio .= $disabled . '>' . PHP_EOL;
+        $radio .= $disabled . $readonly . '>' . PHP_EOL;
         return $radio;
     }
 
@@ -246,7 +256,8 @@ class Form
      * @param bool $checked
      * @param mixed $attr['id']
      * @param mixed $attr['class']
-     * @param mixed $attr['disabled']
+     * @param mixed $attr['disabled'] remove from $_POST data
+     * @param mixed $attr['readonly']
      * @return string
      */
     public function checkbox( $name, $value, $checked = false, $attr = array() )
@@ -257,6 +268,7 @@ class Form
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
 
         $checkbox = '';
@@ -266,7 +278,7 @@ class Form
             $checkbox .= 'checked';
         }
 
-        $checkbox .= $disabled . '>' . PHP_EOL;
+        $checkbox .= $disabled . $readonly . '>' . PHP_EOL;
         return $checkbox;
     }
 
@@ -276,7 +288,8 @@ class Form
      * @param string $name
      * @param mixed $attr['id']
      * @param mixed $attr['class']
-     * @param mixed $attr['disabled']
+     * @param mixed $attr['disabled'] remove from $_POST data
+     * @param mixed $attr['readonly']
      * @return string
      */
     public function file( $name, $attr = array() )
@@ -286,9 +299,10 @@ class Form
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
 
         $file = '';
-        $file .= '<input type="file" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled . '>';
+        $file .= '<input type="file" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled .$readonly . '>';
         $file .= PHP_EOL;
         return $file;
     }
@@ -323,7 +337,8 @@ class Form
      * @param mixed $value
      * @param mixed $attr['id']
      * @param mixed $attr['class']
-     * @param mixed $attr['disabled']
+     * @param mixed $attr['disabled'] remove from $_POST data
+     * @param mixed $attr['readonly']
      * @return string
      */
     public function button( $name, $value, $attr = array() )
@@ -333,9 +348,10 @@ class Form
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
 
         $button = '';
-        $button .= '<input type="button" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ' . $disabled . '>';
+        $button .= '<input type="button" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ' . $disabled . $readonly . '>';
         $button .= PHP_EOL;
         return $button;
     }
@@ -347,7 +363,8 @@ class Form
      * @param mixed $value
      * @param mixed $attr['id']
      * @param mixed $attr['class']
-     * @param mixed $attr['disabled']
+     * @param mixed $attr['disabled'] remove from $_POST data
+     * @param mixed $attr['readonly']
      * @return string
      */
     public function submit( $name, $value = 'Submit', $attr = array() )
@@ -357,9 +374,10 @@ class Form
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
+        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
 
         $submit = '';
-        $submit .= '<input type="submit" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . '>';
+        $submit .= '<input type="submit" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . $readonly . '>';
         $submit .= PHP_EOL;
         return $submit;
     }
