@@ -241,7 +241,7 @@ class Authentication
     {
         $data = array();
 
-        $data['key'] = $this->encode( serialize( $this->login_data[0] ) );
+        $data['key'] = $this->encode( serialize( $this->login_data ) );
         $data['hash'] = $this->encode( strrev( $this->hash . $data['key'] . $this->hash ) );
 
         return $data;
