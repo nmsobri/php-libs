@@ -149,6 +149,7 @@ class CompareValidator extends ValidatorStrategy
      * @param mixed $value value of the field
      * @param mixed $comparisonValue value of the field to compare
      * @param mixed $comparisonField name of the field to compare
+     * @param mixed $attr
      * @param bool $attr['required']
      * @param mixed $attr['field'] custom field name in error message ( @default $name )
      * @param mixed $attr['field_comparison'] comparison field name
@@ -268,6 +269,7 @@ class EmailValidator extends ValidatorStrategy
      * Validation for email
      * @param string $name
      * @param mixed $value
+     * @param mixed $attr
      * @param bool $attr['required']
      * @param string $attr['message'] custom message
      * @param mixed $attr['field'] custom field name in error message ( @default $name )
@@ -321,6 +323,7 @@ class NumberValidator extends ValidatorStrategy
      * Validation for number field
      * @param mixed $name
      * @param mixed $value
+     * @param mixed $attr
      * @param bool $attr['required'] mark mandatory
      * @param int $attr['decimal'] decimal place
      * @param int $attr['min_length'] minimum length
