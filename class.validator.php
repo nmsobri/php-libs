@@ -527,6 +527,7 @@ class RegexValidator extends ValidatorStrategy
      * @param string $name
      * @param mixed $value
      * @param string $regex
+     * @param mixed $attr
      * @param bool $attr['required']
      * @param mixed $attr['message']
      * @param mixed $attr['field'] customfield name in error message instead of using POST key data
