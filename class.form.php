@@ -45,7 +45,7 @@ class Form
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array(); /* Cast to an array if $attribute exist otherwise create an empty array */
 
-        $formData = $this->getFormData();
+        $formData = & $this->getFormData();
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $placeholder = ( array_key_exists( 'placeholder', $attr ) ) ? $attr['placeholder'] : '';
@@ -53,7 +53,21 @@ class Form
         $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
-        $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
+        #$_POST[data][]
+        if ( substr( $name, -2 ) == '[]' ) {
+            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if ( @isset( $formData[$tmp_name] ) ) {
+                $value = $formData[$tmp_name][0];
+                array_shift( $formData[$tmp_name] );
+            }
+            else {
+                $value = $defaultValue;
+            }
+        }
+        else {
+            $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
+        }
+
         $text = '';
         $text .= '<input type="text" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . $readonly . ' placeholder="' . $placeholder . '"' . '>';
         $text .= PHP_EOL;
@@ -78,7 +92,7 @@ class Form
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $formData = $this->getFormData();
+        $formData = & $this->getFormData();
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $placeholder = ( array_key_exists( 'placeholder', $attr ) ) ? $attr['placeholder'] : '';
@@ -88,7 +102,21 @@ class Form
         $rows = ( array_key_exists( 'rows', $attr ) ) ? $attr['rows'] : 3;
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
-        $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
+        #$_POST[data][]
+        if ( substr( $name, -2 ) == '[]' ) {
+            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if ( @isset( $formData[$tmp_name] ) ) {
+                $value = $formData[$tmp_name][0];
+                array_shift( $formData[$tmp_name] );
+            }
+            else {
+                $value = $defaultValue;
+            }
+        }
+        else {
+            $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
+        }
+
         $textarea = '';
         $textarea .= '<textarea name="' . $name . '" id="' . $id . '" class="' . $class . '" cols="' . $cols . '" rows="' . $rows . '" ' . $disabled . $readonly . ' placeholder="' . $placeholder . '"' . '>';
         $textarea .= $value;
@@ -148,7 +176,7 @@ class Form
      * <option value='kl'>K.Lumpur</option>
      * </select>
      *
-     *  @example array('north'=>array('kdh'=>'Kedah', 'png'=>'Penang', 'prk'=>'Perak' ) ) will create select option like this
+     * @example array('north'=>array('kdh'=>'Kedah', 'png'=>'Penang', 'prk'=>'Perak' ) ) will create select option like this
      * <select>
      * <optgroup label='north'>
      *  <option value='kdh'>Kedah</option>
@@ -161,7 +189,7 @@ class Form
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $formData = $this->getFormData();
+        $formData = & $this->getFormData();
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
@@ -178,7 +206,20 @@ class Form
             $optionsList = '';
         }
 
-        $value = isset( $formData[$name] ) ? $formData[$name] : $selected;
+        #$_POST[data][]
+        if ( substr( $name, -2 ) == '[]' ) {
+            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if ( @isset( $formData[$tmp_name] ) ) {
+                $value = $formData[$tmp_name][0];
+                array_shift( $formData[$tmp_name] );
+            }
+            else {
+                $value = $selected;
+            }
+        }
+        else {
+            $value = isset( $formData[$name] ) ? $formData[$name] : $selected;
+        }
 
         foreach ( $options as $key => $val ) {
             if ( is_array( $val ) ) {
@@ -227,7 +268,7 @@ class Form
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $formData = $this->getFormData();
+        $formData = & $this->getFormData();
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
@@ -237,12 +278,25 @@ class Form
         $radio = '';
         $radio .= '<input type="radio" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ';
 
-        if ( $checked and !isset( $formData[$name] ) ) {
-            $radio .= 'checked';
+        #$_POST[data][]
+        if ( substr( $name, -2 ) == '[]' ) {
+            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if ( $checked and !isset( $formData[$tmp_name] ) ) {
+                $radio .= 'checked';
+            }
+            elseif ( ( isset( $formData[$tmp_name] ) and $formData[$tmp_name][0] == $value ) ) {
+                $radio .= 'checked';
+            }
         }
-        elseif ( ( isset( $formData[$name] ) and $formData[$name] == $value ) ) {
-            $radio .= 'checked';
+        else {
+            if ( $checked and !isset( $formData[$name] ) ) {
+                $radio .= 'checked';
+            }
+            elseif ( ( isset( $formData[$name] ) and $formData[$name] == $value ) ) {
+                $radio .= 'checked';
+            }
         }
+
 
         $radio .= $disabled . $readonly . '>' . PHP_EOL;
         return $radio;
@@ -264,7 +318,8 @@ class Form
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $formData = $this->getFormData();
+        $formData = & $this->getFormData();
+
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
         $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
@@ -274,9 +329,20 @@ class Form
         $checkbox = '';
         $checkbox .= '<input type="checkbox" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ';
 
-        if ( ( isset( $formData[$name] ) and $formData[$name] == $value ) or $checked ) {
-            $checkbox .= 'checked';
+        #form with same name $_POST[data][]
+        if ( substr( $name, -2 ) == '[]' ) {
+            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if ( ( @isset( $formData[$tmp_name] ) and @$formData[$tmp_name][0] == $value ) or $checked ) {
+                array_shift( $formData[$tmp_name] );
+                $checkbox .= 'checked';
+            }
         }
+        else {
+            if ( ( isset( $formData[$name] ) and $formData[$name] == $value ) or $checked ) {
+                $checkbox .= 'checked';
+            }
+        }
+
 
         $checkbox .= $disabled . $readonly . '>' . PHP_EOL;
         return $checkbox;
@@ -302,7 +368,7 @@ class Form
         $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
 
         $file = '';
-        $file .= '<input type="file" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled .$readonly . '>';
+        $file .= '<input type="file" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled . $readonly . '>';
         $file .= PHP_EOL;
         return $file;
     }
@@ -419,9 +485,15 @@ class Form
      * Populated form data
      * @return mixed
      */
-    protected function getFormData()
+    protected function &getFormData()
     {
-        return ( $this->formMethod == 'Post' ) ? $_POST : $_GET;
+        if ( $this->formMethod == 'Post' ) {
+            return $_POST;
+        }
+        else {
+            return $_GET;
+        }
+
     }
 
 
