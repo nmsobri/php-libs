@@ -61,6 +61,10 @@ class Request
      */
     public function postToGet()
     {
+        if ( $_FILES ) {
+            return $this->isPost();
+        }
+
         #Quickly delete session data if this $_GET data do not exist (make session only available on this page and only when GET data is exist)
         if ( !@$_GET['post'] ) {
             unset( $_SESSION[$_SERVER['PHP_SELF'] . 'POST'] );
