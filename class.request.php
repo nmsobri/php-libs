@@ -25,7 +25,7 @@ class Request
      */
     public function isPost()
     {
-        return isset( $_POST );
+        return $_POST;
     }
 
 
@@ -35,7 +35,7 @@ class Request
      */
     public function isGet()
     {
-        return isset( $_GET );
+        return $_GET;
     }
 
 
@@ -79,7 +79,8 @@ class Request
         }
         elseif ( intval( @$_SERVER['CONTENT_LENGTH'] ) > 0 && count( $_POST ) === 0 ) {
             #change this to save $_SESSION data and return false, then check in the else block of existence of the $_SESSION data for proper error message instead of Exception
-            throw new Exception( 'PHP discarded POST data because of request exceeding post_max_size.' );
+            $this->session->flash( 'upload_error', true );
+            return false;
         }
         else {
             return false;
