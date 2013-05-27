@@ -78,6 +78,7 @@ class Request
             return true;
         }
         elseif ( intval( @$_SERVER['CONTENT_LENGTH'] ) > 0 && count( $_POST ) === 0 ) {
+            #change this to save $_SESSION data and return false, then check in the else block of existence of the $_SESSION data for proper error message instead of Exception
             throw new Exception( 'PHP discarded POST data because of request exceeding post_max_size.' );
         }
         else {
