@@ -582,18 +582,18 @@ class FileValidator extends ValidatorStrategy
     /**
      * Validation for select field
      * @param string $name
-     * @param mixed $value $_POST['html_field_name']['name']
+     * @param mixed $file $_POST['html_field_name']
      * @param mixed $ext ['pdf','doc','ppt']
      * @param string $attr['field']
      * @param string $attr['message']
      * @param string $attr['required']
-     * @example new FileValidator( 'user_image' , $_FILES['image']['name'], array( 'message' => 'File is empty' ) )
+     * @example new FileValidator( 'user_image' , $_FILES['image'], array( 'message' => 'File is empty' ) )
      */
-    public function __construct( $name, $value, $ext = array(), $attr = null )
+    public function __construct( $name, $file, $ext = array(), $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
-        $this->data['value'] = $value;
+        $this->data['file'] = $file;
         $this->data['extension'] = $ext;
         $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
         $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
@@ -607,9 +607,9 @@ class FileValidator extends ValidatorStrategy
      */
     public function isValid()
     {
-        if ( !empty( $this->data['value'] ) ) {
+        if ( !empty( $this->data['file']['name'] ) ) {
 
-            $ext = pathinfo( $this->data['value'], PATHINFO_EXTENSION );
+            $ext = pathinfo( $this->data['file']['name'], PATHINFO_EXTENSION );
 
             if ( in_array( $ext, $this->data['extension'] ) ) {
                 return true;
