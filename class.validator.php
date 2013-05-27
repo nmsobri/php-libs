@@ -84,6 +84,7 @@ abstract class ValidatorStrategy
         $msg[20] = 'Field ' . $field . ' can only contain texts and spaces';
         $msg[21] = 'Field ' . $field . ' can only have texts';
         $msg[22] = 'File ' . $field . ' is empty';
+        $msg[23] = 'File ' . $field . ' does not have valid file extension';
 
         return $msg[$num];
     }
@@ -581,17 +582,19 @@ class FileValidator extends ValidatorStrategy
     /**
      * Validation for select field
      * @param string $name
-     * @param mixed $value $_POST['html_field_name']['$_FILES_index']
+     * @param mixed $value $_POST['html_field_name']['name']
+     * @param mixed $ext ['pdf','doc','ppt']
      * @param string $attr['field']
      * @param string $attr['message']
      * @param string $attr['required']
      * @example new FileValidator( 'user_image' , $_FILES['image']['name'], array( 'message' => 'File is empty' ) )
      */
-    public function __construct( $name, $value, $attr = null )
+    public function __construct( $name, $value, $ext = array(), $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
 
         $this->data['value'] = $value;
+        $this->data['extension'] = $ext;
         $this->data['message'] = ( array_key_exists( 'message', $attr ) ) ? $attr['message'] : null;
         $this->data['required'] = ( array_key_exists( 'required', $attr ) ) ? ( boolean )$attr['required'] : true;
         $this->data['field'] = ( array_key_exists( 'field', $attr ) ) ? $attr['field'] : $name;
@@ -605,7 +608,16 @@ class FileValidator extends ValidatorStrategy
     public function isValid()
     {
         if ( !empty( $this->data['value'] ) ) {
-            return true;
+
+            $ext = pathinfo( $this->data['value'], PATHINFO_EXTENSION );
+
+            if ( in_array( $ext, $this->data['extension'] ) ) {
+                return true;
+            }
+            else {
+                $this->messages = ( $this->data['message'] ) ? $this->data['message'] : $this->errorText( 23, $this->data['field'] );
+                return false;
+            }
         }
         else {
             if ( $this->data['required'] ) {
