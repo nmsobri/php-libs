@@ -333,7 +333,7 @@ class Form
         if ( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
             if ( ( @isset( $formData[$tmp_name] ) and @$formData[$tmp_name][0] == $value ) or $checked ) {
-                array_shift( $formData[$tmp_name] );
+                @array_shift( $formData[$tmp_name] );
                 $checkbox .= 'checked';
             }
         }
