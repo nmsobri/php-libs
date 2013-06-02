@@ -335,7 +335,7 @@ class Form
             if ( ( @$formData[$tmp_name] and $formData[$tmp_name][0] == $value ) or ( !$formData && $checked ) ) {
 
                 if ( @$formData[$tmp_name] ) {
-                    array_shift( @$formData[$tmp_name] );
+                    array_shift( $formData[$tmp_name] );
                 }
                 $checkbox .= 'checked';
             }
