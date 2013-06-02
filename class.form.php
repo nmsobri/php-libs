@@ -56,7 +56,7 @@ class Form
         #$_POST[data][]
         if ( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( @isset( $formData[$tmp_name] ) ) {
+            if ( $formData[$tmp_name] ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
             }
@@ -105,7 +105,7 @@ class Form
         #$_POST[data][]
         if ( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( @isset( $formData[$tmp_name] ) ) {
+            if ( $formData[$tmp_name] ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
             }
@@ -209,7 +209,7 @@ class Form
         #$_POST[data][]
         if ( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( @isset( $formData[$tmp_name] ) ) {
+            if ( $formData[$tmp_name] ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
             }
@@ -281,18 +281,18 @@ class Form
         #$_POST[data][]
         if ( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( $checked and !isset( $formData[$tmp_name] ) ) {
+            if ( $checked and !$formData[$tmp_name] ) {
                 $radio .= 'checked';
             }
-            elseif ( ( isset( $formData[$tmp_name] ) and $formData[$tmp_name][0] == $value ) ) {
+            elseif ( ( $formData[$tmp_name]  and $formData[$tmp_name][0] == $value ) ) {
                 $radio .= 'checked';
             }
         }
         else {
-            if ( $checked and !isset( $formData[$name] ) ) {
+            if ( $checked and !$formData[$name] ) {
                 $radio .= 'checked';
             }
-            elseif ( ( isset( $formData[$name] ) and $formData[$name] == $value ) ) {
+            elseif ( ( $formData[$name]  and $formData[$name] == $value ) ) {
                 $radio .= 'checked';
             }
         }
@@ -332,17 +332,19 @@ class Form
         #form with same name $_POST[data][]
         if ( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( ( @isset( $formData[$tmp_name] ) and @$formData[$tmp_name][0] == $value ) or $checked ) {
-                @array_shift( $formData[$tmp_name] );
+            if ( ( @$formData[$tmp_name] and @$formData[$tmp_name][0] == $value ) or ( !$formData && $checked ) ) {
+
+                if ( @$formData[$tmp_name] ) {
+                    @array_shift( $formData[$tmp_name] );
+                }
                 $checkbox .= 'checked';
             }
         }
         else {
-            if ( ( isset( $formData[$name] ) and $formData[$name] == $value ) or $checked ) {
+            if ( ( @$formData[$name]  and @$formData[$name] == $value ) or ( !$formData && $checked ) ) {
                 $checkbox .= 'checked';
             }
         }
-
 
         $checkbox .= $disabled . $readonly . '>' . PHP_EOL;
         return $checkbox;
