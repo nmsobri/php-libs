@@ -127,9 +127,10 @@ class Authentication
     {
         if ( !is_null( $this->login_param ) ) {
             $this->login_data = $this->db->query( $this->login_param->query, $this->bind() )->execute();
+            list( $this->login_data ) = $this->login_data;
 
             if ( count( $this->login_data ) > 0 ) {
-                $this->saveHash();
+                $this->saveHash( $this->login_data );
                 return true;
             }
         }
@@ -159,6 +160,27 @@ class Authentication
         }
 
         return $this->auth_data;
+    }
+
+
+    /**
+     * Update/change auth data
+     * Auth data usually is row from database
+     * @example Auth data = ['id'=>1, 'level'=>'admin', 'dept'=>'hr']
+     * @param str $key key in auth data
+     * @param mixed $val
+     * @return void
+     */
+    public function updateAuthData( $key, $val )
+    {
+        if ( $this->auth_data == null ) {
+            $this->checkHash();
+        }
+
+        if ( array_key_exists( $key, $this->auth_data ) ) {
+            $this->auth_data[$key] = $val;
+            $this->saveHash( $this->auth_data );
+        }
     }
 
 
@@ -206,8 +228,7 @@ class Authentication
         $this->session->unsetSession();
         $this->cookie->delete( $this->auth_name );
 
-        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) )
-            return true;
+        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) ) return true;
         else
             return false;
     }
@@ -233,32 +254,32 @@ class Authentication
 
 
     /**
-     * Create hashing for auth data
-     * @access protected
-     * @return mixed
-     */
-    protected function createHash()
-    {
-        $data = array();
-
-        $data['key'] = $this->encode( serialize( $this->login_data ) );
-        $data['hash'] = $this->encode( strrev( $this->hash . $data['key'] . $this->hash ) );
-
-        return $data;
-    }
-
-
-    /**
      * Save hash auth data to session/cookie
+     * @param mixed $data
      * @return void
      */
-    protected function saveHash()
+    protected function saveHash( $data )
     {
-        $this->session->set( $this->auth_name, $this->createHash() );
+        $this->session->set( $this->auth_name, $this->createHash( $data ) );
 
-        if ( $this->login_param->remember ) {
-            $this->cookie->set( $this->auth_name, $this->createHash() );
+        if ( @$this->login_param->remember ) {
+            $this->cookie->set( $this->auth_name, $this->createHash( $data ) );
         }
+    }
+
+    /**
+     * Create hashing for auth data
+     * @param mixed $data
+     * @return mixed
+     */
+    protected function createHash( $data )
+    {
+        $auth_data = array();
+
+        $auth_data['key'] = $this->encode( serialize( $data ) );
+        $auth_data['hash'] = $this->encode( strrev( $this->hash . $auth_data['key'] . $this->hash ) );
+
+        return $auth_data;
     }
 
 
