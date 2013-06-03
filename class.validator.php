@@ -357,7 +357,7 @@ class NumberValidator extends ValidatorStrategy
     public function isValid()
     {
         if ( empty( $this->data['value'] ) ) {
-            $this->checkRequired();
+            return $this->checkRequired();
         }
         else {
             if ( $this->data['min_length'] > 0 && $this->data['max_length'] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */ {
@@ -720,7 +720,7 @@ class TextValidator extends ValidatorStrategy
     public function isValid()
     {
         if ( empty( $this->data['value'] ) ) {
-            $this->checkrequired();
+            return $this->checkrequired();
         }
         else {
             if ( $this->data['min_length'] > 0 && $this->data['max_length'] == 0 ) /* if minLength > 0 and maxLength == 0, check for exact length match */ {
