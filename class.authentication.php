@@ -127,7 +127,7 @@ class Authentication
     {
         if ( !is_null( $this->login_param ) ) {
             $this->login_data = $this->db->query( $this->login_param->query, $this->bind() )->execute();
-            list( $this->login_data ) = $this->login_data;
+            @list( $this->login_data ) = $this->login_data;
 
             if ( count( $this->login_data ) > 0 ) {
                 $this->saveHash( $this->login_data );
