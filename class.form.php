@@ -457,6 +457,7 @@ class Form
      * @param bool $isUpload
      * @param mixed $attr['id']
      * @param mixed $attr['class']
+     * @param mixed $attr['target']
      * @return string
      */
     public function formStart( $action, $isUpload, $attr = array() )
