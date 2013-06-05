@@ -465,8 +465,9 @@ class Form
         $formName = 'Form' . ++self::$instance;
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $formName . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $formName . 'Class';
+        $target = ( array_key_exists( 'target', $attr ) ) ? $attr['target'] : '';
 
-        $formStart = '<form name="' . $formName . '" id="' . $id . '" class="' . $class . '" method="' . $this->formMethod . '" action="' . $action . '"';
+        $formStart = '<form name="' . $formName . '" id="' . $id . '" class="' . $class . '" method="' . $this->formMethod . '" action="' . $action . '" target="' . $target . '"';
         $formStart .= ( $isUpload ) ? ' enctype="multipart/form-data">' : '>';
         $formStart .= PHP_EOL;
         return $formStart;
