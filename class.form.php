@@ -54,9 +54,9 @@ class Form
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
         #$_POST[data][]
-        if ( substr( $name, -2 ) == '[]' ) {
+        if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( @$formData[$tmp_name] ) {
+            if( @$formData[$tmp_name] ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
             }
@@ -103,9 +103,9 @@ class Form
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
         #$_POST[data][]
-        if ( substr( $name, -2 ) == '[]' ) {
+        if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( @$formData[$tmp_name] ) {
+            if( @$formData[$tmp_name] ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
             }
@@ -200,18 +200,20 @@ class Form
 
         static $instance = 0;
         static $optionsList;
-        $value = '';
+        $value = null;
 
-        if ( $instance == 0 ) /* need to check if this method call in sequential (calling this method twice) to make sure it dosent cache previous <option> */ {
+        if( $instance == 0 ) /* need to check if this method call in sequential (calling this method twice) to make sure it dosent cache previous <option> */ {
             $optionsList = '';
         }
 
         #$_POST[data][]
-        if ( substr( $name, -2 ) == '[]' ) {
+        if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( @$formData[$tmp_name] ) {
-                $value = $formData[$tmp_name][0];
-                array_shift( $formData[$tmp_name] );
+            if( @$formData[$tmp_name] ) {
+                foreach( @$formData[$tmp_name] as $form_val ) {
+                    $value[] = $form_val;
+                    array_shift( $formData[$tmp_name] );
+                }
             }
             else {
                 $value = $selected;
@@ -221,8 +223,8 @@ class Form
             $value = ( @$formData[$name] ) ? $formData[$name] : $selected;
         }
 
-        foreach ( $options as $key => $val ) {
-            if ( is_array( $val ) ) {
+        foreach( $options as $key => $val ) {
+            if( is_array( $val ) ) {
                 $instance++;
                 $optionsList .= '<optgroup label="' . $key . '">' . PHP_EOL;
                 self::select( $name, $val );
@@ -231,8 +233,16 @@ class Form
             }
             else {
                 $optionsList .= '<option value="' . $key . '" ';
-                if ( $key == $value ) {
-                    $optionsList .= 'selected="selected"';
+
+                if( is_array( $value ) ) {
+                    if( in_array( $key, $value ) ) {
+                        $optionsList .= 'selected="selected"';
+                    }
+                }
+                else {
+                    if( $key == $value ) {
+                        $optionsList .= 'selected="selected"';
+                    }
                 }
                 $optionsList .= '>' . $val . '</option>' . PHP_EOL;
             }
@@ -279,20 +289,20 @@ class Form
         $radio .= '<input type="radio" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ';
 
         #$_POST[data][]
-        if ( substr( $name, -2 ) == '[]' ) {
+        if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( @!$formData[$tmp_name] and $checked ) {
+            if( @!$formData[$tmp_name] and $checked ) {
                 $radio .= 'checked';
             }
-            elseif ( ( $formData[$tmp_name]  and $formData[$tmp_name][0] == $value ) ) {
+            elseif( ( $formData[$tmp_name]  and $formData[$tmp_name][0] == $value ) ) {
                 $radio .= 'checked';
             }
         }
         else {
-            if ( !$formData[$name] and $checked ) {
+            if( !$formData[$name] and $checked ) {
                 $radio .= 'checked';
             }
-            elseif ( ( $formData[$name]  and $formData[$name] == $value ) ) {
+            elseif( ( $formData[$name]  and $formData[$name] == $value ) ) {
                 $radio .= 'checked';
             }
         }
@@ -330,18 +340,18 @@ class Form
         $checkbox .= '<input type="checkbox" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ';
 
         #form with same name $_POST[data][]
-        if ( substr( $name, -2 ) == '[]' ) {
+        if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if ( ( @$formData[$tmp_name] and $formData[$tmp_name][0] == $value ) or ( !$formData && $checked ) ) {
+            if( ( @$formData[$tmp_name] and $formData[$tmp_name][0] == $value ) or ( !$formData && $checked ) ) {
 
-                if ( @$formData[$tmp_name] ) {
+                if( @$formData[$tmp_name] ) {
                     array_shift( $formData[$tmp_name] );
                 }
                 $checkbox .= 'checked';
             }
         }
         else {
-            if ( ( @$formData[$name]  and $formData[$name] == $value ) or ( !$formData && $checked ) ) {
+            if( ( @$formData[$name]  and $formData[$name] == $value ) or ( !$formData && $checked ) ) {
                 $checkbox .= 'checked';
             }
         }
@@ -457,7 +467,6 @@ class Form
      * @param bool $isUpload
      * @param mixed $attr['id']
      * @param mixed $attr['class']
-     * @param mixed $attr['target']
      * @return string
      */
     public function formStart( $action, $isUpload, $attr = array() )
@@ -491,7 +500,7 @@ class Form
      */
     protected function &getFormData()
     {
-        if ( $this->formMethod == 'Post' ) {
+        if( $this->formMethod == 'Post' ) {
             return $_POST;
         }
         else {
