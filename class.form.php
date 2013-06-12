@@ -170,13 +170,19 @@ class Form
      *
      * $options is pass as follows:
      *
-     * @example array('png'=>'Penang','kl'=>'K.Lumpur') will create select option like this
+     * @example
+     *
+     * select( 'state', array('png'=>'Penang','kl'=>'K.Lumpur') )
+     *
      * <select>
      * <option value='png'>Penang</option>
      * <option value='kl'>K.Lumpur</option>
      * </select>
      *
-     * @example array('north'=>array('kdh'=>'Kedah', 'png'=>'Penang', 'prk'=>'Perak' ) ) will create select option like this
+     * @example
+     *
+     * select('state', array('north'=>array('kdh'=>'Kedah', 'png'=>'Penang', 'prk'=>'Perak' ) ) )
+     *
      * <select>
      * <optgroup label='north'>
      *  <option value='kdh'>Kedah</option>
@@ -184,6 +190,21 @@ class Form
      *  <option value='prk'>Perak</option>
      * </optgroup>
      * <select>
+     *
+     * @example
+     * select('speciality[]', array( 'economy'=>'Economy', 'technology'=> 'Technology', 'health'=>'Health' ), null, array( 'multiple'=>true ) )
+     * [] allow php to collect multiple value from this select
+
+     * @example
+     * select('speciality[]', array( 'economy'=>'Economy', 'technology'=> 'Technology', 'health'=>'Health' ), array( 'economy', 'health' ), array( 'multiple'=>true ) )
+     * pass array to $selected to mark multiple selection as selected
+     *
+     * <select>
+     *  <option value="economy" selected="selected">Economy</option>
+     *  <option value="technology">Technology</option>
+     *  <option value="health" selected="selected">Health</option>
+     * </select>
+     *
      */
     public function select( $name, $options, $selected = null, $attr = array() )
     {
