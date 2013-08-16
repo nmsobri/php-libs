@@ -25,8 +25,7 @@ class Form
      */
     public function __construct( $formMethod = 'Post' )
     {
-        $formMethod = ( is_null( $formMethod ) ) ? 'Post' : ucfirst( strtolower( $formMethod ) );
-        $this->formMethod = $formMethod;
+        $this->formMethod = ( is_null( $formMethod ) ) ? 'Post' : ucfirst( strtolower( $formMethod ) );
     }
 
 
@@ -56,7 +55,7 @@ class Form
         #$_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( @$formData[$tmp_name] ) {
+            if( isset( $formData[$tmp_name] ) ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
             }
@@ -65,7 +64,7 @@ class Form
             }
         }
         else {
-            $value = ( @$formData[$name] ) ? $formData[$name] : $defaultValue;
+            $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         }
 
         $text = '';
@@ -105,7 +104,7 @@ class Form
         #$_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( @$formData[$tmp_name] ) {
+            if( isset( $formData[$tmp_name] ) ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
             }
@@ -114,7 +113,7 @@ class Form
             }
         }
         else {
-            $value = ( @$formData[$name] ) ? $formData[$name] : $defaultValue;
+            $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         }
 
         $textarea = '';
@@ -194,7 +193,6 @@ class Form
      * @example
      * select('speciality[]', array( 'economy'=>'Economy', 'technology'=> 'Technology', 'health'=>'Health' ), null, array( 'multiple'=>true ) )
      * [] allow php to collect multiple value from this select
-
      * @example
      * select('speciality[]', array( 'economy'=>'Economy', 'technology'=> 'Technology', 'health'=>'Health' ), array( 'economy', 'health' ), array( 'multiple'=>true ) )
      * pass array to $selected to mark multiple selection as selected
@@ -230,8 +228,8 @@ class Form
         #$_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( @$formData[$tmp_name] ) {
-                foreach( @$formData[$tmp_name] as $form_val ) {
+            if( isset( $formData[$tmp_name] ) ) {
+                foreach( $formData[$tmp_name] as $form_val ) {
                     $value[] = $form_val;
                     array_shift( $formData[$tmp_name] );
                 }
@@ -241,7 +239,7 @@ class Form
             }
         }
         else {
-            $value = ( @$formData[$name] ) ? $formData[$name] : $selected;
+            $value = isset( $formData[$name] ) ? $formData[$name] : $selected;
         }
 
         foreach( $options as $key => $val ) {
@@ -312,7 +310,7 @@ class Form
         #$_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( @!$formData[$tmp_name] and $checked ) {
+            if( !isset( $formData[$tmp_name] ) and $checked ) {
                 $radio .= 'checked';
             }
             elseif( ( $formData[$tmp_name]  and $formData[$tmp_name][0] == $value ) ) {
@@ -363,16 +361,16 @@ class Form
         #form with same name $_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( ( @$formData[$tmp_name] and $formData[$tmp_name][0] == $value ) or ( !$formData && $checked ) ) {
+            if( ( isset( $formData[$tmp_name] ) and $formData[$tmp_name][0] == $value ) or ( !$formData && $checked ) ) {
 
-                if( @$formData[$tmp_name] ) {
+                if( isset( $formData[$tmp_name] ) ) {
                     array_shift( $formData[$tmp_name] );
                 }
                 $checkbox .= 'checked';
             }
         }
         else {
-            if( ( @$formData[$name]  and $formData[$name] == $value ) or ( !$formData && $checked ) ) {
+            if( ( isset( $formData[$name] )  and $formData[$name] == $value ) or ( !$formData && $checked ) ) {
                 $checkbox .= 'checked';
             }
         }
