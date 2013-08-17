@@ -408,17 +408,33 @@ class Form
     /**
      * Method to create hidden control
      * @param mixed $name
-     * @param mixed $value
+     * @param mixed $defaultValue
      * @param mixed $attr['id']
      * @param mixed $attr['class']
      * @return string
      */
-    public function hidden( $name, $value, $attr = array() )
+    public function hidden( $name, $defaultValue, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $formData = & $this->getFormData();
 
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
         $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
+
+        #$_POST[data][]
+        if( substr( $name, -2 ) == '[]' ) {
+            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if( isset( $formData[$tmp_name] ) ) {
+                $value = $formData[$tmp_name][0];
+                array_shift( $formData[$tmp_name] );
+            }
+            else {
+                $value = $defaultValue;
+            }
+        }
+        else {
+            $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
+        }
 
         $hidden = '';
         $hidden .= '<input type="hidden" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '">';
