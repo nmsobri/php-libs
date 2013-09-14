@@ -60,7 +60,7 @@ class Template
     /**
      * Constructor Function
      * @param string $templateDir
-     * @param array $data
+     * @param array $data to be use inside template
      *
      */
     public function __construct( $templateDir, $data = array() )
