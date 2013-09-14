@@ -60,11 +60,14 @@ class Template
     /**
      * Constructor Function
      * @param string $templateDir
+     * @param array $data
      *
      */
-    public function __construct( $templateDir )
+    public function __construct( $templateDir, $data = array() )
     {
         $this->setTemplateDir( $templateDir );
+        $this->populateVar( $data );
+
     }
 
 
@@ -74,7 +77,6 @@ class Template
      * This new array index will be treated as a variable by the templates.
      * @param string $name variable name to use in the template
      * @param string $value content to assign
-     * @see getVars, $variables
      * @return void
      */
     public function set( $name, $value )
@@ -85,7 +87,7 @@ class Template
 
     /**
      * Get the value of variable with given name
-     * @param mixed $name
+     * @param string $name
      * @return string|null
      */
     public function get( $name )
@@ -96,7 +98,6 @@ class Template
 
     /**
      * Return names of all the added variables
-     * @see addVar, $variables
      * @return array
      */
     public function getVars()
@@ -111,7 +112,6 @@ class Template
      * Fetches template output, and echoes it to the browser.
      * @param string $template_file
      * @param array $data
-     * @see fetch
      * @return string
      */
     public function display( $template_file, $data = array() )
@@ -148,8 +148,7 @@ class Template
      * Fetch template output and returns it value
      * @param string $template_file Filename (with path) to the template to fetch
      * @param array $data
-     * @see display
-     * @return string|false
+     * @return string|bool
      */
     public function fetch( $template_file, $data = array() )
     {
@@ -170,8 +169,7 @@ class Template
      * Fetch the template output, and return it to caller
      * @param string $template_file filename (with path) to the template to be processed
      * @throws Exception
-     * @see fetch, display
-     * @return string || false
+     * @return string |bool
      */
     private function getOutput( $template_file )
     {
@@ -212,7 +210,6 @@ class Template
      * Sets the cache directory
      * @param string $dir path to the cache dir you want to use
      * @throws Exception
-     * @see setCacheLifetime
      * @return void
      */
     public function setCacheDir( $dir )
@@ -231,7 +228,6 @@ class Template
     /**
      * Sets how long the cache files should exists
      * @param int $seconds number of seconds the cache should survive
-     * @see setCacheDir, isCached, setCaching
      * @return void
      */
     public function setCacheLifetime( $seconds = 0 )
@@ -243,7 +239,6 @@ class Template
     /**
      * Turn caching on or off
      * @param bool $state Set TRUE turns caching on, FALSE turns caching off
-     * @see setCacheLifetime, isCached, setCacheDir
      * @return void
      */
     public function setCaching( $state )
@@ -392,9 +387,8 @@ class Template
      */
     private function isAssocArray( $array )
     {
-        foreach( array_keys( $array ) as  $val ) {
+        foreach( array_keys( $array ) as $val ) {
             if( is_numeric( $val ) ) {
-
                 return false;
             }
         }
@@ -405,8 +399,8 @@ class Template
     /**
      * Populate passed in variable to template so it become local to template
      * @param array $data
-     * @return void
      * @throws Exception
+     * @return void
      */
     private function populateVar( $data )
     {
