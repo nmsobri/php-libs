@@ -16,7 +16,7 @@ class Template
      * that can be used inside of the templates.
      * @var array
      */
-    public $variables = array();
+    private $variables = array();
 
 
     /**
