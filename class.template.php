@@ -16,7 +16,7 @@ class Template
      * that can be used inside of the templates.
      * @var array
      */
-    private $variables = array();
+    public $variables = array();
 
 
     /**
@@ -60,7 +60,7 @@ class Template
     /**
      * Constructor Function
      * @param string $templateDir
-     * @param array $data to be use inside template
+     * @param array $data to be used within template
      *
      */
     public function __construct( $templateDir, $data = array() )
@@ -72,7 +72,7 @@ class Template
 
 
     /**
-     * Adds a variable that can be used by the templates.
+     * Adds a data that can be used by the templates.
      * Adds a new array index to the variable property.
      * This new array index will be treated as a variable by the templates.
      * @param string $name variable name to use in the template
@@ -84,6 +84,15 @@ class Template
         $this->variables[$name] = $value;
     }
 
+
+    /**
+     * Set multiple data using array
+     * @param array $data
+     */
+    public function sets( array $data )
+    {
+        $this->populateVar( $data );
+    }
 
     /**
      * Get the value of variable with given name
