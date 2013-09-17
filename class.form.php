@@ -499,6 +499,9 @@ class Form
     /**
      * Method to create start form tag
      * @param string $action
+     * If $_GET data exist in the $action, it will be merge with $_GET from requesting script
+     * $_GET from requesting script will always overwrite $_GET in $action if they both have same key
+     * $action = 'index.php?id=1' and requesting script is index.php?id=3&lang=en, resulting to index.php?id=1&lang=en
      * @param bool $isUpload
      * @param mixed $attr['id']
      * @param mixed $attr['class']
@@ -506,6 +509,7 @@ class Form
      */
     public function formStart( $action, $isUpload, $attr = array() )
     {
+        $action = $this->formAction( $action );
         $isUpload = ( boolean )$isUpload;
         $formName = 'Form' . ++self::$instance;
         $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $formName . 'Id';
@@ -542,6 +546,50 @@ class Form
             return $_GET;
         }
 
+    }
+
+
+    /**
+     * Method to create form action
+     * @param $action
+     * @return string
+     */
+    protected function formAction( $action )
+    {
+        $url = parse_url( $action );
+        $url = $url['path'] . '?';
+        $action_query = $this->extractQueryString( $action );
+        $request_query = $this->extractQueryString( $_SERVER['REQUEST_URI'] );
+        $collections = array_merge( $action_query, $request_query );
+
+        foreach( $collections as $key => $val ) {
+            $url .= $key . '=' . $val . '&';
+        }
+
+        $url = rtrim( $url, '&' );
+        return $url;
+    }
+
+
+    /**
+     * Method to extract $_GET data from url
+     * @param $url
+     * @return array
+     */
+    protected function extractQueryString( $url )
+    {
+        $url = parse_url( $url );
+        $collections = [ ];
+
+        if( isset( $url['query'] ) ) {
+            $parts = explode( '&', $url['query'] );
+
+            foreach( $parts as $part ) {
+                list( $key, $val ) = explode( '=', $part );
+                $collections[$key] = $val;
+            }
+        }
+        return $collections;
     }
 
 
