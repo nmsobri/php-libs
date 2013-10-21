@@ -10,7 +10,7 @@ class Form
     /**
      * @var string form method
      */
-    protected $formMethod;
+    protected $form_method;
 
 
     /**
@@ -21,11 +21,11 @@ class Form
 
 
     /**
-     * @param string $formMethod
+     * @param string $form_method
      */
-    public function __construct( $formMethod = 'Post' )
+    public function __construct( $form_method = 'post' )
     {
-        $this->formMethod = ( is_null( $formMethod ) ) ? 'Post' : ucfirst( strtolower( $formMethod ) );
+        $this->form_method = ( is_null( $form_method ) ) ? 'post' : strtolower( $form_method );
     }
 
 
@@ -43,13 +43,8 @@ class Form
     public function text( $name, $defaultValue = '', $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array(); /* Cast to an array if $attribute exist otherwise create an empty array */
-
         $formData = & $this->getFormData();
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
-        $placeholder = ( array_key_exists( 'placeholder', $attr ) ) ? $attr['placeholder'] : '';
-        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
+        $cfg = $this->configElement( $name, $attr );
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
         #$_POST[data][]
@@ -58,17 +53,15 @@ class Form
             if( isset( $formData[$tmp_name] ) ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
-            }
-            else {
+            } else {
                 $value = $defaultValue;
             }
-        }
-        else {
+        } else {
             $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         }
 
         $text = '';
-        $text .= '<input type="text" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . $readonly . ' placeholder="' . $placeholder . '"' . '>';
+        $text .= '<input type="text" name="' . $name . '" id="' . $cfg['id'] . '" class="' . $$cfg['class'] . '" value="' . $value . '" ' . $disabled . $readonly . ' placeholder="' . $$cfg['placeholder'] . '"' . '>';
         $text .= PHP_EOL;
         return $text;
     }
@@ -90,15 +83,8 @@ class Form
     public function textarea( $name, $defaultValue = '', $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-
         $formData = & $this->getFormData();
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
-        $placeholder = ( array_key_exists( 'placeholder', $attr ) ) ? $attr['placeholder'] : '';
-        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
-        $cols = ( array_key_exists( 'cols', $attr ) ) ? $attr['cols'] : 20;
-        $rows = ( array_key_exists( 'rows', $attr ) ) ? $attr['rows'] : 3;
+        $cfg = $this->configElement( $name, $attr );
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
 
         #$_POST[data][]
@@ -107,17 +93,15 @@ class Form
             if( isset( $formData[$tmp_name] ) ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
-            }
-            else {
+            } else {
                 $value = $defaultValue;
             }
-        }
-        else {
+        } else {
             $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         }
 
         $textarea = '';
-        $textarea .= '<textarea name="' . $name . '" id="' . $id . '" class="' . $class . '" cols="' . $cols . '" rows="' . $rows . '" ' . $disabled . $readonly . ' placeholder="' . $placeholder . '"' . '>';
+        $textarea .= '<textarea name="' . $name . '" id="' . $$cfg['id'] . '" class="' . $$cfg['class'] . '" cols="' . $cfg['cols'] . '" rows="' . $cfg['rows'] . '" ' . $cfg['disabled'] . $cfg['readonly'] . ' placeholder="' . $$cfg['placeholder'] . '"' . '>';
         $textarea .= $value;
         $textarea .= '</textarea>';
         $textarea .= PHP_EOL;
@@ -139,15 +123,10 @@ class Form
     public function password( $name, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
-        $placeholder = ( array_key_exists( 'placeholder', $attr ) ) ? $attr['placeholder'] : '';
-        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
+        $cfg = $this->configElement( $name, $attr );
 
         $password = '';
-        $password .= '<input type="password" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled . $readonly . ' placeholder="' . $placeholder . '"' . '>';
+        $password .= '<input type="password" name="' . $name . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ' . $cfg['disabled'] . $cfg['readonly'] . ' placeholder="' . $cfg['placeholder'] . '"' . '>';
         $password .= PHP_EOL;
         return $password;
     }
@@ -207,14 +186,8 @@ class Form
     public function select( $name, $options, $selected = null, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-
         $formData = & $this->getFormData();
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
-        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
-        $multiple = ( array_key_exists( 'multiple', $attr ) ) ? $attr['multiple'] : null;
-        $size = ( array_key_exists( 'size', $attr ) ) ? $attr['size'] : null;
+        $cfg = $this->configElement( $name, $attr );
         $selected = ( is_null( $selected ) ) ? '' : $selected;
 
         static $instance = 0;
@@ -233,12 +206,10 @@ class Form
                     $value[] = $form_val;
                     array_shift( $formData[$tmp_name] );
                 }
-            }
-            else {
+            } else {
                 $value = $selected;
             }
-        }
-        else {
+        } else {
             $value = isset( $formData[$name] ) ? $formData[$name] : $selected;
         }
 
@@ -249,16 +220,14 @@ class Form
                 self::select( $name, $val );
                 $instance--;
                 $optionsList .= '</optgroup>' . PHP_EOL;
-            }
-            else {
+            } else {
                 $optionsList .= '<option value="' . $key . '" ';
 
                 if( is_array( $value ) ) {
                     if( in_array( $key, $value ) ) {
                         $optionsList .= 'selected="selected"';
                     }
-                }
-                else {
+                } else {
                     if( $key == $value ) {
                         $optionsList .= 'selected="selected"';
                     }
@@ -269,10 +238,10 @@ class Form
 
         $select = '';
         $select .= '<select name="' . $name . '"';
-        $select .= ( !is_null( $multiple ) ) ? ' multiple="multiple"' : '';
-        $select .= ( !is_null( $size ) ) ? ' size="' . $size . '"' : '';
-        $select .= ' id="' . $id . '" class="' . $class . '"';
-        $select .= $disabled . $readonly . '>';
+        $select .= ( !is_null( $cfg['multiple'] ) ) ? ' multiple="multiple"' : '';
+        $select .= ( !is_null( $cfg['size'] ) ) ? ' size="' . $cfg['size'] . '"' : '';
+        $select .= ' id="' . $cfg['id'] . '" class="' . $cfg['class'] . '"';
+        $select .= $cfg['disabled'] . $cfg['readonly'] . '>';
         $select .= PHP_EOL;
         $select .= $optionsList;
         $select .= '</select>';
@@ -296,38 +265,31 @@ class Form
     public function radio( $name, $value, $checked = false, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-
         $formData = & $this->getFormData();
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
-        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
+        $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
 
         $radio = '';
-        $radio .= '<input type="radio" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ';
+        $radio .= '<input type="radio" name="' . $name . '" value="' . $value . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ';
 
         #$_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
             if( !isset( $formData[$tmp_name] ) and $checked ) {
                 $radio .= 'checked';
-            }
-            elseif( ( $formData[$tmp_name]  and $formData[$tmp_name][0] == $value ) ) {
+            } elseif( ( $formData[$tmp_name]  and $formData[$tmp_name][0] == $value ) ) {
                 $radio .= 'checked';
             }
-        }
-        else {
+        } else {
             if( !$formData[$name] and $checked ) {
                 $radio .= 'checked';
-            }
-            elseif( ( $formData[$name]  and $formData[$name] == $value ) ) {
+            } elseif( ( $formData[$name]  and $formData[$name] == $value ) ) {
                 $radio .= 'checked';
             }
         }
 
 
-        $radio .= $disabled . $readonly . '>' . PHP_EOL;
+        $radio .= $cfg['disabled'] . $cfg['readonly'] . '>' . PHP_EOL;
         return $radio;
     }
 
@@ -346,17 +308,12 @@ class Form
     public function checkbox( $name, $value, $checked = false, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-
         $formData = & $this->getFormData();
-
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
-        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
+        $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
 
         $checkbox = '';
-        $checkbox .= '<input type="checkbox" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ';
+        $checkbox .= '<input type="checkbox" name="' . $name . '" value="' . $value . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ';
 
         #form with same name $_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
@@ -368,14 +325,13 @@ class Form
                 }
                 $checkbox .= 'checked';
             }
-        }
-        else {
+        } else {
             if( ( isset( $formData[$name] )  and $formData[$name] == $value ) or ( !$formData && $checked ) ) {
                 $checkbox .= 'checked';
             }
         }
 
-        $checkbox .= $disabled . $readonly . '>' . PHP_EOL;
+        $checkbox .= $cfg['disabled'] . $cfg['readonly'] . '>' . PHP_EOL;
         return $checkbox;
     }
 
@@ -392,14 +348,10 @@ class Form
     public function file( $name, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
-        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
+        $cfg = $this->configElement( $name, $attr );
 
         $file = '';
-        $file .= '<input type="file" name="' . $name . '" id="' . $id . '" class="' . $class . '" ' . $disabled . $readonly . '>';
+        $file .= '<input type="file" name="' . $name . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ' . $cfg['disabled'] . $cfg['readonly'] . '>';
         $file .= PHP_EOL;
         return $file;
     }
@@ -417,9 +369,7 @@ class Form
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $formData = & $this->getFormData();
-
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
+        $cfg = $this->configElement( $name, $attr );
 
         #$_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
@@ -427,17 +377,15 @@ class Form
             if( isset( $formData[$tmp_name] ) ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
-            }
-            else {
+            } else {
                 $value = $defaultValue;
             }
-        }
-        else {
+        } else {
             $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         }
 
         $hidden = '';
-        $hidden .= '<input type="hidden" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '">';
+        $hidden .= '<input type="hidden" name="' . $name . '" value="' . $value . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '">';
         $hidden .= PHP_EOL;
         return $hidden;
     }
@@ -457,14 +405,10 @@ class Form
     public function button( $name, $value, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
-        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
+        $cfg = $this->configElement( $name, $attr );
 
         $button = '';
-        $button .= '<input type="button" name="' . $name . '" value="' . $value . '" id="' . $id . '" class="' . $class . '" ' . $disabled . $readonly . '>';
+        $button .= '<input type="button" name="' . $name . '" value="' . $value . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ' . $cfg['disabled'] . $cfg['readonly'] . '>';
         $button .= PHP_EOL;
         return $button;
     }
@@ -483,14 +427,10 @@ class Form
     public function submit( $name, $value = 'Submit', $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $name . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $name . 'Class';
-        $disabled = ( array_key_exists( 'disabled', $attr ) ) ? 'disabled="disabled"' : '';
-        $readonly = ( array_key_exists( 'readonly', $attr ) ) ? 'readonly="readonly"' : '';
+        $cfg = $this->configElement( $name, $attr );
 
         $submit = '';
-        $submit .= '<input type="submit" name="' . $name . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" ' . $disabled . $readonly . '>';
+        $submit .= '<input type="submit" name="' . $name . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" value="' . $value . '" ' . $cfg['disabled'] . $cfg['readonly'] . '>';
         $submit .= PHP_EOL;
         return $submit;
     }
@@ -501,23 +441,21 @@ class Form
      * @param string $action
      * If $_GET data exist in the $action, it will be merge with $_GET from requesting script
      * $_GET from requesting script will always overwrite $_GET in $action if they both have same key
-     * $action = 'index.php?id=1' and requesting script is index.php?id=3&lang=en, resulting to index.php?id=1&lang=en
-     * @param bool $isUpload
+     * $action = 'index.php?id=1' and requesting script is index.php?id=3&lang=en, resulting to index.php?id=3&lang=en
      * @param mixed $attr['id']
      * @param mixed $attr['class']
+     * @param mixed $attr['target']
+     * @param bool $attr[upload]
      * @return string
      */
-    public function formStart( $action, $isUpload, $attr = array() )
+    public function formStart( $action, $attr = array() )
     {
         $action = $this->formAction( $action );
-        $isUpload = ( boolean )$isUpload;
         $formName = 'Form' . ++self::$instance;
-        $id = ( array_key_exists( 'id', $attr ) ) ? $attr['id'] : $formName . 'Id';
-        $class = ( array_key_exists( 'class', $attr ) ) ? $attr['class'] : $formName . 'Class';
-        $target = ( array_key_exists( 'target', $attr ) ) ? $attr['target'] : '';
+        $cfg = $this->configElement( $formName, $attr );
 
-        $formStart = '<form name="' . $formName . '" id="' . $id . '" class="' . $class . '" method="' . $this->formMethod . '" action="' . $action . '" target="' . $target . '"';
-        $formStart .= ( $isUpload ) ? ' enctype="multipart/form-data">' : '>';
+        $formStart = '<form name="' . $formName . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" method="' . $this->form_method . '" action="' . $action . '" target="' . $cfg['target'] . '"';
+        $formStart .= ( $cfg['upload'] ) ? ' enctype="multipart/form-data">' : '>';
         $formStart .= PHP_EOL;
         return $formStart;
     }
@@ -539,10 +477,9 @@ class Form
      */
     protected function &getFormData()
     {
-        if( $this->formMethod == 'Post' ) {
+        if( $this->form_method == 'post' ) {
             return $_POST;
-        }
-        else {
+        } else {
             return $_GET;
         }
 
@@ -590,6 +527,27 @@ class Form
             }
         }
         return $collections;
+    }
+
+
+    protected function configElement( $name, array $attr )
+    {
+        $cfg = array(
+            'id' => $name . '_id',
+            'class' => $name . '_class',
+            'disabled' => '',
+            'readonly' => '',
+            'placeholder' => '',
+            'cols' => 20,
+            'rows' => 3,
+            'multiple' => null,
+            'size' => null,
+            'target' => '',
+            'upload' => false
+        );
+
+        return array_merge($cfg, $attr);
+
     }
 
 
