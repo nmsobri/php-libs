@@ -53,16 +53,16 @@ class Form
             if( isset( $formData[$tmp_name] ) ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
-            } else {
+            }
+            else {
                 $value = $defaultValue;
             }
-        } else {
+        }
+        else {
             $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         }
 
-        $text = '';
-        $text .= '<input type="text" name="' . $name . '" id="' . $cfg['id'] . '" class="' . $$cfg['class'] . '" value="' . $value . '" ' . $disabled . $readonly . ' placeholder="' . $$cfg['placeholder'] . '"' . '>';
-        $text .= PHP_EOL;
+        $text = sprintf( '<input type="text" name="%s" id="%s" class="%s" value="%s"  placeholder="%s" %s  %s>', $name, $cfg['id'], $cfg['class'], $value, $cfg['placeholder'], $cfg['readonly'], $cfg['disabled'] );
         return $text;
     }
 
@@ -93,18 +93,16 @@ class Form
             if( isset( $formData[$tmp_name] ) ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
-            } else {
+            }
+            else {
                 $value = $defaultValue;
             }
-        } else {
+        }
+        else {
             $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         }
 
-        $textarea = '';
-        $textarea .= '<textarea name="' . $name . '" id="' . $$cfg['id'] . '" class="' . $$cfg['class'] . '" cols="' . $cfg['cols'] . '" rows="' . $cfg['rows'] . '" ' . $cfg['disabled'] . $cfg['readonly'] . ' placeholder="' . $$cfg['placeholder'] . '"' . '>';
-        $textarea .= $value;
-        $textarea .= '</textarea>';
-        $textarea .= PHP_EOL;
+        $textarea = sprintf( '<textarea name="%s" id="%s" class="%s" placeholder="%s" cols="%d" rows="%d" %s %s >%s</textarea>', $name, $cfg['id'], $cfg['class'], $cfg['placeholder'], $cfg['cols'], $cfg['rows'], $cfg['readonly'], $cfg['disabled'], $value );
         return $textarea;
     }
 
@@ -125,9 +123,7 @@ class Form
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
 
-        $password = '';
-        $password .= '<input type="password" name="' . $name . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ' . $cfg['disabled'] . $cfg['readonly'] . ' placeholder="' . $cfg['placeholder'] . '"' . '>';
-        $password .= PHP_EOL;
+        $password = sprintf( '<input type="password" name="%s" id="%s" class="%s" placeholder="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['placeholder'], $cfg['readonly'], $cfg['disabled'] );
         return $password;
     }
 
@@ -206,10 +202,12 @@ class Form
                     $value[] = $form_val;
                     array_shift( $formData[$tmp_name] );
                 }
-            } else {
+            }
+            else {
                 $value = $selected;
             }
-        } else {
+        }
+        else {
             $value = isset( $formData[$name] ) ? $formData[$name] : $selected;
         }
 
@@ -220,14 +218,16 @@ class Form
                 self::select( $name, $val );
                 $instance--;
                 $optionsList .= '</optgroup>' . PHP_EOL;
-            } else {
+            }
+            else {
                 $optionsList .= '<option value="' . $key . '" ';
 
                 if( is_array( $value ) ) {
                     if( in_array( $key, $value ) ) {
                         $optionsList .= 'selected="selected"';
                     }
-                } else {
+                }
+                else {
                     if( $key == $value ) {
                         $optionsList .= 'selected="selected"';
                     }
@@ -236,17 +236,7 @@ class Form
             }
         }
 
-        $select = '';
-        $select .= '<select name="' . $name . '"';
-        $select .= ( !is_null( $cfg['multiple'] ) ) ? ' multiple="multiple"' : '';
-        $select .= ( !is_null( $cfg['size'] ) ) ? ' size="' . $cfg['size'] . '"' : '';
-        $select .= ' id="' . $cfg['id'] . '" class="' . $cfg['class'] . '"';
-        $select .= $cfg['disabled'] . $cfg['readonly'] . '>';
-        $select .= PHP_EOL;
-        $select .= $optionsList;
-        $select .= '</select>';
-        $select .= PHP_EOL;
-
+        $select = sprintf( '<select name="%s" id="%s" class="%s" %d %s %s %s>%s</select>', $name, $cfg['id'], $cfg['class'], $cfg['size'], $cfg['multiple'], $cfg['readonly'], $cfg['disabled'], $optionsList );
         return $select;
     }
 
@@ -268,28 +258,28 @@ class Form
         $formData = & $this->getFormData();
         $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
-
-        $radio = '';
-        $radio .= '<input type="radio" name="' . $name . '" value="' . $value . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ';
+        $radio_checked = '';
 
         #$_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
             $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
             if( !isset( $formData[$tmp_name] ) and $checked ) {
-                $radio .= 'checked';
-            } elseif( ( $formData[$tmp_name]  and $formData[$tmp_name][0] == $value ) ) {
-                $radio .= 'checked';
+                $radio_checked = 'checked';
             }
-        } else {
+            elseif( ( $formData[$tmp_name]  and $formData[$tmp_name][0] == $value ) ) {
+                $radio_checked = 'checked';
+            }
+        }
+        else {
             if( !$formData[$name] and $checked ) {
-                $radio .= 'checked';
-            } elseif( ( $formData[$name]  and $formData[$name] == $value ) ) {
-                $radio .= 'checked';
+                $radio_checked = 'checked';
+            }
+            elseif( ( $formData[$name]  and $formData[$name] == $value ) ) {
+                $radio_checked = 'checked';
             }
         }
 
-
-        $radio .= $cfg['disabled'] . $cfg['readonly'] . '>' . PHP_EOL;
+        $radio = sprintf( '<input type="radio" name="%s" id="%s" class="%s" value="%s" %s %s %s>', $name, $cfg['id'], $cfg['class'], $value, $radio_checked, $cfg['readonly'], $cfg['disabled'] );
         return $radio;
     }
 
@@ -311,9 +301,7 @@ class Form
         $formData = & $this->getFormData();
         $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
-
-        $checkbox = '';
-        $checkbox .= '<input type="checkbox" name="' . $name . '" value="' . $value . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ';
+        $checkbox_checked = '';
 
         #form with same name $_POST[data][]
         if( substr( $name, -2 ) == '[]' ) {
@@ -323,15 +311,16 @@ class Form
                 if( isset( $formData[$tmp_name] ) ) {
                     array_shift( $formData[$tmp_name] );
                 }
-                $checkbox .= 'checked';
+                $checkbox_checked = 'checked';
             }
-        } else {
+        }
+        else {
             if( ( isset( $formData[$name] )  and $formData[$name] == $value ) or ( !$formData && $checked ) ) {
-                $checkbox .= 'checked';
+                $checkbox_checked = 'checked';
             }
         }
 
-        $checkbox .= $cfg['disabled'] . $cfg['readonly'] . '>' . PHP_EOL;
+        $checkbox = sprintf( '<input type="checkbox" name="%s" id="%s" class="%s" value="%s" %s %s %s>', $name, $cfg['id'], $cfg['class'], $value, $checkbox_checked, $cfg['readonly'], $cfg['disabled'] );
         return $checkbox;
     }
 
@@ -350,9 +339,7 @@ class Form
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
 
-        $file = '';
-        $file .= '<input type="file" name="' . $name . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ' . $cfg['disabled'] . $cfg['readonly'] . '>';
-        $file .= PHP_EOL;
+        $file = sprintf( '<input type="file" name="%s" id="%s" class="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] );
         return $file;
     }
 
@@ -377,16 +364,16 @@ class Form
             if( isset( $formData[$tmp_name] ) ) {
                 $value = $formData[$tmp_name][0];
                 array_shift( $formData[$tmp_name] );
-            } else {
+            }
+            else {
                 $value = $defaultValue;
             }
-        } else {
+        }
+        else {
             $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
         }
 
-        $hidden = '';
-        $hidden .= '<input type="hidden" name="' . $name . '" value="' . $value . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '">';
-        $hidden .= PHP_EOL;
+        $hidden = sprintf( '<input type="hidden" name="%s" value="%s" id="%s" class="%s">', $name, $value, $cfg['id'], $cfg['class'] );
         return $hidden;
     }
 
@@ -407,9 +394,7 @@ class Form
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
 
-        $button = '';
-        $button .= '<input type="button" name="' . $name . '" value="' . $value . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" ' . $cfg['disabled'] . $cfg['readonly'] . '>';
-        $button .= PHP_EOL;
+        $button = sprintf( '<input type="button" name="%s" value="%s" id="%s" class="%s" %s %s>', $name, $value, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] );
         return $button;
     }
 
@@ -429,9 +414,7 @@ class Form
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
 
-        $submit = '';
-        $submit .= '<input type="submit" name="' . $name . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" value="' . $value . '" ' . $cfg['disabled'] . $cfg['readonly'] . '>';
-        $submit .= PHP_EOL;
+        $submit = sprintf( '<input type="submit" name="%s" id="%s" class="%s" value="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $value, $cfg['readonly'], $cfg['disabled'] );
         return $submit;
     }
 
@@ -452,11 +435,10 @@ class Form
     {
         $action = $this->formAction( $action );
         $formName = 'Form' . ++self::$instance;
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $formName, $attr );
 
-        $formStart = '<form name="' . $formName . '" id="' . $cfg['id'] . '" class="' . $cfg['class'] . '" method="' . $this->form_method . '" action="' . $action . '" target="' . $cfg['target'] . '"';
-        $formStart .= ( $cfg['upload'] ) ? ' enctype="multipart/form-data">' : '>';
-        $formStart .= PHP_EOL;
+        $formStart = sprintf( '<form name="%s" id="%s" class="%s" method="%s" action="%s" target="%s" %s>', $formName, $cfg['id'], $cfg['class'], $this->form_method, $action, $cfg['target'], $cfg['upload'] );
         return $formStart;
     }
 
@@ -467,7 +449,7 @@ class Form
      */
     public function formEnd()
     {
-        return '</form>' . PHP_EOL;
+        return '</form>';
     }
 
 
@@ -479,7 +461,8 @@ class Form
     {
         if( $this->form_method == 'post' ) {
             return $_POST;
-        } else {
+        }
+        else {
             return $_GET;
         }
 
@@ -546,7 +529,7 @@ class Form
             'upload' => false
         );
 
-        return array_merge($cfg, $attr);
+        return array_merge( $cfg, $attr );
 
     }
 
