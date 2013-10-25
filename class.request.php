@@ -78,7 +78,7 @@ class Request
             exit;
         }
         elseif ( $this->session->check( $_SERVER['PHP_SELF'] . 'POST' ) || $this->session->check( $_SERVER['PHP_SELF'] . 'FILES' ) ) {
-            $_POST = $this->session->get( $_SERVER['PHP_SELF'] . 'POST' ); //just a convenience so validation object can acces to post data
+            $_POST = $this->session->get( $_SERVER['PHP_SELF'] . 'POST' ); //just a convenience so validation object can access to post data
             $this->session->keepFlash( $_SERVER['PHP_SELF'] . 'POST' );
             return true;
         }
