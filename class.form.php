@@ -30,116 +30,80 @@ class Form
 
 
     /**
-     * Method to create text control
+     * Create text control
      * @param string $name
-     * @param mixed $defaultValue
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['placeholder']
-     * @param mixed $attr['disabled'] remove from $_POST data
-     * @param mixed $attr['readonly']
+     * @param string $defaultValue
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param string $attr ['placeholder']
+     * @param bool $attr ['disabled'] remove from $_POST data
+     * @param bool $attr ['readonly']
      * @return string
      */
     public function text( $name, $defaultValue = '', $attr = array() )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array(); /* Cast to an array if $attribute exist otherwise create an empty array */
-        $formData = & $this->getFormData();
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array(); #Cast to an array if $attribute exist otherwise create an empty array
         $cfg = $this->configElement( $name, $attr );
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
-
-        #$_POST[data][]
-        if( substr( $name, -2 ) == '[]' ) {
-            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( isset( $formData[$tmp_name] ) ) {
-                $value = $formData[$tmp_name][0];
-                array_shift( $formData[$tmp_name] );
-            }
-            else {
-                $value = $defaultValue;
-            }
-        }
-        else {
-            $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
-        }
-
-        $text = sprintf( '<input type="text" name="%s" id="%s" class="%s" value="%s"  placeholder="%s" %s  %s>', $name, $cfg['id'], $cfg['class'], $value, $cfg['placeholder'], $cfg['readonly'], $cfg['disabled'] );
-        return $text;
+        $value = $this->getTextValue( $name, $defaultValue );
+        return sprintf( '<input type="text" name="%s" id="%s" class="%s" value="%s"  placeholder="%s" %s  %s>', $name, $cfg['id'], $cfg['class'], $value, $cfg['placeholder'], $cfg['readonly'], $cfg['disabled'] );
     }
 
 
     /**
-     * Method to create textarea control
+     * Create textarea control
      * @param string $name
-     * @param mixed $defaultValue
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['placeholder']
-     * @param mixed $attr['disabled'] remove from $_POST data
-     * @param mixed $attr['readonly']
-     * @param mixed $attr['cols']
-     * @param mixed $attr['rows']
+     * @param string $defaultValue
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param string $attr ['placeholder']
+     * @param bool $attr ['disabled']
+     * @param bool $attr ['readonly']
+     * @param int $attr ['cols']
+     * @param int $attr ['rows']
      * @return string
      */
     public function textarea( $name, $defaultValue = '', $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-        $formData = & $this->getFormData();
         $cfg = $this->configElement( $name, $attr );
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
-
-        #$_POST[data][]
-        if( substr( $name, -2 ) == '[]' ) {
-            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( isset( $formData[$tmp_name] ) ) {
-                $value = $formData[$tmp_name][0];
-                array_shift( $formData[$tmp_name] );
-            }
-            else {
-                $value = $defaultValue;
-            }
-        }
-        else {
-            $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
-        }
-
-        $textarea = sprintf( '<textarea name="%s" id="%s" class="%s" placeholder="%s" cols="%d" rows="%d" %s %s >%s</textarea>', $name, $cfg['id'], $cfg['class'], $cfg['placeholder'], $cfg['cols'], $cfg['rows'], $cfg['readonly'], $cfg['disabled'], $value );
-        return $textarea;
+        $value = $this->getTextValue( $name, $defaultValue );
+        return sprintf( '<textarea name="%s" id="%s" class="%s" placeholder="%s" cols="%d" rows="%d" %s %s>%s</textarea>', $name, $cfg['id'], $cfg['class'], $cfg['placeholder'], $cfg['cols'], $cfg['rows'], $cfg['readonly'], $cfg['disabled'], $value );
     }
 
 
     /**
      *
-     * Method to create password control
+     * Create password control
      * @param string $name
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['placeholder']
-     * @param mixed $attr['disabled'] remove from $_POST data
-     * @param mixed $attr['readonly']
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param string $attr ['placeholder']
+     * @param bool $attr ['disabled'] remove from $_POST data
+     * @param bool $attr ['readonly']
      * @return string
      */
     public function password( $name, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
-
-        $password = sprintf( '<input type="password" name="%s" id="%s" class="%s" placeholder="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['placeholder'], $cfg['readonly'], $cfg['disabled'] );
-        return $password;
+        return sprintf( '<input type="password" name="%s" id="%s" class="%s" placeholder="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['placeholder'], $cfg['readonly'], $cfg['disabled'] );
     }
 
 
     /**
-     * Method to create select control
+     * Create select control
      * @access public
      * @param string $name
      * @param array $options
      * @param string $selected marked option selected
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['disabled'] remove from $_POST data
-     * @param mixed $attr['readonly']
-     * @param mixed $attr['multiple']
-     * @param mixed $attr['size']
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param bool $attr ['disabled']
+     * @param bool $attr ['readonly']
+     * @param bool $attr ['multiple']
+     * @param int $attr ['size']
      * @return string
      *
      * $options is pass as follows:
@@ -182,269 +146,160 @@ class Form
     public function select( $name, $options, $selected = null, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-        $formData = & $this->getFormData();
         $cfg = $this->configElement( $name, $attr );
         $selected = ( is_null( $selected ) ) ? '' : $selected;
 
         static $instance = 0;
-        static $optionsList;
+        static $optionsList = null;
         $value = null;
 
-        if( $instance == 0 ) /* need to check if this method call in sequential (calling this method twice) to make sure it dosent cache previous <option> */ {
+        if( $instance == 0 ) /* need to check if this method call in sequential (calling this method twice) to make sure it dosent cache previous <option> */{
             $optionsList = '';
         }
 
-        #$_POST[data][]
-        if( substr( $name, -2 ) == '[]' ) {
-            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( isset( $formData[$tmp_name] ) ) {
-                foreach( $formData[$tmp_name] as $form_val ) {
-                    $value[] = $form_val;
-                    array_shift( $formData[$tmp_name] );
-                }
-            }
-            else {
-                $value = $selected;
-            }
-        }
-        else {
-            $value = isset( $formData[$name] ) ? $formData[$name] : $selected;
-        }
-
-        foreach( $options as $key => $val ) {
-            if( is_array( $val ) ) {
-                $instance++;
-                $optionsList .= '<optgroup label="' . $key . '">' . PHP_EOL;
-                self::select( $name, $val );
-                $instance--;
-                $optionsList .= '</optgroup>' . PHP_EOL;
-            }
-            else {
-                $optionsList .= '<option value="' . $key . '" ';
-
-                if( is_array( $value ) ) {
-                    if( in_array( $key, $value ) ) {
-                        $optionsList .= 'selected="selected"';
-                    }
-                }
-                else {
-                    if( $key == $value ) {
-                        $optionsList .= 'selected="selected"';
-                    }
-                }
-                $optionsList .= '>' . $val . '</option>' . PHP_EOL;
-            }
-        }
-
-        $select = sprintf( '<select name="%s" id="%s" class="%s" %d %s %s %s>%s</select>', $name, $cfg['id'], $cfg['class'], $cfg['size'], $cfg['multiple'], $cfg['readonly'], $cfg['disabled'], $optionsList );
-        return $select;
+        $value = $this->getSelectValue( $name, $selected );
+        $optionsList = $this->buildSelectOption( $name, $options, $instance, $optionsList, $value );
+        return sprintf( '<select name="%s" id="%s" class="%s" %d %s %s %s>%s</select>', $name, $cfg['id'], $cfg['class'], $cfg['size'], $cfg['multiple'], $cfg['readonly'], $cfg['disabled'], $optionsList );
     }
 
 
     /**
-     * Method to create radio control
+     * Create radio control
      * @param string $name
-     * @param mixed $value
+     * @param string $value
      * @param bool $checked
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['disabled'] remove from $_POST data
-     * @param mixed $attr['readonly']
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param bool $attr ['disabled']
+     * @param bool $attr ['readonly']
      * @return string
      */
     public function radio( $name, $value, $checked = false, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-        $formData = & $this->getFormData();
         $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
-        $radio_checked = '';
-
-        #$_POST[data][]
-        if( substr( $name, -2 ) == '[]' ) {
-            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( !isset( $formData[$tmp_name] ) and $checked ) {
-                $radio_checked = 'checked';
-            }
-            elseif( ( $formData[$tmp_name]  and $formData[$tmp_name][0] == $value ) ) {
-                $radio_checked = 'checked';
-            }
-        }
-        else {
-            if( !$formData[$name] and $checked ) {
-                $radio_checked = 'checked';
-            }
-            elseif( ( $formData[$name]  and $formData[$name] == $value ) ) {
-                $radio_checked = 'checked';
-            }
-        }
-
-        $radio = sprintf( '<input type="radio" name="%s" id="%s" class="%s" value="%s" %s %s %s>', $name, $cfg['id'], $cfg['class'], $value, $radio_checked, $cfg['readonly'], $cfg['disabled'] );
-        return $radio;
+        $radio_checked = $this->getRadioValue( $name, $value, $checked );
+        return sprintf( '<input type="radio" name="%s" id="%s" class="%s" value="%s" %s %s %s>', $name, $cfg['id'], $cfg['class'], $value, $radio_checked, $cfg['readonly'], $cfg['disabled'] );
     }
 
 
     /**
-     * Method to create checkbox control
+     * Create checkbox control
      * @param string $name
-     * @param mixed $value
+     * @param string $value
      * @param bool $checked
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['disabled'] remove from $_POST data
-     * @param mixed $attr['readonly']
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param bool $attr ['disabled'] remove from $_POST data
+     * @param bool $attr ['readonly']
      * @return string
      */
     public function checkbox( $name, $value, $checked = false, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-        $formData = & $this->getFormData();
         $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
-        $checkbox_checked = '';
-
-        #form with same name $_POST[data][]
-        if( substr( $name, -2 ) == '[]' ) {
-            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( ( isset( $formData[$tmp_name] ) and $formData[$tmp_name][0] == $value ) or ( !$formData && $checked ) ) {
-
-                if( isset( $formData[$tmp_name] ) ) {
-                    array_shift( $formData[$tmp_name] );
-                }
-                $checkbox_checked = 'checked';
-            }
-        }
-        else {
-            if( ( isset( $formData[$name] )  and $formData[$name] == $value ) or ( !$formData && $checked ) ) {
-                $checkbox_checked = 'checked';
-            }
-        }
-
-        $checkbox = sprintf( '<input type="checkbox" name="%s" id="%s" class="%s" value="%s" %s %s %s>', $name, $cfg['id'], $cfg['class'], $value, $checkbox_checked, $cfg['readonly'], $cfg['disabled'] );
-        return $checkbox;
+        $checkbox_checked = $this->getCheckboxValue( $name, $value, $checked );
+        return sprintf( '<input type="checkbox" name="%s" id="%s" class="%s" value="%s" %s %s %s>', $name, $cfg['id'], $cfg['class'], $value, $checkbox_checked, $cfg['readonly'], $cfg['disabled'] );
     }
 
 
     /**
-     * Method to create file control (for upload)
+     * Create file control (for upload)
      * @param string $name
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['disabled'] remove from $_POST data
-     * @param mixed $attr['readonly']
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param bool $attr ['disabled'] remove from $_POST data
+     * @param bool $attr ['readonly']
      * @return string
      */
     public function file( $name, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
-
-        $file = sprintf( '<input type="file" name="%s" id="%s" class="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] );
-        return $file;
+        return sprintf( '<input type="file" name="%s" id="%s" class="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] );
     }
 
 
     /**
-     * Method to create hidden control
-     * @param mixed $name
-     * @param mixed $defaultValue
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
+     * Create hidden control
+     * @param string $name
+     * @param string $defaultValue
+     * @param string $attr ['id']
+     * @param string $attr ['class']
      * @return string
      */
     public function hidden( $name, $defaultValue, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
-        $formData = & $this->getFormData();
         $cfg = $this->configElement( $name, $attr );
-
-        #$_POST[data][]
-        if( substr( $name, -2 ) == '[]' ) {
-            $tmp_name = substr( $name, 0, strpos( $name, '[]' ) );
-            if( isset( $formData[$tmp_name] ) ) {
-                $value = $formData[$tmp_name][0];
-                array_shift( $formData[$tmp_name] );
-            }
-            else {
-                $value = $defaultValue;
-            }
-        }
-        else {
-            $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
-        }
-
-        $hidden = sprintf( '<input type="hidden" name="%s" value="%s" id="%s" class="%s">', $name, $value, $cfg['id'], $cfg['class'] );
-        return $hidden;
+        $value = $this->getTextValue( $name, $defaultValue );
+        return sprintf( '<input type="hidden" name="%s" value="%s" id="%s" class="%s">', $name, $value, $cfg['id'], $cfg['class'] );
     }
 
 
     /**
      *
-     * Method to create button control
-     * @param mixed $name
-     * @param mixed $value
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['disabled'] remove from $_POST data
-     * @param mixed $attr['readonly']
+     * Create button control
+     * @param string $name
+     * @param string $value
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param bool $attr ['disabled']
+     * @param bool $attr ['readonly']
      * @return string
      */
     public function button( $name, $value, $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
-
-        $button = sprintf( '<input type="button" name="%s" value="%s" id="%s" class="%s" %s %s>', $name, $value, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] );
-        return $button;
+        return sprintf( '<input type="button" name="%s" value="%s" id="%s" class="%s" %s %s>', $name, $value, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] );
     }
 
 
     /**
-     * Method to create submit control
+     * Create submit control
      * @param string $name
-     * @param mixed $value
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['disabled'] remove from $_POST data
-     * @param mixed $attr['readonly']
+     * @param string $value
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param bool $attr ['disabled']
+     * @param bool $attr ['readonly']
      * @return string
      */
     public function submit( $name, $value = 'Submit', $attr = array() )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
-
-        $submit = sprintf( '<input type="submit" name="%s" id="%s" class="%s" value="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $value, $cfg['readonly'], $cfg['disabled'] );
-        return $submit;
+        return sprintf( '<input type="submit" name="%s" id="%s" class="%s" value="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $value, $cfg['readonly'], $cfg['disabled'] );
     }
 
 
     /**
-     * Method to create start form tag
+     * Create start form tag
+     * If GET data exist in the $action, it will be merge with GET from requesting script
+     * GET data from requesting script will always overwrite GET in $action if they both have same key
+     * Example $action = 'index.php?id=1' and requesting script is index.php?id=3&lang=en, resulting to index.php?id=3&lang=en
      * @param string $action
-     * If $_GET data exist in the $action, it will be merge with $_GET from requesting script
-     * $_GET from requesting script will always overwrite $_GET in $action if they both have same key
-     * $action = 'index.php?id=1' and requesting script is index.php?id=3&lang=en, resulting to index.php?id=3&lang=en
-     * @param mixed $attr['id']
-     * @param mixed $attr['class']
-     * @param mixed $attr['target']
-     * @param bool $attr[upload]
+     * @param string $attr ['id']
+     * @param string $attr ['class']
+     * @param string $attr ['target']
+     * @param bool $attr [upload]
      * @return string
      */
     public function formStart( $action, $attr = array() )
     {
+        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $action = $this->formAction( $action );
         $formName = 'Form' . ++self::$instance;
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $formName, $attr );
-
-        $formStart = sprintf( '<form name="%s" id="%s" class="%s" method="%s" action="%s" target="%s" %s>', $formName, $cfg['id'], $cfg['class'], $this->form_method, $action, $cfg['target'], $cfg['upload'] );
-        return $formStart;
+        return sprintf( '<form name="%s" id="%s" class="%s" method="%s" action="%s" target="%s" %s>', $formName, $cfg['id'], $cfg['class'], $this->form_method, $action, $cfg['target'], $cfg['upload'] );
     }
 
 
     /**
-     * Method to create end form tag
+     * Create end form tag
      * @return string
      */
     public function formEnd()
@@ -454,24 +309,18 @@ class Form
 
 
     /**
-     * Populated form data
+     * Get form data
      * @return mixed
      */
     protected function &getFormData()
     {
-        if( $this->form_method == 'post' ) {
-            return $_POST;
-        }
-        else {
-            return $_GET;
-        }
-
+        return ( $this->form_method == 'post' ) ? $_POST : $_GET;
     }
 
 
     /**
-     * Method to create form action
-     * @param $action
+     * Create form action
+     * @param string $action
      * @return string
      */
     protected function formAction( $action )
@@ -482,7 +331,7 @@ class Form
         $request_query = $this->extractQueryString( $_SERVER['REQUEST_URI'] );
         $collections = array_merge( $action_query, $request_query );
 
-        foreach( $collections as $key => $val ) {
+        foreach( $collections as $key => $val ){
             $url .= $key . '=' . $val . '&';
         }
 
@@ -492,8 +341,8 @@ class Form
 
 
     /**
-     * Method to extract $_GET data from url
-     * @param $url
+     * Extract $_GET data from url
+     * @param string $url
      * @return array
      */
     protected function extractQueryString( $url )
@@ -501,10 +350,10 @@ class Form
         $url = parse_url( $url );
         $collections = [ ];
 
-        if( isset( $url['query'] ) ) {
+        if( isset( $url['query'] ) ){
             $parts = explode( '&', $url['query'] );
 
-            foreach( $parts as $part ) {
+            foreach( $parts as $part ){
                 list( $key, $val ) = explode( '=', $part );
                 $collections[$key] = $val;
             }
@@ -513,24 +362,197 @@ class Form
     }
 
 
+    /**
+     * Populate html element attribute
+     * @param string $name
+     * @param array $attr
+     * @return array
+     */
     protected function configElement( $name, array $attr )
     {
-        $cfg = array(
-            'id' => $name . '_id',
-            'class' => $name . '_class',
-            'disabled' => '',
-            'readonly' => '',
-            'placeholder' => '',
-            'cols' => 20,
-            'rows' => 3,
-            'multiple' => null,
-            'size' => null,
-            'target' => '',
-            'upload' => false
+        #Overwrite the attribute because this attribute cant be use by itself
+        $attr['disabled'] = ( $attr['disabled'] == true ) ? 'disabled' : null;
+        $attr['readonly'] = ( $attr['readonly'] == true ) ? 'readonly' : null;
+        $attr['multiple'] = ( $attr['multiple'] == true ) ? 'multiple' : null;
+        $attr['upload'] = ( $attr['upload'] == true ) ? 'enctype="multipart/form-data"' : null;
+        $attr['size'] = ( is_int( $attr['size'] ) ) ? sprintf( 'size="%d"', $attr['size'] ) : null;
+
+        $cfg = array( 'id' => $name . '_id', 'class' => $name . '_class', 'disabled' => null,
+            'readonly' => null, 'placeholder' => null, 'cols' => 20, 'rows' => 3,
+            'multiple' => null, 'size' => null, 'target' => null, 'upload' => null
         );
 
         return array_merge( $cfg, $attr );
 
+    }
+
+
+    /**
+     * Get value for all text related html element
+     * @param string $name
+     * @param string $defaultValue
+     * @return string
+     */
+    protected function getTextValue( $name, $defaultValue )
+    {
+        #$_POST[data][]
+        $formData = & $this->getFormData();
+        if( substr( $name, -2 ) == '[]' ){
+            $elem_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if( isset( $formData[$elem_name] ) ){
+                $value = $formData[$elem_name][0];
+                array_shift( $formData[$elem_name] );
+                return $value;
+            }
+            else{
+                $value = $defaultValue;
+                return $value;
+            }
+        }
+        else{
+            $value = isset( $formData[$name] ) ? $formData[$name] : $defaultValue;
+            return $value;
+        }
+    }
+
+
+    /**
+     * Get value for html select
+     * @param string $name
+     * @param string $selected
+     * @return mixed
+     */
+    protected function getSelectValue( $name, $selected )
+    {
+        #$_POST[data][]
+        $formData = & $this->getFormData();
+        if( substr( $name, -2 ) == '[]' ){
+            $elem_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if( isset( $formData[$elem_name] ) ){
+                foreach( $formData[$elem_name] as $form_val ){
+                    $value[] = $form_val;
+                    array_shift( $formData[$elem_name] );
+                }
+                return $value;
+            }
+            else{
+                $value = $selected;
+                return $value;
+            }
+        }
+        else{
+            $value = isset( $formData[$name] ) ? $formData[$name] : $selected;
+            return $value;
+        }
+    }
+
+
+    /**
+     * Get value for html radio
+     * @param string $name
+     * @param string $value
+     * @param bool $checked
+     * @return string
+     */
+    protected function getRadioValue( $name, $value, $checked )
+    {
+        #$_POST[data][]
+        $formData = & $this->getFormData();
+        if( substr( $name, -2 ) == '[]' ){
+            $elem_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if( !isset( $formData[$elem_name] ) and $checked ){
+                $radio_checked = 'checked';
+                return $radio_checked;
+            }
+            elseif( ( $formData[$elem_name]  and $formData[$elem_name][0] == $value ) ){
+                $radio_checked = 'checked';
+                return $radio_checked;
+            }
+            return $radio_checked;
+        }
+        else{
+            if( !$formData[$name] and $checked ){
+                $radio_checked = 'checked';
+                return $radio_checked;
+            }
+            elseif( ( $formData[$name]  and $formData[$name] == $value ) ){
+                $radio_checked = 'checked';
+                return $radio_checked;
+            }
+            return $radio_checked;
+        }
+    }
+
+
+    /**
+     * Get value for html checkbox
+     * @param string $name
+     * @param string $value
+     * @param bool $checked
+     * @return string
+     */
+    protected function getCheckboxValue( $name, $value, $checked )
+    {
+        #$_POST[data][]
+        $formData = & $this->getFormData();
+        if( substr( $name, -2 ) == '[]' ){
+            $elem_name = substr( $name, 0, strpos( $name, '[]' ) );
+            if( ( isset( $formData[$elem_name] ) and $formData[$elem_name][0] == $value ) or ( !$formData && $checked ) ){
+
+                if( isset( $formData[$elem_name] ) ){
+                    array_shift( $formData[$elem_name] );
+                }
+                $checkbox_checked = 'checked';
+                return $checkbox_checked;
+            }
+            return $checkbox_checked;
+        }
+        else{
+            if( ( isset( $formData[$name] )  and $formData[$name] == $value ) or ( !$formData && $checked ) ){
+                $checkbox_checked = 'checked';
+                return $checkbox_checked;
+            }
+            return $checkbox_checked;
+        }
+    }
+
+
+    /**
+     * Build select option list
+     * @param string $name
+     * @param array $options
+     * @param int $instance
+     * @param string $optionsList
+     * @param mixed $value
+     * @return array
+     */
+    protected function buildSelectOption( $name, $options, &$instance, &$optionsList, $value )
+    {
+        foreach( $options as $key => $val ){
+            if( is_array( $val ) ){
+                $instance++;
+                $optionsList .= sprintf( '<optgroup label="%s">', $key );
+                $this->select( $name, $val );
+                $instance--;
+                $optionsList .= '</optgroup>';
+            }
+            else{
+                $optionsList .= sprintf( '<option value="%s"', $key );
+
+                if( is_array( $value ) ){
+                    if( in_array( $key, $value ) ){
+                        $optionsList .= ' selected';
+                    }
+                }
+                else{
+                    if( $key == $value ){
+                        $optionsList .= ' selected';
+                    }
+                }
+                $optionsList .= sprintf( '>%s</option>', $val );
+            }
+        }
+        return $optionsList;
     }
 
 
