@@ -40,7 +40,7 @@ class Form
      * @param bool $attr['readonly']
      * @return string
      */
-    public function text( $name, $defaultValue = '', $attr = array() )
+    public function text( $name, $defaultValue = null, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array(); #Cast to an array if $attribute exist otherwise create an empty array
         $cfg = $this->configElement( $name, $attr );
@@ -63,7 +63,7 @@ class Form
      * @param int $attr['rows']
      * @return string
      */
-    public function textarea( $name, $defaultValue = '', $attr = array() )
+    public function textarea( $name, $defaultValue = null, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
@@ -83,7 +83,7 @@ class Form
      * @param bool $attr['readonly']
      * @return string
      */
-    public function password( $name, $attr = array() )
+    public function password( $name, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
@@ -140,7 +140,7 @@ class Form
      * </select>
      *
      */
-    public function select( $name, $options, $selected = null, $attr = array() )
+    public function select( $name, $options, $selected = null, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
@@ -173,7 +173,7 @@ class Form
      * @param bool $attr['readonly']
      * @return string
      */
-    public function radio( $name, $value, $checked = false, $attr = array() )
+    public function radio( $name, $value, $checked = false, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
@@ -194,7 +194,7 @@ class Form
      * @param bool $attr['readonly']
      * @return string
      */
-    public function checkbox( $name, $value, $checked = false, $attr = array() )
+    public function checkbox( $name, $value, $checked = false, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
@@ -213,7 +213,7 @@ class Form
      * @param bool $attr['readonly']
      * @return string
      */
-    public function file( $name, $attr = array() )
+    public function file( $name, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
@@ -229,7 +229,7 @@ class Form
      * @param string $attr['class']
      * @return string
      */
-    public function hidden( $name, $value, $attr = array() )
+    public function hidden( $name, $value, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
@@ -249,7 +249,7 @@ class Form
      * @param bool $attr['readonly']
      * @return string
      */
-    public function button( $name, $value, $attr = array() )
+    public function button( $name, $value, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
@@ -267,7 +267,7 @@ class Form
      * @param bool $attr['readonly']
      * @return string
      */
-    public function submit( $name, $value = 'Submit', $attr = array() )
+    public function submit( $name, $value = 'Submit', array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $cfg = $this->configElement( $name, $attr );
@@ -289,7 +289,7 @@ class Form
      * @param bool $attr[upload]
      * @return string
      */
-    public function formStart( $action, $attr = array() )
+    public function formStart( $action, array $attr = null )
     {
         $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
         $action = $this->formAction( $action, @$_SERVER['REQUEST_URI'] );
