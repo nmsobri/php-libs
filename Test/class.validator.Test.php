@@ -1,6 +1,18 @@
 <?php
 
 include 'class.validator.php';
+include 'validator/validator.strategy.php';
+include 'validator/checkbox.validator.php';
+include 'validator/compare.validator.php';
+include 'validator/date.validator.php';
+include 'validator/email.validator.php';
+include 'validator/error.validator.php';
+include 'validator/file.validator.php';
+include 'validator/number.validator.php';
+include 'validator/radio.validator.php';
+include 'validator/regex.validator.php';
+include 'validator/select.validator.php';
+include 'validator/text.validator.php';
 
 class ValidatorTest extends PHPUnit_Framework_TestCase
 {
@@ -65,8 +77,9 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $checkbox_validator = new CheckBoxValidator( $name, $value, $attr );
         $checkbox_internal_property = $this->getInternalProperty( $checkbox_validator, 'data' );
+
         $this->assertEquals( $expected_value['value'], $checkbox_internal_property['value'] );
-        $this->assertEquals( $expected_value['message'], $checkbox_internal_property['message'] );
+        $this->assertEquals( $expected_value['errors'], $checkbox_internal_property['errors'] );
         $this->assertEquals( $expected_value['required'], $checkbox_internal_property['required'] );
         $this->assertEquals( $expected_value['field'], $checkbox_internal_property['field'] );
 
@@ -117,12 +130,12 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $compare_validator = new CompareValidator( $name, $value, $comparison_value, $comparison_field, $attr );
         $compare_internal_property = $this->getInternalProperty( $compare_validator, 'data' );
-        $this->assertEquals( $expected_value['to_compare'], $compare_internal_property['to_compare'] );
-        $this->assertEquals( $expected_value['compare_with'], $compare_internal_property['compare_with'] );
-        $this->assertEquals( $expected_value['field_comparison'], $compare_internal_property['field_comparison'] );
+        $this->assertEquals( $expected_value['to_compare'], $compare_internal_property['value'] );
+        $this->assertEquals( $expected_value['compare_with'], $compare_internal_property['compare_value'] );
+        $this->assertEquals( $expected_value['field_comparison'], $compare_internal_property['compare_field'] );
         $this->assertEquals( $expected_value['required'], $compare_internal_property['required'] );
-        $this->assertEquals( $expected_value['empty_message'], $compare_internal_property['empty_message'] );
-        $this->assertEquals( $expected_value['unmatch_message'], $compare_internal_property['unmatch_message'] );
+        $this->assertEquals( $expected_value['errors']['empty'], $compare_internal_property['errors']['empty'] );
+        $this->assertEquals( $expected_value['errors']['equal'], $compare_internal_property['errors']['equal'] );
         $this->assertEquals( $expected_value['field'], $compare_internal_property['field'] );
 
     }
@@ -179,7 +192,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $expected_value['value'], $compare_internal_property['value'] );
         $this->assertEquals( $expected_value['version'], $compare_internal_property['version'] );
         $this->assertEquals( $expected_value['required'], $compare_internal_property['required'] );
-        $this->assertEquals( $expected_value['message'], $compare_internal_property['message'] );
+        $this->assertEquals( $expected_value['errors'], $compare_internal_property['errors'] );
         $this->assertEquals( $expected_value['field'], $compare_internal_property['field'] );
 
     }
@@ -235,7 +248,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals( $expected_value['value'], $compare_internal_property['value'] );
         $this->assertEquals( $expected_value['required'], $compare_internal_property['required'] );
-        $this->assertEquals( $expected_value['message'], $compare_internal_property['message'] );
+        $this->assertEquals( $expected_value['errors'], $compare_internal_property['errors'] );
         $this->assertEquals( $expected_value['field'], $compare_internal_property['field'] );
 
     }
@@ -294,7 +307,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $expected_value['decimal'], $compare_internal_property['decimal'] );
         $this->assertEquals( $expected_value['min_length'], $compare_internal_property['min_length'] );
         $this->assertEquals( $expected_value['max_length'], $compare_internal_property['max_length'] );
-        $this->assertEquals( $expected_value['message'], $compare_internal_property['message'] );
+        $this->assertEquals( $expected_value['errors'], $compare_internal_property['errors'] );
         $this->assertEquals( $expected_value['field'], $compare_internal_property['field'] );
 
     }
@@ -350,7 +363,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals( $expected_value['value'], $compare_internal_property['value'] );
         $this->assertEquals( $expected_value['required'], $compare_internal_property['required'] );
-        $this->assertEquals( $expected_value['message'], $compare_internal_property['message'] );
+        $this->assertEquals( $expected_value['errors'], $compare_internal_property['errors'] );
         $this->assertEquals( $expected_value['field'], $compare_internal_property['field'] );
 
     }
@@ -407,7 +420,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $expected_value['value'], $compare_internal_property['value'] );
         $this->assertEquals( $expected_value['regex'], $compare_internal_property['regex'] );
         $this->assertEquals( $expected_value['required'], $compare_internal_property['required'] );
-        $this->assertEquals( $expected_value['message'], $compare_internal_property['message'] );
+        $this->assertEquals( $expected_value['errors'], $compare_internal_property['errors'] );
         $this->assertEquals( $expected_value['field'], $compare_internal_property['field'] );
 
     }
@@ -461,10 +474,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $file_validator = new FileValidator( $name, $file, $ext, $attr );
         $compare_internal_property = $this->getInternalProperty( $file_validator, 'data' );
 
-        $this->assertEquals( $expected_value['file'], $compare_internal_property['file'] );
+        $this->assertEquals( $expected_value['value'], $compare_internal_property['value'] );
         $this->assertEquals( $expected_value['extension'], $compare_internal_property['extension'] );
         $this->assertEquals( $expected_value['required'], $compare_internal_property['required'] );
-        $this->assertEquals( $expected_value['message'], $compare_internal_property['message'] );
+        $this->assertEquals( $expected_value['errors'], $compare_internal_property['errors'] );
         $this->assertEquals( $expected_value['field'], $compare_internal_property['field'] );
 
     }
@@ -520,7 +533,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals( $expected_value['value'], $compare_internal_property['value'] );
         $this->assertEquals( $expected_value['required'], $compare_internal_property['required'] );
-        $this->assertEquals( $expected_value['message'], $compare_internal_property['message'] );
+        $this->assertEquals( $expected_value['errors'], $compare_internal_property['errors'] );
         $this->assertEquals( $expected_value['field'], $compare_internal_property['field'] );
 
     }
@@ -581,7 +594,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $expected_value['allow_space'], $compare_internal_property['allow_space'] );
         $this->assertEquals( $expected_value['min_length'], $compare_internal_property['min_length'] );
         $this->assertEquals( $expected_value['max_length'], $compare_internal_property['max_length'] );
-        $this->assertEquals( $expected_value['message'], $compare_internal_property['message'] );
+        $this->assertEquals( $expected_value['errors'], $compare_internal_property['errors'] );
         $this->assertEquals( $expected_value['field'], $compare_internal_property['field'] );
 
     }
@@ -629,8 +642,8 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $msg = 'validation failed';
         $error_validator = new ErrorValidator( $msg );
-        $compare_internal_property = $this->getInternalProperty( $error_validator, 'error_msg' );
-        $this->assertEquals( $msg, $compare_internal_property );
+        $compare_internal_property = $this->getInternalProperty( $error_validator, 'data' );
+        $this->assertEquals( $msg, $compare_internal_property['errors']['error'] );
 
 
     }
@@ -696,7 +709,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $text_validator = new TextValidator( 'user', 'slier' );
         $validator->addValidator( 'user', $text_validator );
         $validator->invalidateField( 'user', 'account is not active' );
-        $validator_internal_property = $this->getInternalProperty( $validator, 'isEror' );
+        $validator_internal_property = $this->getInternalProperty( $validator, 'isError' );
         $this->assertEquals( true, $validator_internal_property );
     }
 
@@ -719,7 +732,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         $validator = new Validator();
         $validator->invalidateValidation( 'error' );
-        $result = $this->getInternalProperty( $validator, 'isEror' );
+        $result = $this->getInternalProperty( $validator, 'isError' );
         $this->assertEquals( true, $result );
     }
 
@@ -793,10 +806,16 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         return array(
 
-            array( 'subscribe', 'yes', null, array( 'value' => 'yes', 'message' => null, 'required' => true, 'field' => 'subscribe' ) ),
-            array( 'subscribe', 'yes', array( 'field' => 'newsletter' ), array( 'value' => 'yes', 'message' => null, 'required' => true, 'field' => 'newsletter' ) ),
-            array( 'subscribe', 'yes', array( 'required' => false ), array( 'value' => 'yes', 'message' => null, 'required' => false, 'field' => 'subscribe' ) ),
-            array( 'subscribe', 'yes', array( 'message' => 'hai sup' ), array( 'value' => 'yes', 'message' => 'hai sup', 'required' => true, 'field' => 'subscribe' ) )
+            array( 'subscribe', 'yes', null, array( 'value' => 'yes', 'errors' => array(
+                'empty' => null
+            ), 'required' => true, 'field' => 'subscribe' ) ),
+            array( 'subscribe', 'yes', array( 'field' => 'newsletter' ), array( 'value' => 'yes', 'errors' => array(
+                'empty' => null
+            ), 'required' => true, 'field' => 'newsletter' ) ),
+            array( 'subscribe', 'yes', array( 'required' => false ), array( 'value' => 'yes', 'errors' => array(
+                'empty' => null
+            ), 'required' => false, 'field' => 'subscribe' ) ),
+            array( 'subscribe', 'yes', array( 'errors' => array( 'empty' => 'hai sup' ) ), array( 'value' => 'yes', 'errors' => array( 'empty' => 'hai sup' ), 'required' => true, 'field' => 'subscribe' ) )
 
         );
     }
@@ -808,7 +827,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
             array( 'subscribe', 'yes', array(), true ),
             array( 'subscribe', null, array(), false ),
-            array( 'subscribe', null, array('required'=>false), true)
+            array( 'subscribe', null, array( 'required' => false ), true )
 
         );
     }
@@ -819,8 +838,8 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'subscribe', null, array(), 'Checkbox subscribe is not marked.' ),
-            array( 'subscribe', null, array( 'message' => 'this is message' ), 'this is message' )
+            array( 'subscribe', null, array(), 'Checkbox subscribe is not checked' ),
+            array( 'subscribe', null, array( 'errors' => array( 'empty' => 'this is message' ) ), 'this is message' )
 
         );
     }
@@ -832,11 +851,11 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         return array(
 
 
-            array( 'repeat_password', 123, 123, 'password', array(), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => true, 'empty_message' => null, 'unmatch_message' => null, 'field' => 'repeat_password' ) ),
-            array( 'repeat_password', 123, 123, 'password', array( 'field' => 'field' ), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => true, 'empty_message' => null, 'unmatch_message' => null, 'field' => 'field' ) ),
-            array( 'repeat_password', 123, 123, 'password', array( 'unmatch_message' => 'this is an error' ), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => true, 'empty_message' => null, 'unmatch_message' => 'this is an error', 'field' => 'repeat_password' ) ),
-            array( 'repeat_password', 123, 123, 'password', array( 'empty_message' => 'this is an error' ), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => true, 'empty_message' => 'this is an error', 'unmatch_message' => null, 'field' => 'repeat_password' ) ),
-            array( 'repeat_password', 123, 123, 'password', array( 'required' => false ), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => false, 'empty_message' => null, 'unmatch_message' => null, 'field' => 'repeat_password' ) )
+            array( 'repeat_password', 123, 123, 'password', array(), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => true, 'errors' => array( 'empty' => null, 'equal' => null ), 'field' => 'repeat_password' ) ),
+            array( 'repeat_password', 123, 123, 'password', array( 'field' => 'field' ), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => true, 'errors' => array( 'empty' => null, 'equal' => null ), 'field' => 'field' ) ),
+            array( 'repeat_password', 123, 123, 'password', array( 'unmatch_message' => 'this is an error' ), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => true, 'errors' => array( 'empty' => null, 'equal' => null ), 'field' => 'repeat_password' ) ),
+            array( 'repeat_password', 123, 123, 'password', array( 'empty_message' => 'this is an error' ), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => true, 'errors' => array( 'empty' => null, 'equal' => null ), 'field' => 'repeat_password' ) ),
+            array( 'repeat_password', 123, 123, 'password', array( 'required' => false ), array( 'to_compare' => '123', 'compare_with' => '123', 'field_comparison' => 'password', 'required' => false, 'errors' => array( 'empty' => null, 'equal' => null ), 'field' => 'repeat_password' ) )
 
         );
 
@@ -864,11 +883,11 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'repeat_password', null, 321, 'password', array('required'=>false), '' ),
-            array( 'repeat_password', null, 321, 'password', array(), 'Field repeat_password is empty.' ),
-            array( 'repeat_password', 123, 321, 'password', array( 'unmatch_message' => 'field x sama' ), 'field x sama' ),
-            array( 'repeat_password', 123, 321, 'password', array(), 'Field repeat_password does not match field  password.' ),
-            array( 'repeat_password', null, 321, 'password', array( 'empty_message' => 'field kosong' ), 'field kosong' )
+            array( 'repeat_password', null, 321, 'password', array( 'required' => false ), '' ),
+            array( 'repeat_password', null, 321, 'password', array(), 'Field repeat_password is empty' ),
+            array( 'repeat_password', 123, 321, 'password', array( 'errors' => array( 'equal' => 'field x sama' ) ), 'field x sama' ),
+            array( 'repeat_password', 123, 321, 'password', array(), 'Field repeat_password does not match field password' ),
+            array( 'repeat_password', null, 321, 'password', array( 'errors' => array( 'empty' => 'field kosong' ) ), 'field kosong' )
         );
     }
 
@@ -879,11 +898,21 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         return array(
 
 
-            array( 'dob', '2010-02-29', array(), array( 'value' => '2010-02-29', 'version' => 'us', 'required' => true, 'message' => null, 'field' => 'dob' ) ),
-            array( 'dob', '2010-02-29', array( 'field' => 'lol' ), array( 'value' => '2010-02-29', 'version' => 'us', 'required' => true, 'message' => null, 'field' => 'lol' ) ),
-            array( 'dob', '2010-02-29', array( 'message' => 'hi there' ), array( 'value' => '2010-02-29', 'version' => 'us', 'required' => true, 'message' => 'hi there', 'field' => 'dob' ) ),
-            array( 'dob', '2010-02-29', array( 'required' => false ), array( 'value' => '2010-02-29', 'version' => 'us', 'required' => false, 'message' => null, 'field' => 'dob' ) ),
-            array( 'dob', '2010-02-29', array( 'version' => 'en' ), array( 'value' => '2010-02-29', 'version' => 'en', 'required' => true, 'message' => null, 'field' => 'dob' ) )
+            array( 'dob', '2010-02-29', array(), array( 'value' => '2010-02-29', 'version' => 'us', 'required' => true, 'errors' => array(
+                'empty' => null, 'date' => null
+            ), 'field' => 'dob' ) ),
+            array( 'dob', '2010-02-29', array( 'field' => 'lol' ), array( 'value' => '2010-02-29', 'version' => 'us', 'required' => true, 'errors' => array(
+                'empty' => null, 'date' => null
+            ), 'field' => 'lol' ) ),
+            array( 'dob', '2010-02-29', array( 'message' => 'hi there' ), array( 'value' => '2010-02-29', 'version' => 'us', 'required' => true, 'errors' => array(
+                'empty' => null, 'date' => null
+            ), 'field' => 'dob' ) ),
+            array( 'dob', '2010-02-29', array( 'required' => false ), array( 'value' => '2010-02-29', 'version' => 'us', 'required' => false, 'errors' => array(
+                'empty' => null, 'date' => null
+            ), 'field' => 'dob' ) ),
+            array( 'dob', '2010-02-29', array( 'version' => 'en' ), array( 'value' => '2010-02-29', 'version' => 'en', 'required' => true, 'errors' => array(
+                'empty' => null, 'date' => null
+            ), 'field' => 'dob' ) )
 
         );
     }
@@ -895,7 +924,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         return array(
 
             array( 'dob', null, array(), false ),
-            array( 'dob', null, array('required'=>false), true),
+            array( 'dob', null, array( 'required' => false ), true ),
             array( 'dob', '00-02-2010', array( 'version' => 'eu' ), false ),
             array( 'dob', '2010-02-29', array( 'version' => 'en' ), true ),
             array( 'dob', '2010-02-00', array( 'version' => 'en' ), false ),
@@ -911,12 +940,12 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'dob', null, array(), 'Field dob is empty.' ),
-            array( 'dob', '2010-02-29', array( 'version' => 'eu' ), 'Date in field dob is invalid.' ),
-            array( 'dob', '2010-02-29', array( 'version' => 'eu', 'message' => 'invalid' ), 'invalid' ),
-            array( 'dob', '29-02-2010', array(), 'Date in field dob is invalid.' ),
-            array( 'dob', '29-02-2010', array( 'message' => 'invalid' ), 'invalid' ),
-            array( 'dob', null, array( 'message' => 'failed' ), 'failed' )
+            array( 'dob', null, array(), 'Field dob is empty' ),
+            array( 'dob', '2010-02-29', array( 'version' => 'eu' ), 'Field dob contains invalid date.Only date formatted as DD-MM-YY are allowed' ),
+            array( 'dob', '2010-02-29', array( 'version' => 'eu', 'errors' => array( 'date' => 'invalid' ) ), 'invalid' ),
+            array( 'dob', '29-02-2010', array(), 'Field dob contains invalid date.Only date formatted as YY-MM-DD are allowed' ),
+            array( 'dob', '29-02-2010', array( 'errors' => array( 'date' => 'invalid' ) ), 'invalid' ),
+            array( 'dob', null, array( 'errors' => array( 'empty' => 'failed' ) ), 'failed' )
 
         );
     }
@@ -926,11 +955,19 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         return array(
 
-            array( 'email', 'slier81@gmail.com', array(), array( 'value' => 'slier81@gmail.com', 'required' => true, 'message' => null, 'field' => 'email' ) ),
-            array( 'email', 'slier81@gmail.com', array( 'field' => 'field_name' ), array( 'value' => 'slier81@gmail.com', 'required' => true, 'message' => null, 'field' => 'field_name' ) ),
-            array( 'email', 'slier81@gmail.com', array( 'message' => 'error' ), array( 'value' => 'slier81@gmail.com', 'required' => true, 'message' => 'error', 'field' => 'email' ) ),
-            array( 'email', 'slier81@gmail.com', array( 'required' => 'gaj' ), array( 'value' => 'slier81@gmail.com', 'required' => true, 'message' => null, 'field' => 'email' ) ),
-            array( 'email', 'slier81@gmail.com', array( 'required' => false ), array( 'value' => 'slier81@gmail.com', 'required' => false, 'message' => null, 'field' => 'email' ) )
+            array( 'email', 'slier81@gmail.com', array(), array( 'value' => 'slier81@gmail.com', 'required' => true, 'errors' => array(
+                'empty' => null, 'email' => null
+            ), 'field' => 'email' ) ),
+            array( 'email', 'slier81@gmail.com', array( 'field' => 'field_name' ), array( 'value' => 'slier81@gmail.com', 'required' => true, 'errors' => array(
+                'empty' => null, 'email' => null
+            ), 'field' => 'field_name' ) ),
+            array( 'email', 'slier81@gmail.com', array( 'errors' => array( 'empty' => 'error' ) ), array( 'value' => 'slier81@gmail.com', 'required' => true, 'errors' => array( 'empty' => 'error', 'email' => null ), 'field' => 'email' ) ),
+            array( 'email', 'slier81@gmail.com', array( 'required' => 'gaj' ), array( 'value' => 'slier81@gmail.com', 'required' => true, 'errors' => array(
+                'empty' => null, 'email' => null
+            ), 'field' => 'email' ) ),
+            array( 'email', 'slier81@gmail.com', array( 'required' => false ), array( 'value' => 'slier81@gmail.com', 'required' => false, 'errors' => array(
+                'empty' => null, 'email' => null
+            ), 'field' => 'email' ) )
 
         );
     }
@@ -957,10 +994,11 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         return array(
 
 
-            array( 'email', null, array(), 'Field email is empty.' ),
-            array( 'email', 'dsfasdfads', array(), 'Email in field email is invalid.' ),
-            array( 'email', 'dsfasdfads', array( 'message' => 'error' ), 'error' ),
-            array( 'email', null, array( 'message' => 'error' ), 'error' )
+            array( 'email', null, array(), 'Field email is empty' ),
+            array( 'email', 'dsfasdfads', array(), 'Field email contains invalid email' ),
+            array( 'email', 'dsfasdfads', array( 'errors' => array( 'email' => 'error' ) ), 'error' ),
+            array( 'email', 'dsfasdfads', array( 'errors' => array( 'email' => 'error' ) ), 'error' ),
+            array( 'email', null, array( 'errors' => array( 'empty' => 'error' ) ), 'error' )
         );
 
     }
@@ -971,13 +1009,41 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'position', 123, array(), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'message' => null, 'field' => 'position' ) ),
-            array( 'position', 123, array( 'field' => 'field_name' ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'message' => null, 'field' => 'field_name' ) ),
-            array( 'position', 123, array( 'message' => 'error' ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'message' => 'error', 'field' => 'position' ) ),
-            array( 'position', 123, array( 'max_length' => 9 ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 0, 'max_length' => 9, 'message' => null, 'field' => 'position' ) ),
-            array( 'position', 123, array( 'min_length' => 7 ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 7, 'max_length' => 0, 'message' => null, 'field' => 'position' ) ),
-            array( 'position', 123, array( 'required' => 'dfa' ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'message' => null, 'field' => 'position' ) ),
-            array( 'position', 123, array( 'required' => false ), array( 'value' => '123', 'required' => false, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'message' => null, 'field' => 'position' ) )
+            array( 'position', 123, array(), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'number' => null, 'number_decimal' => null,
+                'number_fixed' => null, 'number_range' => null, 'number_decimal_fixed' => null,
+                'number_decimal_range' => null
+            ), 'field' => 'position' ) ),
+            array( 'position', 123, array( 'field' => 'field_name' ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'number' => null, 'number_decimal' => null,
+                'number_fixed' => null, 'number_range' => null, 'number_decimal_fixed' => null,
+                'number_decimal_range' => null
+            ), 'field' => 'field_name' ) ),
+            array( 'position', 123, array( 'errors' => array( 'empty' => 'error' ) ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => 'error', 'number' => null, 'number_decimal' => null,
+                'number_fixed' => null, 'number_range' => null, 'number_decimal_fixed' => null,
+                'number_decimal_range' => null
+            ), 'field' => 'position' ) ),
+            array( 'position', 123, array( 'length' => array( 'max' => 9 ) ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 1, 'max_length' => 9, 'errors' => array(
+                'empty' => null, 'number' => null, 'number_decimal' => null,
+                'number_fixed' => null, 'number_range' => null, 'number_decimal_fixed' => null,
+                'number_decimal_range' => null
+            ), 'field' => 'position' ) ),
+            array( 'position', 123, array( 'length' => 7 ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 7, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'number' => null, 'number_decimal' => null,
+                'number_fixed' => null, 'number_range' => null, 'number_decimal_fixed' => null,
+                'number_decimal_range' => null
+            ), 'field' => 'position' ) ),
+            array( 'position', 123, array( 'required' => 'dfa' ), array( 'value' => '123', 'required' => true, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'number' => null, 'number_decimal' => null,
+                'number_fixed' => null, 'number_range' => null, 'number_decimal_fixed' => null,
+                'number_decimal_range' => null
+            ), 'field' => 'position' ) ),
+            array( 'position', 123, array( 'required' => false ), array( 'value' => '123', 'required' => false, 'decimal' => 0, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'number' => null, 'number_decimal' => null,
+                'number_fixed' => null, 'number_range' => null, 'number_decimal_fixed' => null,
+                'number_decimal_range' => null
+            ), 'field' => 'position' ) )
 
         );
     }
@@ -992,16 +1058,16 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             array( 'position', '13213132132', array(), true ),
             array( 'position', '13213132132', array( 'decimal' => 2 ), false ),
             array( 'position', '13213132132.00', array( 'decimal' => 2 ), true ),
-            array( 'position', '123.00', array( 'min_length' => 2, 'max_length' => 3, 'decimal' => 2 ), true ),
-            array( 'position', '123444.00', array( 'min_length' => 2, 'max_length' => 3, 'decimal' => 2 ), false ),
-            array( 'position', '123', array( 'min_length' => 2, 'max_length' => 3 ), true ),
-            array( 'position', '12', array( 'min_length' => 2, 'max_length' => 3 ), true ),
-            array( 'position', '123.00', array( 'min_length' => 2 ), false ),
-            array( 'position', '123.00', array( 'min_length' => 3 ), false ),
-            array( 'position', '123.00', array( 'min_length' => 3, 'decimal' => 2 ), true ),
-            array( 'position', '123', array( 'min_length' => 3 ), true ),
-            array( 'position', '123', array( 'min_length' => 2 ), false ),
-            array( 'position', '123', array( 'min_length' => 3, 'max_length' => 0 ), true ),
+            array( 'position', '123.00', array( 'length' => array( 'min' => 2, 'max' => 3 ), 'decimal' => 2 ), true ),
+            array( 'position', '123444.00', array( 'length' => array( 'min' => 2, 'max' => 3 ), 'decimal' => 2 ), false ),
+            array( 'position', '123', array( 'length' => array( 'min' => 2, 'max' => 3 ) ), true ),
+            array( 'position', '12', array( 'length' => array( 'min' => 2, 'max' => 3 ) ), true ),
+            array( 'position', '123.00', array( 'length' => 2 ), false ),
+            array( 'position', '123.00', array( 'length' => 3 ), false ),
+            array( 'position', '123.00', array( 'length' => 3, 'decimal' => 2 ), true ),
+            array( 'position', '123', array( 'length' => 3 ), true ),
+            array( 'position', '123', array( 'length' => 2 ), false ),
+            array( 'position', '123', array( 'length' => 3, 'max_length' => 0 ), true ),
             array( 'position', null, array( 'required' => false ), true )
         );
     }
@@ -1012,20 +1078,18 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'position', null, array(), 'Field position is empty.' ),
-            array( 'position', '123', array( 'decimal' => 2 ), 'Field position does not match required length or does not contain valid decimal place or contain texts.' ),
-            array( 'position', '123.00', array( 'decimal' => 0 ), 'Field  position can only contain numbers.' ),
-            array( 'position', 'adfsfda', array( 'decimal' => 0 ), 'Field  position can only contain numbers.' ),
-            array( 'position', 'adfsfda', array(), 'Field  position can only contain numbers.' ),
-            array( 'position', '1.00', array( 'min_length' => 2, 'max_length' => 4, 'decimal' => 2 ), 'Field position does not match required length or does not contain valid decimal place or contain texts.' ),
-            array( 'position', '1.00', array( 'min_length' => 2, 'max_length' => 4 ), 'Field position does not match required length.' ),
-            array( 'position', '1.00', array( 'min_length' => 2, 'max_length' => 4, 'decimal' => 0 ), 'Field position does not match required length.' ),
-            array( 'position', '123', array( 'min_length' => 4 ), 'Field  position does not match required length or contain texts.' ),
-            array( 'position', '123', array( 'min_length' => 4, 'max_length' => 0 ), 'Field  position does not match required length or contain texts.' ),
-            array( 'position', '123', array( 'min_length' => 2, 'decimal' => 2 ), 'Field position does not match required length or does not contain valid decimal place or contain texts.' ),
-            array( 'position', '123.00', array( 'min_length' => 2, 'max_length' => 0, 'decimal' => 2 ), 'Field position does not match required length or does not contain valid decimal place or contain texts.' )
-
-
+            array( 'position', null, array(), 'Field position is empty' ),
+            array( 'position', '123', array( 'decimal' => 2 ), 'Field position contains error.Only number with 2 decimal places are allowed' ),
+            array( 'position', '123.00', array( 'decimal' => 0 ), 'Field position contains error.Only numbers without decimal places are allowed' ),
+            array( 'position', 'adfsfda', array( 'decimal' => 0 ), 'Field position contains error.Only numbers without decimal places are allowed' ),
+            array( 'position', 'adfsfda', array(), 'Field position contains error.Only numbers without decimal places are allowed' ),
+            array( 'position', '1.00', array( 'length' => array( 'min' => 2, 'max' => 4 ), 'decimal' => 2 ), 'Field position contains error.Only number with 2 decimal places and length between 2 and 4 are allowed' ),
+            array( 'position', '1.00', array( 'length' => array( 'min' => 2, 'max' => 4 ) ), 'Field position contains error.Only number without decimal places and length between 2 and 4 are allowed' ),
+            array( 'position', '1.00', array( 'length' => array( 'min' => 2, 'max' => 4 ), 'decimal' => 0 ), 'Field position contains error.Only number without decimal places and length between 2 and 4 are allowed' ),
+            array( 'position', '123', array( 'length' => 4 ), 'Field position contains error.Only number without decimal places and length equal to 4 are allowed' ),
+            array( 'position', '123', array( 'length' => array( 'min' => 4, 'max' => 0 ) ), 'Field position contains error.Only number without decimal places and length equal to 4 are allowed' ),
+            array( 'position', '123', array( 'length' => 2, 'decimal' => 2 ), 'Field position contains error.Only number with 2 decimal places and length equal to 2 are allowed' ),
+            array( 'position', '123.00', array( 'length' => array( 2, 0 ), 'decimal' => 2 ), 'Field position contains error.Only number with 2 decimal places and length equal to 2 are allowed' )
         );
     }
 
@@ -1034,10 +1098,16 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         return array(
 
-            array( 'subscribe', 'yes', array(), array( 'value' => 'yes', 'message' => null, 'required' => true, 'field' => 'subscribe' ) ),
-            array( 'subscribe', 'yes', array( 'field' => 'field_name' ), array( 'value' => 'yes', 'message' => null, 'required' => true, 'field' => 'field_name' ) ),
-            array( 'subscribe', 'yes', array( 'required' => false ), array( 'value' => 'yes', 'message' => null, 'required' => false, 'field' => 'subscribe' ) ),
-            array( 'subscribe', 'yes', array( 'message' => 'error' ), array( 'value' => 'yes', 'message' => 'error', 'required' => true, 'field' => 'subscribe' ) )
+            array( 'subscribe', 'yes', array(), array( 'value' => 'yes', 'errors' => array(
+                'empty' => null
+            ), 'required' => true, 'field' => 'subscribe' ) ),
+            array( 'subscribe', 'yes', array( 'field' => 'field_name' ), array( 'value' => 'yes', 'errors' => array(
+                'empty' => null
+            ), 'required' => true, 'field' => 'field_name' ) ),
+            array( 'subscribe', 'yes', array( 'required' => false ), array( 'value' => 'yes', 'errors' => array(
+                'empty' => null
+            ), 'required' => false, 'field' => 'subscribe' ) ),
+            array( 'subscribe', 'yes', array( 'errors' => array( 'empty' => 'error' ) ), array( 'value' => 'yes', 'errors' => array( 'empty' => 'error' ), 'required' => true, 'field' => 'subscribe' ) )
 
         );
     }
@@ -1062,8 +1132,8 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'subscribe', null, array(), 'Radio subscribe is not marked.' ),
-            array( 'subscribe', null, array( 'message' => 'error' ), 'error' )
+            array( 'subscribe', null, array(), 'Radio subscribe is not marked' ),
+            array( 'subscribe', null, array( 'errors' => array( 'empty' => 'error' ) ), 'error' )
         );
     }
 
@@ -1073,10 +1143,16 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'address', 'penang', '#a-z#', array(), array( 'value' => 'penang', 'regex' => '#a-z#', 'required' => true, 'message' => null, 'field' => 'address' ) ),
-            array( 'address', 'penang', '#a-z#', array( 'field' => 'field_name' ), array( 'value' => 'penang', 'regex' => '#a-z#', 'required' => true, 'message' => null, 'field' => 'field_name' ) ),
-            array( 'address', 'penang', '#a-z#', array( 'message' => 'error' ), array( 'value' => 'penang', 'regex' => '#a-z#', 'required' => true, 'message' => 'error', 'field' => 'address' ) ),
-            array( 'address', 'penang', '#a-z#', array( 'required' => false ), array( 'value' => 'penang', 'regex' => '#a-z#', 'required' => false, 'message' => null, 'field' => 'address' ) )
+            array( 'address', 'penang', '#a-z#', array(), array( 'value' => 'penang', 'regex' => '#a-z#', 'required' => true, 'errors' => array(
+                'empty' => null, 'regex' => null
+            ), 'field' => 'address' ) ),
+            array( 'address', 'penang', '#a-z#', array( 'field' => 'field_name' ), array( 'value' => 'penang', 'regex' => '#a-z#', 'required' => true, 'errors' => array(
+                'empty' => null, 'regex' => null
+            ), 'field' => 'field_name' ) ),
+            array( 'address', 'penang', '#a-z#', array( 'errors' => array( 'empty' => 'error' ) ), array( 'value' => 'penang', 'regex' => '#a-z#', 'required' => true, 'errors' => array( 'empty' => 'error', 'regex' => null ), 'field' => 'address' ) ),
+            array( 'address', 'penang', '#a-z#', array( 'required' => false ), array( 'value' => 'penang', 'regex' => '#a-z#', 'required' => false, 'errors' => array(
+                'empty' => null, 'regex' => null
+            ), 'field' => 'address' ) )
         );
     }
 
@@ -1099,11 +1175,11 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'address', null, '#[a-z]+#', array(), 'Field address is empty.' ),
-            array( 'address', 'address99', '#^[a-z]+$#', array(), 'Field address contain invalid character.' ),
-            array( 'address', 'address99', '#^[a-z]+$#', array( 'message' => 'error' ), 'error' ),
-            array( 'address', null, '#[a-z]+#', array( 'required' => true ), 'Field address is empty.' ),
-            array( 'address', null, '#[a-z]+#', array( 'required' => true, 'message' => 'error' ), 'error' )
+            array( 'address', null, '#[a-z]+#', array(), 'Field address is empty' ),
+            array( 'address', 'address99', '#^[a-z]+$#', array(), 'Field address contain invalid character' ),
+            array( 'address', 'address99', '#^[a-z]+$#', array( 'errors' => array( 'regex' => 'error' ) ), 'error' ),
+            array( 'address', null, '#[a-z]+#', array( 'required' => true ), 'Field address is empty' ),
+            array( 'address', null, '#[a-z]+#', array( 'required' => true, 'errors' => array( 'empty' => 'error' ) ), 'error' )
 
         );
     }
@@ -1114,10 +1190,16 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'avatar', 'file', array( 'txt', 'doc' ), array(), array( 'file' => 'file', 'extension' => array( 'txt', 'doc' ), 'message' => null, 'required' => true, 'field' => 'avatar' ) ),
-            array( 'avatar', 'file', array(), array( 'field' => 'field_name' ), array( 'file' => 'file', 'extension' => array(), 'message' => null, 'required' => true, 'field' => 'field_name' ) ),
-            array( 'avatar', 'file', array(), array( 'required' => false ), array( 'file' => 'file', 'extension' => array(), 'message' => null, 'required' => false, 'field' => 'avatar' ) ),
-            array( 'avatar', 'file', array(), array( 'message' => 'error' ), array( 'file' => 'file', 'extension' => array(), 'message' => 'error', 'required' => true, 'field' => 'avatar' ) )
+            array( 'avatar', 'file', array( 'txt', 'doc' ), array(), array( 'value' => 'file', 'extension' => array( 'txt', 'doc' ), 'errors' => array(
+                'empty' => null, 'extension' => null
+            ), 'required' => true, 'field' => 'avatar' ) ),
+            array( 'avatar', 'file', array(), array( 'field' => 'field_name' ), array( 'value' => 'file', 'extension' => array(), 'errors' => array(
+                'empty' => null, 'extension' => null
+            ), 'required' => true, 'field' => 'field_name' ) ),
+            array( 'avatar', 'file', array(), array( 'required' => false ), array( 'value' => 'file', 'extension' => array(), 'errors' => array(
+                'empty' => null, 'extension' => null
+            ), 'required' => false, 'field' => 'avatar' ) ),
+            array( 'avatar', 'file', array(), array( 'errors' => array( 'extension' => 'error' ) ), array( 'value' => 'file', 'extension' => array(), 'errors' => array( 'extension' => 'error', 'empty' => null ), 'required' => true, 'field' => 'avatar' ) )
 
         );
     }
@@ -1143,11 +1225,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-
-            array( 'avatar', array( 'name' => 'avatar.jpg' ), array(), array(), 'File avatar does not have valid file extension' ),
-            array( 'avatar', array( 'name' => 'avatar.jpg' ), array(), array( 'gif' ), 'File avatar does not have valid file extension' ),
+            array( 'avatar', array( 'name' => 'avatar.jpg' ), array( 'pdf' ), array(), 'File avatar contains error.Only file with extension pdf are allowed' ),
+            array( 'avatar', array( 'name' => 'avatar.jpg' ), array( 'gif, png' ), array(), 'File avatar contains error.Only file with extension gif, png are allowed' ),
             array( 'avatar', null, array(), array(), 'File avatar is empty' ),
-            array( 'avatar', null, array(), array( 'message' => 'error' ), 'error' ),
+            array( 'avatar', null, array(), array( 'errors' => array( 'empty' => 'error' ) ), 'error' ),
             array( 'avatar', null, array(), array( 'required' => true ), 'File avatar is empty' )
 
         );
@@ -1159,10 +1240,16 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'state', 'png', array(), array( 'value' => 'png', 'message' => null, 'required' => true, 'field' => 'state' ) ),
-            array( 'state', 'png', array( 'field' => 'field_name' ), array( 'value' => 'png', 'message' => null, 'required' => true, 'field' => 'field_name' ) ),
-            array( 'state', 'png', array( 'required' => false ), array( 'value' => 'png', 'message' => null, 'required' => false, 'field' => 'state' ) ),
-            array( 'state', 'png', array( 'message' => 'error' ), array( 'value' => 'png', 'message' => 'error', 'required' => true, 'field' => 'state' ) )
+            array( 'state', 'png', array(), array( 'value' => 'png', 'errors' => array(
+                'empty' => null
+            ), 'required' => true, 'field' => 'state' ) ),
+            array( 'state', 'png', array( 'field' => 'field_name' ), array( 'value' => 'png', 'errors' => array(
+                'empty' => null
+            ), 'required' => true, 'field' => 'field_name' ) ),
+            array( 'state', 'png', array( 'required' => false ), array( 'value' => 'png', 'errors' => array(
+                'empty' => null
+            ), 'required' => false, 'field' => 'state' ) ),
+            array( 'state', 'png', array( 'errors' => array( 'empty' => 'error' ) ), array( 'value' => 'png', 'errors' => array( 'empty' => 'error' ), 'required' => true, 'field' => 'state' ) )
 
         );
     }
@@ -1187,8 +1274,8 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'state', null, array(), 'Selection state is not selected.' ),
-            array( 'state', null, array( 'message' => 'error' ), 'error' )
+            array( 'state', null, array(), 'Selection state is not selected' ),
+            array( 'state', null, array( 'errors' => array( 'empty' => 'error' ) ), 'error' )
         );
     }
 
@@ -1198,14 +1285,78 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( 'name', 'sobri', array(), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'message' => null, 'field' => 'name' ) ),
-            array( 'name', 'sobri', array( 'field' => 'field_name' ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'message' => null, 'field' => 'field_name' ) ),
-            array( 'name', 'sobri', array( 'message' => 'error' ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'message' => 'error', 'field' => 'name' ) ),
-            array( 'name', 'sobri', array( 'max_length' => 7 ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 0, 'max_length' => 7, 'message' => null, 'field' => 'name' ) ),
-            array( 'name', 'sobri', array( 'min_length' => 9 ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 9, 'max_length' => 0, 'message' => null, 'field' => 'name' ) ),
-            array( 'name', 'sobri', array( 'allow_space' => true ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => true, 'min_length' => 0, 'max_length' => 0, 'message' => null, 'field' => 'name' ) ),
-            array( 'name', 'sobri', array( 'allow_num' => true ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => true, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'message' => null, 'field' => 'name' ) ),
-            array( 'name', 'sobri', array( 'required' => false ), array( 'value' => 'sobri', 'required' => false, 'allow_num' => false, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'message' => null, 'field' => 'name' ) )
+            array( 'name', 'sobri', array(), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'text' => null,
+                'text_fixed' => null, 'text_range' => null,
+                'text_number' => null, 'text_space' => null,
+                'text_number_fixed' => null, 'text_space_fixed' => null,
+                'text_number_range' => null, 'text_space_range' => null,
+                'text_number_space' => null, 'text_number_space_fixed' => null,
+                'text_number_space_range' => null
+            ), 'field' => 'name' ) ),
+            array( 'name', 'sobri', array( 'field' => 'field_name' ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'text' => null,
+                'text_fixed' => null, 'text_range' => null,
+                'text_number' => null, 'text_space' => null,
+                'text_number_fixed' => null, 'text_space_fixed' => null,
+                'text_number_range' => null, 'text_space_range' => null,
+                'text_number_space' => null, 'text_number_space_fixed' => null,
+                'text_number_space_range' => null
+            ), 'field' => 'field_name' ) ),
+            array( 'name', 'sobri', array( 'errors' => array( 'empty' => 'error' ) ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => 'error', 'text' => null,
+                'text_fixed' => null, 'text_range' => null,
+                'text_number' => null, 'text_space' => null,
+                'text_number_fixed' => null, 'text_space_fixed' => null,
+                'text_number_range' => null, 'text_space_range' => null,
+                'text_number_space' => null, 'text_number_space_fixed' => null,
+                'text_number_space_range' => null
+            ), 'field' => 'name' ) ),
+            array( 'name', 'sobri', array( 'length' => array( 'max' => 7 ) ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 1, 'max_length' => 7, 'errors' => array(
+                'empty' => null, 'text' => null,
+                'text_fixed' => null, 'text_range' => null,
+                'text_number' => null, 'text_space' => null,
+                'text_number_fixed' => null, 'text_space_fixed' => null,
+                'text_number_range' => null, 'text_space_range' => null,
+                'text_number_space' => null, 'text_number_space_fixed' => null,
+                'text_number_space_range' => null
+            ), 'field' => 'name' ) ),
+            array( 'name', 'sobri', array( 'length' => 9 ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => false, 'min_length' => 9, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'text' => null,
+                'text_fixed' => null, 'text_range' => null,
+                'text_number' => null, 'text_space' => null,
+                'text_number_fixed' => null, 'text_space_fixed' => null,
+                'text_number_range' => null, 'text_space_range' => null,
+                'text_number_space' => null, 'text_number_space_fixed' => null,
+                'text_number_space_range' => null
+            ), 'field' => 'name' ) ),
+            array( 'name', 'sobri', array( 'allow_space' => true ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => false, 'allow_space' => true, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'text' => null,
+                'text_fixed' => null, 'text_range' => null,
+                'text_number' => null, 'text_space' => null,
+                'text_number_fixed' => null, 'text_space_fixed' => null,
+                'text_number_range' => null, 'text_space_range' => null,
+                'text_number_space' => null, 'text_number_space_fixed' => null,
+                'text_number_space_range' => null
+            ), 'field' => 'name' ) ),
+            array( 'name', 'sobri', array( 'allow_num' => true ), array( 'value' => 'sobri', 'required' => true, 'allow_num' => true, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'text' => null,
+                'text_fixed' => null, 'text_range' => null,
+                'text_number' => null, 'text_space' => null,
+                'text_number_fixed' => null, 'text_space_fixed' => null,
+                'text_number_range' => null, 'text_space_range' => null,
+                'text_number_space' => null, 'text_number_space_fixed' => null,
+                'text_number_space_range' => null
+            ), 'field' => 'name' ) ),
+            array( 'name', 'sobri', array( 'required' => false ), array( 'value' => 'sobri', 'required' => false, 'allow_num' => false, 'allow_space' => false, 'min_length' => 0, 'max_length' => 0, 'errors' => array(
+                'empty' => null, 'text' => null,
+                'text_fixed' => null, 'text_range' => null,
+                'text_number' => null, 'text_space' => null,
+                'text_number_fixed' => null, 'text_space_fixed' => null,
+                'text_number_range' => null, 'text_space_range' => null,
+                'text_number_space' => null, 'text_number_space_fixed' => null,
+                'text_number_space_range' => null
+            ), 'field' => 'name' ) )
 
         );
     }
@@ -1217,12 +1368,12 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         return array(
 
             array( 'name', null, array(), false ),
-            array( 'name', 'slier', array(), true),
-            array( 'name', '@#@#R ', array('allow_num'=>true, 'allow_space'=>true), false),
-            array( 'name', 'slier', array('min_length'=>3, 'allow_space'=>true), false ),
-            array( 'name', 'slier', array('min_length'=>5, 'allow_space'=>true), true),
-            array( 'name', 'slie ', array('min_length'=>5, 'allow_space'=>true), true ),
-            array( 'name', 'sobri', array( 'min_length' => 20 ), false ),
+            array( 'name', 'slier', array(), true ),
+            array( 'name', '@#@#R ', array( 'allow_num' => true, 'allow_space' => true ), false ),
+            array( 'name', 'slier', array( 'length' => 3, 'allow_space' => true ), false ),
+            array( 'name', 'slier', array( 'length' => 5, 'allow_space' => true ), true ),
+            array( 'name', 'slie ', array( 'length' => 5, 'allow_space' => true ), true ),
+            array( 'name', 'sobri', array( 'length' => 20 ), false ),
             array( 'name', 'sobri', array(), true ),
             array( 'name', 'sobri', array( 'allow_num' => true, 'allow_space' => false ), true ),
             array( 'name', 'sobri ', array( 'allow_num' => true, 'allow_space' => false ), false ),
@@ -1240,31 +1391,31 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             array( 'name', 'sobr ', array( 'allow_space' => true ), true ),
             array( 'name', 'sobri ', array( 'allow_space' => true ), true ),
             array( 'name', 'sobri5', array( 'allow_space' => true ), false ),
-            array( 'name', 'sobri', array( 'min_length' => 3, 'max_length' => 5 ), true ),
-            array( 'name', 'sobri', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), true ),
-            array( 'name', 'sobr3', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), true ),
-            array( 'name', 'sobr ', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), true ),
-            array( 'name', 'sob3 ', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), true ),
-            array( 'name', '3 ', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), false ),
-            array( 'name', 'adfafdsfadsf', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), false ),
-            array( 'name', 'adfafdsfa3 dfsdaf 2', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), false ),
-            array( 'name', 'sobri', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true ), true ),
-            array( 'name', 'sobr3', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true ), true ),
-            array( 'name', 'so', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true ), false ),
-            array( 'name', 'sobr ', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true ), false ),
-            array( 'name', 'sobr ', array( 'min_length' => 3, 'max_length' => 5, 'allow_space' => true ), true ),
-            array( 'name', 'sob3 ', array( 'min_length' => 3, 'max_length' => 5, 'allow_space' => true ), false ),
-            array( 'name', 'sobr  ', array( 'min_length' => 3, 'max_length' => 5, 'allow_space' => true ), false ),
-            array( 'name', 'sobridsfasdf', array( 'min_length' => 3, 'max_length' => 5 ), false ),
-            array( 'name', 'sobr ', array( 'min_length' => 3, 'max_length' => 5 ), false ),
-            array( 'name', 'sobri', array( 'min_length' => 20, 'allow_num' => true ), false ),
-            array( 'name', 'sobri', array( 'min_length' => 20, 'allow_num' => true, 'allow_space' => true ), false ),
-            array( 'name', 'sobri', array( 'min_length' => 5 ), true ),
-            array( 'name', 'sobr3', array( 'min_length' => 5 ), false ),
-            array( 'name', 'sobr ', array( 'min_length' => 5 ), false ),
-            array( 'name', 'sobr3', array( 'min_length' => 5, 'allow_num' => true ), true ),
-            array( 'name', 'sob3 ', array( 'min_length' => 5, 'allow_num' => true ), false ),
-            array( 'name', 'sob3 ', array( 'min_length' => 5, 'allow_num' => true, 'allow_space' => true ), true ),
+            array( 'name', 'sobri', array( 'length' => array( 3, 5 ) ), true ),
+            array( 'name', 'sobri', array( 'length' => array( 3, 5 ), 'allow_num' => true, 'allow_space' => true ), true ),
+            array( 'name', 'sobr3', array( 'length' => array( 3, 5 ), 'allow_num' => true, 'allow_space' => true ), true ),
+            array( 'name', 'sobr ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true, 'allow_space' => true ), true ),
+            array( 'name', 'sob3 ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true, 'allow_space' => true ), true ),
+            array( 'name', '3 ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true, 'allow_space' => true ), false ),
+            array( 'name', 'adfafdsfadsf', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true, 'allow_space' => true ), false ),
+            array( 'name', 'adfafdsfa3 dfsdaf 2', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true, 'allow_space' => true ), false ),
+            array( 'name', 'sobri', array( 'length' => array( 3, 5 ), 'allow_num' => true ), true ),
+            array( 'name', 'sobr3', array( 'length' => array( 3, 5 ), 'allow_num' => true ), true ),
+            array( 'name', 'so', array( 'length' => array( 3, 5 ), 'allow_num' => true ), false ),
+            array( 'name', 'sobr ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true ), false ),
+            array( 'name', 'sobr ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_space' => true ), true ),
+            array( 'name', 'sob3 ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_space' => true ), false ),
+            array( 'name', 'sobr  ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_space' => true ), false ),
+            array( 'name', 'sobridsfasdf', array( 'length' => array( 'min' => 3, 'max' => 5 ) ), false ),
+            array( 'name', 'sobr ', array( 'length' => array( 'min' => 3, 'max' => 5 ) ), false ),
+            array( 'name', 'sobri', array( 'length' => 20, 'allow_num' => true ), false ),
+            array( 'name', 'sobri', array( 'length' => 20, 'allow_num' => true, 'allow_space' => true ), false ),
+            array( 'name', 'sobri', array( 'length' => 5 ), true ),
+            array( 'name', 'sobr3', array( 'length' => 5 ), false ),
+            array( 'name', 'sobr ', array( 'length' => 5 ), false ),
+            array( 'name', 'sobr3', array( 'length' => 5, 'allow_num' => true ), true ),
+            array( 'name', 'sob3 ', array( 'length' => 5, 'allow_num' => true ), false ),
+            array( 'name', 'sob3 ', array( 'length' => 5, 'allow_num' => true, 'allow_space' => true ), true ),
             array( 'name', null, array( 'required' => true ), false ),
             array( 'name', null, array( 'required' => false ), true )
 
@@ -1276,29 +1427,29 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
 
         return array(
-            array( 'name', null, array(), 'Field name is empty.' ),
-            array( 'name', 'sobri', array( 'min_length' => 20 ), 'Field name does not match required length or contain numbers.' ),
-            array( 'name', 'sobri ', array( 'allow_num' => true, 'allow_space' => false ), 'Field name cannot contain spaces' ),
-            array( 'name', 'sobri3 ', array( 'allow_num' => true ), 'Field name cannot contain spaces' ),
-            array( 'name', 'sobri ', array( 'allow_num' => true ), 'Field name cannot contain spaces' ),
-            array( 'name', 'sobri3', array(), 'Field name can only have texts' ),
-            array( 'name', 'sobri ', array(), 'Field name can only have texts' ),
-            array( 'name', 'sobri5', array( 'allow_space' => true ), 'Field name can only contain texts and spaces' ),
-            array( 'name', '3 ', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), 'Field name does not match required length.' ),
-            array( 'name', 'adfafdsfadsf', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), 'Field name does not match required length.' ),
-            array( 'name', 'adfafdsfa3 dfsdaf 2', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true, 'allow_space' => true ), 'Field name does not match required length.' ),
-            array( 'name', 'so', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true ), 'Field name does not match required length.' ),
-            array( 'name', 'sobr ', array( 'min_length' => 3, 'max_length' => 5, 'allow_num' => true ), 'Field name does not match required length.' ),
-            array( 'name', 'sob3 ', array( 'min_length' => 3, 'max_length' => 5, 'allow_space' => true ), 'Field name does not match required length or contain numbers.' ),
-            array( 'name', 'sobr  ', array( 'min_length' => 3, 'max_length' => 5, 'allow_space' => true ), 'Field name does not match required length or contain numbers.' ),
-            array( 'name', 'sobridsfasdf', array( 'min_length' => 3, 'max_length' => 5 ), 'Field name does not match required length or contain numbers.' ),
-            array( 'name', 'sobr ', array( 'min_length' => 3, 'max_length' => 5 ), 'Field name does not match required length or contain numbers.' ),
-            array( 'name', 'sobri', array( 'min_length' => 20, 'allow_num' => true ), 'Field name does not match required length.' ),
-            array( 'name', 'sobri', array( 'min_length' => 20, 'allow_num' => true, 'allow_space' => true ), 'Field name does not match required length.' ),
-            array( 'name', 'sobr3', array( 'min_length' => 5 ), 'Field name does not match required length or contain numbers.' ),
-            array( 'name', 'sobr ', array( 'min_length' => 5 ), 'Field name does not match required length or contain numbers.' ),
-            array( 'name', 'sob3 ', array( 'min_length' => 5, 'allow_num' => true ), 'Field name does not match required length.' ),
-            array( 'name', null, array( 'required' => true ), 'Field name is empty.' )
+            array( 'name', null, array(), 'Field name is empty' ),
+            array( 'name', 'sobri', array( 'length' => 20 ), 'Field name contains error.Only text and length equal to 20 are allowed' ),
+            array( 'name', 'sobri ', array( 'allow_num' => true, 'allow_space' => false ), 'Field name contains error.Only text and number are allowed' ),
+            array( 'name', 'sobri3 ', array( 'allow_num' => true ), 'Field name contains error.Only text and number are allowed' ),
+            array( 'name', 'sobri ', array( 'allow_num' => true ), 'Field name contains error.Only text and number are allowed' ),
+            array( 'name', 'sobri3', array(), 'Field name contains error.Only text are allowed' ),
+            array( 'name', 'sobri ', array(), 'Field name contains error.Only text are allowed' ),
+            array( 'name', 'sobri5', array( 'allow_space' => true ), 'Field name contains error.Only text and space are allowed' ),
+            array( 'name', '3 ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true, 'allow_space' => true ), 'Field name contains error.Only text, number, space and length between 3 and 5 are allowed' ),
+            array( 'name', 'adfafdsfadsf', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true, 'allow_space' => true ), 'Field name contains error.Only text, number, space and length between 3 and 5 are allowed' ),
+            array( 'name', 'adfafdsfa3 dfsdaf 2', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true, 'allow_space' => true ), 'Field name contains error.Only text, number, space and length between 3 and 5 are allowed' ),
+            array( 'name', 'so', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true ), 'Field name contains error.Only text, number and length between 3 and 5 are allowed' ),
+            array( 'name', 'sobr ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_num' => true ), 'Field name contains error.Only text, number and length between 3 and 5 are allowed' ),
+            array( 'name', 'sob3 ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_space' => true ), 'Field name contains error.Only text, space and length between 3 and 5 are allowed' ),
+            array( 'name', 'sobr  ', array( 'length' => array( 'min' => 3, 'max' => 5 ), 'allow_space' => true ), 'Field name contains error.Only text, space and length between 3 and 5 are allowed' ),
+            array( 'name', 'sobridsfasdf', array( 'length' => array( 'min' => 3, 'max' => 5 ) ), 'Field name contains error.Only text and length between 3 and 5 are allowed' ),
+            array( 'name', 'sobr ', array( 'length' => array( 'min' => 3, 'max' => 5 ) ), 'Field name contains error.Only text and length between 3 and 5 are allowed' ),
+            array( 'name', 'sobri', array( 'length' => array( 'min' => 20 ), 'allow_num' => true ), 'Field name contains error.Only text, number and length equal to 20 are allowed' ),
+            array( 'name', 'sobri', array( 'length' => array( 'min' => 20 ), 'allow_num' => true, 'allow_space' => true ), 'Field name contains error.Only text, number, space and length equal to 20 are allowed' ),
+            array( 'name', 'sobr3', array( 'length' => array( 'min' => 5 ) ), 'Field name contains error.Only text and length equal to 5 are allowed' ),
+            array( 'name', 'sobr ', array( 'length' => array( 'min' => 5 ) ), 'Field name contains error.Only text and length equal to 5 are allowed' ),
+            array( 'name', 'sob3 ', array( 'length' => array( 'min' => 5 ), 'allow_num' => true ), 'Field name contains error.Only text, number and length equal to 5 are allowed' ),
+            array( 'name', null, array( 'required' => true ), 'Field name is empty' )
         );
     }
 
@@ -1377,7 +1528,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
                 $validator->isValid();
                 return $validator->getError( 'user' );
 
-            }, 'Field user is empty.' ),
+            }, 'Field user is empty' ),
 
             array( function () {
 
@@ -1386,7 +1537,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
                 $validator->isValid();
                 return $validator->getError( 'user' );
 
-            }, 'Field user can only have texts' ),
+            }, 'Field user contains error.Only text are allowed' ),
 
         );
     }
@@ -1397,10 +1548,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( new TextValidator( 'user', 'slier' ), array() ),
-            array( array( 'user' => new TextValidator( 'user', '123' ) ), array( 'user' => 'Field user can only have texts' ) ),
-            array( array( 'position' => new NumberValidator( 'position', 'slier' ) ), array( 'position' => 'Field  position can only contain numbers.' ) ),
-            array( array( 'position' => new NumberValidator( 'position', 'slier' ), 'user' => new TextValidator( 'user', '123' ) ), array( 'position' => 'Field  position can only contain numbers.', 'user' => 'Field user can only have texts' ) )
+            array( new TextValidator( 'user', 'slier' ), null ),
+            array( array( 'user' => new TextValidator( 'user', '123' ) ), array( 'user' => 'Field user contains error.Only text are allowed' ) ),
+            array( array( 'position' => new NumberValidator( 'position', 'slier' ) ), array( 'position' => 'Field position contains error.Only numbers without decimal places are allowed' ) ),
+            array( array( 'position' => new NumberValidator( 'position', 'slier' ), 'user' => new TextValidator( 'user', '123' ) ), array( 'position' => 'Field position contains error.Only numbers without decimal places are allowed', 'user' => 'Field user contains error.Only text are allowed' ) )
         );
     }
 
@@ -1410,9 +1561,9 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         return array(
 
-            array( array( 'user' => new TextValidator( 'user', '123' ) ), 'Field user can only have texts<br />' ),
-            array( array( 'position' => new NumberValidator( 'position', 'slier' ) ), 'Field  position can only contain numbers.<br />' ),
-            array( array( 'position' => new NumberValidator( 'position', 'slier' ), 'user' => new TextValidator( 'user', '123' ) ), 'Field  position can only contain numbers.<br />Field user can only have texts<br />' )
+            array( array( 'user' => new TextValidator( 'user', '123' ) ), 'Field user contains error.Only text are allowed<br>' ),
+            array( array( 'position' => new NumberValidator( 'position', 'slier' ) ), 'Field position contains error.Only numbers without decimal places are allowed<br>' ),
+            array( array( 'position' => new NumberValidator( 'position', 'slier' ), 'user' => new TextValidator( 'user', '123' ) ), 'Field position contains error.Only numbers without decimal places are allowed<br>Field user contains error.Only text are allowed<br>' )
 
         );
     }
