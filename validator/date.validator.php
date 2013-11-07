@@ -27,26 +27,22 @@ class DateValidator extends ValidatorStrategy
     public function isValid()
     {
         $pattern = $this->data['version'] == 'eu' ? "#^(0[1-9]|[1-2][0-9]|3[0-1])[-](0[1-9]|1[0-2])[-](19|20)[0-9]{2}$#" : "#^(19|20)[0-9]{2}[-](0[1-9]|1[0-2])[-](0[1-9]|[1-2][0-9]|3[0-1])$#";
-        $format  = $this->data['version'] == 'eu' ? 'DD-MM-YY' :'YY-MM-DD';
+        $format = $this->data['version'] == 'eu' ? 'DD-MM-YY' : 'YY-MM-DD';
 
         if( empty( $this->data['value'] ) ){
             if( $this->data['required'] ){
                 $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_EMPTY, array( $this->data['field'] ) );
                 return false;
             }
-            else{
-                return true;
-            }
+            return true;
         }
-        else{
-            if( preg_match( $pattern, $this->data['value'] ) ){
-                return true;
-            }
-            else{
-                $this->messages = ( $this->data['errors']['date'] ) ? $this->data['errors']['date'] : $this->errorText( ValidatorStrategy::E_INVALID_DATE, array( $this->data['field'], $format ) );
-                return false;
-            }
+
+        if( !preg_match( $pattern, $this->data['value'] ) ){
+            $this->messages = ( $this->data['errors']['date'] ) ? $this->data['errors']['date'] : $this->errorText( ValidatorStrategy::E_INVALID_DATE, array( $this->data['field'], $format ) );
+            return false;
         }
+
+        return true;
     }
 
 
@@ -75,9 +71,8 @@ class DateValidator extends ValidatorStrategy
         if( isset( $attr['errors'] ) and is_array( $attr['errors'] ) ){
             return array_merge( $cfg, $attr['errors'] );
         }
-        else{
-            return $cfg;
-        }
+
+        return $cfg;
     }
 
 

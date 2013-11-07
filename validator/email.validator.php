@@ -33,19 +33,15 @@ class EmailValidator extends ValidatorStrategy
                 $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_EMPTY, array( $this->data['field'] ) );
                 return false;
             }
-            else{
-                return true;
-            }
+            return true;
         }
-        else{
-            if( preg_match( "#^[^\W\d](?:\w+)(?:\.\w+|\-\w+)*@(?:\w+)(\.[a-z]{2,6})+$#i", $this->data['value'] ) ){
-                return true;
-            }
-            else{
-                $this->messages = ( $this->data['errors']['email'] ) ? $this->data['errors']['email'] : $this->errorText( ValidatorStrategy::E_INVALID_EMAIL, array( $this->data['field'] ) );
-                return false;
-            }
+
+        if( !preg_match( "#^[^\W\d](?:\w+)(?:\.\w+|\-\w+)*@(?:\w+)(\.[a-z]{2,6})+$#i", $this->data['value'] ) ){
+            $this->messages = ( $this->data['errors']['email'] ) ? $this->data['errors']['email'] : $this->errorText( ValidatorStrategy::E_INVALID_EMAIL, array( $this->data['field'] ) );
+            return false;
         }
+
+        return true;
     }
 
 
@@ -58,9 +54,8 @@ class EmailValidator extends ValidatorStrategy
         if( isset( $attr['errors'] ) and is_array( $attr['errors'] ) ){
             return array_merge( $cfg, $attr['errors'] );
         }
-        else{
-            return $cfg;
-        }
+
+        return $cfg;
     }
 
 

@@ -29,13 +29,13 @@ class CheckBoxValidator extends ValidatorStrategy
         if( isset( $this->data['value'] ) ){
             return true;
         }
-        elseif( $this->data['required'] ){
+
+        if( $this->data['required'] ){
             $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_NOT_CHECK, array( $this->data['field'] ) );
             return false;
         }
-        else{
-            return true;
-        }
+
+        return true;
     }
 
 
@@ -45,12 +45,11 @@ class CheckBoxValidator extends ValidatorStrategy
             'empty' => null
         );
 
-        if( isset( $attr['errors'] ) and is_array( $attr['errors'] ) ){
+        if( isset( $attr['errors'] ) && is_array( $attr['errors'] ) ){
             return array_merge( $cfg, $attr['errors'] );
         }
-        else{
-            return $cfg;
-        }
+
+        return $cfg;
     }
 
 

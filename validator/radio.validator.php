@@ -29,14 +29,13 @@ class RadioValidator extends ValidatorStrategy
         if( isset( $this->data['value'] ) ){
             return true;
         }
-        elseif( $this->data['required'] ){
+
+        if( $this->data['required'] ){
             $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_NOT_MARK, array( $this->data['field'] ) );
             return false;
         }
-        else{
-            return true;
-        }
 
+        return true;
     }
 
 
@@ -49,9 +48,8 @@ class RadioValidator extends ValidatorStrategy
         if( isset( $attr['errors'] ) and is_array( $attr['errors'] ) ){
             return array_merge( $cfg, $attr['errors'] );
         }
-        else{
-            return $cfg;
-        }
+
+        return $cfg;
     }
 
 

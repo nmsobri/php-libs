@@ -30,13 +30,8 @@ class SelectValidator extends ValidatorStrategy
                 $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_NOT_SELECT, array( $this->data['field'] ) );
                 return false;
             }
-            else{
-                return true;
-            }
         }
-        else{
-            return true;
-        }
+        return true;
     }
 
 
@@ -49,9 +44,8 @@ class SelectValidator extends ValidatorStrategy
         if( isset( $attr['errors'] ) and is_array( $attr['errors'] ) ){
             return array_merge( $cfg, $attr['errors'] );
         }
-        else{
-            return $cfg;
-        }
+
+        return $cfg;
     }
 
 

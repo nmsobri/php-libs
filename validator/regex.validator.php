@@ -34,20 +34,15 @@ class RegexValidator extends ValidatorStrategy
                 $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_EMPTY, array( $this->data['field'] ) );
                 return false;
             }
-            else{
-                return true; //simply return true cause we dont care if this field is empty or not
-            }
-        }
-        else{
-            if( preg_match( $this->data['regex'], $this->data['value'] ) ){
-                return true;
-            }
-            else{
-                $this->messages = ( $this->data['errors']['regex'] ) ? $this->data['errors']['regex'] : $this->errorText( ValidatorStrategy::E_INVALID_CHARACTER, array( $this->data['field'] ) );
-                return false;
-            }
+            return true;
         }
 
+        if( !preg_match( $this->data['regex'], $this->data['value'] ) ){
+            $this->messages = ( $this->data['errors']['regex'] ) ? $this->data['errors']['regex'] : $this->errorText( ValidatorStrategy::E_INVALID_CHARACTER, array( $this->data['field'] ) );
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -73,9 +68,8 @@ class RegexValidator extends ValidatorStrategy
         if( isset( $attr['errors'] ) and is_array( $attr['errors'] ) ){
             return array_merge( $cfg, $attr['errors'] );
         }
-        else{
-            return $cfg;
-        }
+
+        return $cfg;
     }
 
 

@@ -35,17 +35,14 @@ class CompareValidator extends ValidatorStrategy
                 $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_EMPTY, array( $this->data['field'] ) );
                 return false;
             }
-            else{
-                return true;
-            }
+            return true;
         }
-        elseif( $this->data['value'] != $this->data['compare_value'] ){
+
+        if( $this->data['value'] != $this->data['compare_value'] ){
             $this->messages = ( $this->data['errors']['equal'] ) ? $this->data['errors']['equal'] : $this->errorText( ValidatorStrategy::E_NOT_MATCH, array( $this->data['field'], $this->data['compare_field'] ) );
             return false;
         }
-        else{
-            return true;
-        }
+        return true;
     }
 
 
@@ -73,9 +70,8 @@ class CompareValidator extends ValidatorStrategy
         if( isset( $attr['errors'] ) and is_array( $attr['errors'] ) ){
             return array_merge( $cfg, $attr['errors'] );
         }
-        else{
-            return $cfg;
-        }
+
+        return $cfg;
     }
 
 

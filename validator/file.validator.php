@@ -34,19 +34,15 @@ class FileValidator extends ValidatorStrategy
                 $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_FILE_EMPTY, array( $this->data['field'] ) );
                 return false;
             }
-            else{
-                return true;
-            }
+            return true;
         }
-        else{
-            if( in_array( $ext, $this->data['extension'] ) ){
-                return true;
-            }
-            else{
-                $this->messages = ( $this->data['errors']['extension'] ) ? $this->data['errors']['extension'] : $this->errorText( ValidatorStrategy::E_INVALID_EXTENSION, array( $this->data['field'], implode( ', ', $this->data['extension'] ) ) );
-                return false;
-            }
+
+        if( !in_array( $ext, $this->data['extension'] ) ){
+            $this->messages = ( $this->data['errors']['extension'] ) ? $this->data['errors']['extension'] : $this->errorText( ValidatorStrategy::E_INVALID_EXTENSION, array( $this->data['field'], implode( ', ', $this->data['extension'] ) ) );
+            return false;
         }
+
+        return true;
     }
 
 
@@ -76,9 +72,8 @@ class FileValidator extends ValidatorStrategy
         if( isset( $attr['errors'] ) and is_array( $attr['errors'] ) ){
             return array_merge( $cfg, $attr['errors'] );
         }
-        else{
-            return $cfg;
-        }
+
+        return $cfg;
     }
 
 
