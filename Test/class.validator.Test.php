@@ -2,6 +2,7 @@
 
 include 'class.validator.php';
 include 'validator/validator.strategy.php';
+include 'validator/alnum.validator.strategy.php';
 include 'validator/checkbox.validator.php';
 include 'validator/compare.validator.php';
 include 'validator/date.validator.php';
