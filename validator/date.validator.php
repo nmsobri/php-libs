@@ -4,24 +4,28 @@ class DateValidator extends ValidatorStrategy
 {
 
     /**
+     * Validation for date
+     *
      * @param string $name
      * @param string $value
-     * @param string $attr ['version']
-     * @param bool $attr ['required']
-     * @param string $attr ['field']
-     * @param string $attr ['errors']['empty']
-     * @param string $attr ['errors']['date']
-     * @example new DateValidator( 'dob', $_POST['dob'], array( 'message' => '*' ) )
+     * @param array $attr
+     *
+     * bool $attr['required']
+     * string $attr['field']
+     * string $attr['version']
+     * string $attr['errors']['empty']
+     * string $attr['errors']['date']
+     *
+     * @example new DateValidator( 'dob', $_POST['dob'] )
      */
     public function __construct( $name, $value, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidator( $name, $value, $attr );
+        $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 
     /**
-     * Perform validation
      * @return bool
      */
     public function isValid()
@@ -51,10 +55,10 @@ class DateValidator extends ValidatorStrategy
      * @param $value
      * @param array $attr
      */
-    protected function configValidator( $name, $value, array $attr )
+    protected function configValidatorGenericAttr( $name, $value, array $attr )
     {
-        parent::configValidator( $name, $value, $attr );
-        $this->data['version'] = ( array_key_exists( 'version', $attr ) ) ? $attr['version'] : 'us';
+        parent::configValidatorGenericAttr( $name, $value, $attr );
+        $this->data['version'] = isset( $attr['version'] ) ? $attr['version'] : 'us';
     }
 
 

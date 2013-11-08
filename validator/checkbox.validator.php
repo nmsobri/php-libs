@@ -4,24 +4,26 @@ class CheckBoxValidator extends ValidatorStrategy
 {
 
     /**
-     * Validation for html checkbox element
+     * Validation for checkbox
+     *
      * @param string $name
      * @param string $value
-     * @param string $attr ['field']
-     * @param string $attr ['errors']['empty']
-     * @param bool $attr ['required']
+     * @param array $attr
      *
-     * new CheckBoxValidator( 'subscribe' , $_POST['subscribe'], array( 'message' => '*' ) )
+     * bool $attr['required']
+     * string $attr['field']
+     * string $attr['errors']['empty']
+     *
+     * new CheckBoxValidator( 'subscribe' , $_POST['subscribe'] )
      */
     public function __construct( $name, $value, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidator( $name, $value, $attr );
+        $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 
     /**
-     * Perform validation
      * @return bool
      */
     public function isValid()
@@ -39,6 +41,10 @@ class CheckBoxValidator extends ValidatorStrategy
     }
 
 
+    /**
+     * @param array $attr
+     * @return array
+     */
     protected function configErrors( array $attr )
     {
         $cfg = array(

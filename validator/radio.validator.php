@@ -4,19 +4,22 @@ class RadioValidator extends ValidatorStrategy
 {
 
     /**
-     * Validation for radio field
-     * @param string $name
-     * @param mixed $value
-     * @param string $attr ['errors']['empty']
-     * @param bool $attr ['required']
-     * @param string $attr ['field']
+     * Validation for radio
      *
-     * @example new RadioValidator( 'gender', $_POST['gender'], array( 'message' => '*' ) )
+     * @param string $name
+     * @param string $value
+     * @param array $attr
+     *
+     * bool $attr['required']
+     * string $attr['field']
+     * string $attr['errors']['empty']
+     *
+     * @example new RadioValidator( 'gender', $_POST['gender'] )
      */
     public function __construct( $name, $value, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidator( $name, $value, $attr );
+        $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 

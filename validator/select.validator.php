@@ -3,19 +3,22 @@
 class SelectValidator extends ValidatorStrategy
 {
     /**
-     * Validation for select field
-     * @param string $name
-     * @param mixed $value
-     * @param $attr ['errors']['empty']
-     * @param $attr ['required']
-     * @param $attr ['field']
+     * Validation for select
      *
-     * @example new SelectValidator( 'country' , $_POST['country'], array( 'message' => '*' ) )
+     * @param string $name
+     * @param string $value
+     * @param array $attr
+     *
+     * bool $attr['required']
+     * string $attr['field']
+     * string $attr['errors']['empty']
+     *
+     * @example new SelectValidator( 'country' , $_POST['country'] )
      */
     public function __construct( $name, $value, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidator( $name, $value, $attr );
+        $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 
@@ -35,6 +38,10 @@ class SelectValidator extends ValidatorStrategy
     }
 
 
+    /**
+     * @param array $attr
+     * @return array
+     */
     protected function configErrors( array $attr )
     {
         $cfg = array(

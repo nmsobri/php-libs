@@ -4,28 +4,29 @@ class CompareValidator extends ValidatorStrategy
 {
 
     /**
-     * Validation to compare two field for equality
+     * Validation for comparing two entity for equality
+     *
      * @param string $name
      * @param mixed $value
      * @param string $comparisonValue
      * @param string $comparisonField
-     * @param bool $attr ['required']
-     * @param string $attr ['field']
-     * @param string $attr ['compare_field']
-     * @param string $attr ['errors']['empty']
-     * @param string $attr ['errors']['equal']
+     * @param array $attr
      *
-     * @example new CompareValidator( 'repeat_pass' , $_POST['repeat_password'], $_POST['password'], 'Password', array( 'empty_message' => 'Repeat password is empty', 'unmatch_message' => 'Repeat password dosent match password' ) )
+     * bool $attr['required']
+     * string $attr['field']
+     * string $attr['errors']['empty']
+     * string $attr['errors']['equal']
+     *
+     * new CompareValidator( 'repeat_pass' , $_POST['repeat_password'], $_POST['password'], 'Password' )
      */
     public function __construct( $name, $value, $comparisonValue, $comparisonField, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidator( $name, $value, $comparisonValue, $comparisonField, $attr );
+        $this->configValidatorGenericAttr( $name, $value, $comparisonValue, $comparisonField, $attr );
     }
 
 
     /**
-     * Perform validation
      * @return bool
      */
     public function isValid()
@@ -53,14 +54,18 @@ class CompareValidator extends ValidatorStrategy
      * @param $comparisonField
      * @param $attr
      */
-    protected function configValidator( $name, $value, $comparisonValue, $comparisonField, $attr )
+    protected function configValidatorGenericAttr( $name, $value, $comparisonValue, $comparisonField, $attr )
     {
-        parent::configValidator( $name, $value, $attr );
+        parent::configValidatorGenericAttr( $name, $value, $attr );
         $this->data['compare_value'] = $comparisonValue;
-        $this->data['compare_field'] = ( array_key_exists( 'compare_field', $attr ) ) ? $attr['compare_field'] : $comparisonField;
+        $this->data['compare_field'] = $comparisonField;
     }
 
 
+    /**
+     * @param array $attr
+     * @return array
+     */
     protected function configErrors( array $attr )
     {
         $cfg = array(

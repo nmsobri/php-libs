@@ -5,20 +5,23 @@ class RegexValidator extends ValidatorStrategy
 
 
     /**
-     * @param string $name
-     * @param mixed $value
-     * @param string $regex
-     * @param mixed $attr
-     * @param bool $attr ['required']
-     * @param mixed $attr ['errors']['empty']
-     * @param mixed $attr ['field']
+     * Validation for regex
      *
-     * @example new RegexValidator( 'gender', $_POST['gender'], '/[a-z]+$/', array( 'message' => '*' ) )
+     * @param string $name
+     * @param string $value
+     * @param string $regex
+     * @param array $attr
+     *
+     * bool $attr['required']
+     * string $attr['field']
+     * string $attr['errors']['empty']
+     *
+     * @example new RegexValidator( 'gender', $_POST['gender'], '/[a-z]+$/' )
      */
     public function __construct( $name, $value, $regex, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidator( $name, $value, $regex, $attr );
+        $this->configValidatorGenericAttr( $name, $value, $regex, $attr );
     }
 
 
@@ -52,13 +55,17 @@ class RegexValidator extends ValidatorStrategy
      * @param array $regex
      * @param $attr
      */
-    protected function configValidator( $name, $value, $regex, $attr )
+    protected function configValidatorGenericAttr( $name, $value, $regex, $attr )
     {
-        parent::configValidator( $name, $value, $attr );
+        parent::configValidatorGenericAttr( $name, $value, $attr );
         $this->data['regex'] = $regex;
     }
 
 
+    /**
+     * @param array $attr
+     * @return array
+     */
     protected function configErrors( array $attr )
     {
         $cfg = array(

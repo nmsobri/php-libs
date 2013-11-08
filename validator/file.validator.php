@@ -4,25 +4,28 @@ class FileValidator extends ValidatorStrategy
 {
 
     /**
-     * Validation for select field
+     * Validation for file
+     *
      * @param string $name
-     * @param mixed $value $_FILES['elem_name']
-     * @param mixed $ext ['pdf','doc','ppt']
-     * @param string $attr ['field']
-     * @param string $attr ['required']
-     * @param string $attr ['errors']['empty']
-     * @param string $attr ['errors']['extension']
-     * @example new FileValidator( 'user_image' , $_FILES['image'], array( 'message' => 'File is empty' ) )
+     * @param mixed $value $_FILES['elem']
+     * @param array $ext array('pdf','doc','ppt')
+     * @param array $attr
+     *
+     * bool $attr['required']
+     * string $attr['field']
+     * string $attr['errors']['empty']
+     * string $attr['errors']['extension']
+     *
+     * @example new FileValidator( 'user_image' , $_FILES['image'] )
      */
     public function __construct( $name, $value, array $ext = null, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidator( $name, $value, $ext, $attr );
+        $this->configValidatorGenericAttr( $name, $value, $ext, $attr );
     }
 
 
     /**
-     * Perform validation
      * @return bool
      */
     public function isValid()
@@ -52,9 +55,9 @@ class FileValidator extends ValidatorStrategy
      * @param array $ext
      * @param $attr
      */
-    protected function configValidator( $name, $value, $ext, $attr )
+    protected function configValidatorGenericAttr( $name, $value, $ext, $attr )
     {
-        parent::configValidator( $name, $value, $attr );
+        parent::configValidatorGenericAttr( $name, $value, $attr );
         $this->data['extension'] = $ext;
     }
 

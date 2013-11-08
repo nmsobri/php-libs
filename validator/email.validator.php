@@ -5,20 +5,22 @@ class EmailValidator extends ValidatorStrategy
 
     /**
      * Validation for email
+     *
      * @param string $name
      * @param mixed $value
      * @param mixed $attr
-     * @param bool $attr ['required']
-     * @param string $attr ['errors']['empty']
-     * @param string $attr ['errors']['email']
-     * @param mixed $attr ['field']
      *
-     * @example new EmailValidator( 'email', $_POST['email'], array( 'message' => '*' ) )
+     * bool $attr['required']
+     * string $attr['field']
+     * string $attr['errors']['empty']
+     * string $attr['errors']['email']
+     *
+     * @example new EmailValidator( 'email', $_POST['email'] )
      */
     public function __construct( $name, $value, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidator( $name, $value, $attr );
+        $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 
