@@ -1,40 +1,41 @@
 <?php
 
-class NumberValidator extends ValidatorStrategy
+class NumberValidator extends AlnumValidatorStrategy
 {
-
     /**
-     * Validation for number field
+     * Validation for number
+     *
      * @param mixed $name
      * @param mixed $value
      * @param mixed $attr
-     * @param mixed $attr ['field']
-     * @param bool $attr ['required']
-     * @param int $attr ['decimal']
-     * @param int $attr ['min_length']
-     * @param int $attr ['max_length']
-     * @param mixed $attr ['errors']['empty']
-     * @param mixed $attr ['errors']['number']
-     * @param mixed $attr ['errors']['number_fixed']
-     * @param mixed $attr ['errors']['number_range']
-     * @param mixed $attr ['errors']['number_decimal']
-     * @param mixed $attr ['errors']['number_decimal_fixed']
-     * @param mixed $attr ['errors']['number_decimal_range']
      *
-     * @example new NumberValidator( 'age', $_POST['age'], array( 'min_length' => 2, 'max_length' => 0 ) ) check for number that length equal to 2
-     * @example new NumberValidator( 'age', $_POST['age'], array( 'min_length' => 7, 'max_length' => 9 ) ) check for number that length in the range of 7-9
-     * @example new NumberValidator( 'age', $_POST['age'], array( 'min_length' => 3, 'max_length' => 0 , 'decimal' => 2 ) ) check for number that length equal to 3 and have 2 decimal place (190.30)
-     * @example new NumberValidator( 'age', $_POST['age'], array( 'min_length' => 2, 'max_length' => -1 ) ) check for number that length have at least 2 length and beyond (ignore the maxLength)
+     * bool $attr['required']
+     * string $attr['field']
+     * int $attr['decimal']
+     * int|array $attr['length']
+     * string $attr['errors']['empty'] error if empty
+     * string $attr['errors']['number'] error if not whole number
+     * string $attr['errors']['number_fixed'] error if not whole number or have exact length
+     * string $attr['errors']['number_range'] error if not whole number or not length not in between range
+     * string $attr['errors']['number_decimal'] error if not floating point
+     * string $attr['errors']['number_decimal_fixed'] error if not floating point or have exact length
+     * string $attr['errors']['number_decimal_range'] error if not floating point or length not in between range
+     *
+     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>10) ) check for text that length equal to 10
+     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array('min'=>10)) ) check for text that length equal to 10
+     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array(3,10) ) ) check for text that length in between 3 and 10
+     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array( 'min'=>3,'max'=> 10) ) ) check for text that length between 3 and 10
+     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array( 'max'=> 8) ) ) check for text that length in between 1 and 8
+     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array(5,7), 'allow_num' => true ) ) check for text that length between 5 to 7 and can contain number
      */
     public function __construct( $name, $value, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidator( $name, $value, $attr );
+        $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 
     /**
-     * Perform validation
      * @return bool
      */
     public function isValid()
@@ -42,114 +43,97 @@ class NumberValidator extends ValidatorStrategy
         if( empty( $this->data['value'] ) ){
             return $this->checkRequired();
         }
-        else{
-            if( $this->data['min_length'] >= 1 && $this->data['max_length'] == 0 ){
-                return $this->checkExactLength();
-            }
-            elseif( $this->data['min_length'] >= 1 && ( $this->data['max_length'] > $this->data['min_length'] ) ){
-                return $this->checkVariableLength();
-            }
-            else{
-                return $this->checkInfiniteLength();
-            }
+
+        if( $this->data['min_length'] >= 1 && $this->data['max_length'] == 0 ){
+            return $this->checkFixNumber();
         }
+
+        if( $this->data['min_length'] >= 1 && ( $this->data['max_length'] > $this->data['min_length'] ) ){
+            return $this->checkRangeNumber();
+        }
+
+        return $this->checkNumber();
     }
 
 
     /**
-     * Check for field existence
      * @return bool
      */
     protected function checkRequired()
     {
-        if( $this->data['required'] == true ){
+        if( $this->data['required'] ){
             $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_EMPTY, array( $this->data['field'] ) );
             return false;
         }
-        else{
-            return true;
-        }
+        return true;
     }
 
 
     /**
-     * Check field for exact length
      * @return bool
      */
-    protected function checkExactLength()
+    protected function checkFixNumber()
     {
         if( $this->data['decimal'] > 0 ){
             if( preg_match( '/^[0-9]{' . $this->data['min_length'] . '}\.[0-9]{' . $this->data['decimal'] . '}$/i', $this->data['value'] ) ){
                 return true;
             }
-            else{
-                $this->messages = ( $this->data['errors']['number_decimal_fixed'] ) ? $this->data['errors']['number_decimal_fixed'] : $this->errorText( ValidatorStrategy::E_NUMBER_DECIMAL_FIXED, array( $this->data['field'], $this->data['decimal'], $this->data['min_length'] ) );
-                return false;
-            }
+            $this->messages = ( $this->data['errors']['number_decimal_fixed'] ) ? $this->data['errors']['number_decimal_fixed'] : $this->errorText( ValidatorStrategy::E_NUMBER_DECIMAL_FIXED, array( $this->data['field'], $this->data['decimal'], $this->data['min_length'] ) );
+            return false;
         }
-        else{
-            if( preg_match( '/^[0-9]{' . $this->data['min_length'] . '}$/i', $this->data['value'] ) ){
-                return true;
-            }
-            else{
-                $this->messages = ( $this->data['errors']['number_fixed'] ) ? $this->data['errors']['number_fixed'] : $this->errorText( ValidatorStrategy::E_NUMBER_FIXED, array( $this->data['field'], $this->data['min_length'] ) );
-                return false;
-            }
+
+        if( preg_match( '/^[0-9]{' . $this->data['min_length'] . '}$/i', $this->data['value'] ) ){
+            return true;
         }
+
+        $this->messages = ( $this->data['errors']['number_fixed'] ) ? $this->data['errors']['number_fixed'] : $this->errorText( ValidatorStrategy::E_NUMBER_FIXED, array( $this->data['field'], $this->data['min_length'] ) );
+        return false;
     }
 
 
     /**
-     * Check field for range of length
      * @return bool
      */
-    protected function checkVariableLength()
+    protected function checkRangeNumber()
     {
         if( $this->data['decimal'] > 0 ){
             if( preg_match( '/^[0-9]{' . $this->data['min_length'] . ',' . $this->data['max_length'] . '}\.[0-9]{' . $this->data['decimal'] . '}$/i', $this->data['value'] ) ){
                 return true;
             }
-            else{
-                $this->messages = ( $this->data['errors']['number_decimal_range'] ) ? $this->data['errors']['number_decimal_range'] : $this->errorText( ValidatorStrategy::E_NUMBER_DECIMAL_RANGE, array( $this->data['field'], $this->data['decimal'], $this->data['min_length'], $this->data['max_length'] ) );
-                return false;
-            }
+
+            $this->messages = ( $this->data['errors']['number_decimal_range'] ) ? $this->data['errors']['number_decimal_range'] : $this->errorText( ValidatorStrategy::E_NUMBER_DECIMAL_RANGE, array( $this->data['field'], $this->data['decimal'], $this->data['min_length'], $this->data['max_length'] ) );
+            return false;
         }
-        else{
-            if( preg_match( '/^[0-9]{' . $this->data['min_length'] . ',' . $this->data['max_length'] . '}$/i', $this->data['value'] ) ){
-                return true;
-            }
-            else{
-                $this->messages = ( $this->data['errors']['number_range'] ) ? $this->data['errors']['number_range'] : $this->errorText( ValidatorStrategy::E_NUMBER_RANGE, array( $this->data['field'], $this->data['min_length'], $this->data['max_length'] ) );
-                return false;
-            }
+
+        if( preg_match( '/^[0-9]{' . $this->data['min_length'] . ',' . $this->data['max_length'] . '}$/i', $this->data['value'] ) ){
+            return true;
         }
+
+        $this->messages = ( $this->data['errors']['number_range'] ) ? $this->data['errors']['number_range'] : $this->errorText( ValidatorStrategy::E_NUMBER_RANGE, array( $this->data['field'], $this->data['min_length'], $this->data['max_length'] ) );
+        return false;
     }
 
 
     /**
-     * Check field for infinite length
      * @return bool
      */
-    protected function checkInfiniteLength()
+    protected function checkNumber()
     {
         if( $this->data['decimal'] > 0 ){
             if( preg_match( '/^[0-9]+\.[0-9]{' . $this->data['decimal'] . '}$/i', $this->data['value'] ) ){
                 return true;
             }
-            else{
-                $this->messages = ( $this->data['errors']['number_decimal'] ) ? $this->data['errors']['number_decimal'] : $this->errorText( ValidatorStrategy::E_NUMBER_DECIMAL, array( $this->data['field'], $this->data['decimal'] ) );
-                return false;
-            }
+
+            $this->messages = ( $this->data['errors']['number_decimal'] ) ? $this->data['errors']['number_decimal'] : $this->errorText( ValidatorStrategy::E_NUMBER_DECIMAL, array( $this->data['field'], $this->data['decimal'] ) );
+            return false;
         }
-        else{
-            if( preg_match( '/^[0-9]+$/i', $this->data['value'] ) ){
-                return true;
-            }
-            else{
-                $this->messages = ( $this->data['errors']['number'] ) ? $this->data['errors']['number'] : $this->errorText( ValidatorStrategy::E_NUMBER, array( $this->data['field'] ) );
-                return false;
-            }
+
+        if( preg_match( '/^[0-9]+$/i', $this->data['value'] ) ){
+            return true;
         }
+
+        $this->messages = ( $this->data['errors']['number'] ) ? $this->data['errors']['number'] : $this->errorText( ValidatorStrategy::E_NUMBER, array( $this->data['field'] ) );
+        return false;
     }
 
 
@@ -158,14 +142,18 @@ class NumberValidator extends ValidatorStrategy
      * @param $value
      * @param array $attr
      */
-    protected function configValidator( $name, $value, $attr )
+    protected function configValidatorGenericAttr( $name, $value, $attr )
     {
-        parent::configValidator( $name, $value, $attr );
-        $this->configLength( @$attr['length'] );
-        $this->data['decimal'] = ( array_key_exists( 'decimal', $attr ) ) ? $attr['decimal'] : 0;
+        parent::configValidatorGenericAttr( $name, $value, $attr );
+        $this->configValidatorLengthAttr( @$attr['length'] );
+        $this->data['decimal'] = isset( $attr['decimal'] ) ? $attr['decimal'] : 0;
     }
 
 
+    /**
+     * @param array $attr
+     * @return array
+     */
     protected function configErrors( array $attr )
     {
         $cfg = array(
@@ -177,9 +165,8 @@ class NumberValidator extends ValidatorStrategy
         if( isset( $attr['errors'] ) and is_array( $attr['errors'] ) ){
             return array_merge( $cfg, $attr['errors'] );
         }
-        else{
-            return $cfg;
-        }
+
+        return $cfg;
     }
 
 
