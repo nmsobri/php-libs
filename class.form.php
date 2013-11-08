@@ -31,18 +31,22 @@ class Form
 
     /**
      * Create html text element
+     *
      * @param string $name
      * @param string $defaultValue
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param string $attr['placeholder']
-     * @param bool $attr['disabled'] remove from $_POST
-     * @param bool $attr['readonly']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * string $attr['placeholder']
+     * bool $attr['disabled'] remove from $_POST
+     * bool $attr['readonly']
+     *
      * @return string
      */
     public function text( $name, $defaultValue = null, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array(); #Cast to an array if $attribute exist otherwise create an empty array
+        $attr = !is_null( $attr ) ? $attr : array(); #Cast to an array if $attribute exist otherwise create an empty array
         $cfg = $this->configElement( $name, $attr );
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
         $value = $this->getTextValue( $name, $defaultValue );
@@ -52,20 +56,24 @@ class Form
 
     /**
      * Create html textarea element
+     *
      * @param string $name
      * @param string $defaultValue
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param string $attr['placeholder']
-     * @param bool $attr['disabled']
-     * @param bool $attr['readonly']
-     * @param int $attr['cols']
-     * @param int $attr['rows']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * string $attr['placeholder']
+     * bool $attr['disabled']
+     * bool $attr['readonly']
+     * int $attr['cols']
+     * int $attr['rows']
+     *
      * @return string
      */
     public function textarea( $name, $defaultValue = null, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
         $value = $this->getTextValue( $name, $defaultValue );
@@ -75,17 +83,21 @@ class Form
 
     /**
      * Create html password element
+     *
      * @param string $name
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param string $attr['placeholder']
-     * @param bool $attr['disabled']
-     * @param bool $attr['readonly']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * string $attr['placeholder']
+     * bool $attr['disabled']
+     * bool $attr['readonly']
+     *
      * @return string
      */
     public function password( $name, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         return $this->removeExtraSpaces( sprintf( '<input type="password" name="%s" id="%s" class="%s" placeholder="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['placeholder'], $cfg['readonly'], $cfg['disabled'] ) );
     }
@@ -93,19 +105,23 @@ class Form
 
     /**
      * Create html select element
+     *
      * @param string $name
      * @param array $options
      * @param string|array $selected marked option selected
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param bool $attr['disabled']
-     * @param bool $attr['readonly']
-     * @param bool $attr['multiple']
-     * @param int $attr['size']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * bool $attr['disabled']
+     * bool $attr['readonly']
+     * bool $attr['multiple']
+     * int $attr['size']
+     *
      * @return string
      *
-     * $options is pass as follows:
      *
+     * $options is pass as follows:
      *
      * select( 'state', array('png'=>'Penang','kl'=>'K.Lumpur') )
      *
@@ -142,7 +158,7 @@ class Form
      */
     public function select( $name, $options, $selected = null, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         $name = $this->setSelectElementName( $name );
         $selected = ( is_null( $selected ) ) ? '' : $selected;
@@ -164,18 +180,22 @@ class Form
 
     /**
      * Create html radio element
+     *
      * @param string $name
      * @param string $value
      * @param bool $checked
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param bool $attr['disabled']
-     * @param bool $attr['readonly']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * bool $attr['disabled']
+     * bool $attr['readonly']
+     *
      * @return string
      */
     public function radio( $name, $value, $checked = false, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
         $radio_checked = $this->getRadioValue( $name, $value, $checked );
@@ -185,18 +205,22 @@ class Form
 
     /**
      * Create html checkbox element
+     *
      * @param string $name
      * @param string $value
      * @param bool $checked
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param bool $attr['disabled']
-     * @param bool $attr['readonly']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * bool $attr['disabled']
+     * bool $attr['readonly']
+     *
      * @return string
      */
     public function checkbox( $name, $value, $checked = false, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
         $checkbox_checked = $this->getCheckboxValue( $name, $value, $checked );
@@ -206,16 +230,20 @@ class Form
 
     /**
      * Create html file element(for upload)
+     *
      * @param string $name
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param bool $attr['disabled'] remove from $_POST data
-     * @param bool $attr['readonly']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * bool $attr['disabled'] remove from $_POST data
+     * bool $attr['readonly']
+     *
      * @return string
      */
     public function file( $name, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         return $this->removeExtraSpaces( sprintf( '<input type="file" name="%s" id="%s" class="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] ) );
     }
@@ -223,15 +251,19 @@ class Form
 
     /**
      * Create html hidden element
+     *
      * @param string $name
      * @param string $value
-     * @param string $attr['id']
-     * @param string $attr['class']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     *
      * @return string
      */
     public function hidden( $name, $value, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         $value = $this->getTextValue( $name, $value );
         return $this->removeExtraSpaces( sprintf( '<input type="hidden" name="%s" value="%s" id="%s" class="%s">', $name, $value, $cfg['id'], $cfg['class'] ) );
@@ -241,17 +273,21 @@ class Form
     /**
      *
      * Create html button element
+     *
      * @param string $name
      * @param string $value
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param bool $attr['disabled']
-     * @param bool $attr['readonly']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * bool $attr['disabled']
+     * bool $attr['readonly']
+     *
      * @return string
      */
     public function button( $name, $value, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         return $this->removeExtraSpaces( sprintf( '<input type="button" name="%s" value="%s" id="%s" class="%s" %s %s>', $name, $value, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] ) );
     }
@@ -259,17 +295,21 @@ class Form
 
     /**
      * Create html submit element
+     *
      * @param string $name
      * @param string $value
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param bool $attr['disabled']
-     * @param bool $attr['readonly']
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * bool $attr['disabled']
+     * bool $attr['readonly']
+     *
      * @return string
      */
     public function submit( $name, $value = 'Submit', array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         return $this->removeExtraSpaces( sprintf( '<input type="submit" name="%s" id="%s" class="%s" value="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $value, $cfg['readonly'], $cfg['disabled'] ) );
     }
@@ -283,15 +323,18 @@ class Form
      * $action = 'index.php?id=1' and requesting script is index.php?id=3&lang=en, resulting to index.php?id=3&lang=en
      *
      * @param string $action
-     * @param string $attr['id']
-     * @param string $attr['class']
-     * @param string $attr['target']
-     * @param bool $attr[upload]
+     * @param array $attr
+     *
+     * string $attr['id']
+     * string $attr['class']
+     * string $attr['target']
+     * bool $attr[upload]
+     *
      * @return string
      */
     public function formStart( $action, array $attr = null )
     {
-        $attr = ( !is_null( $attr ) ) ? ( array )$attr : array();
+        $attr = !is_null( $attr ) ? $attr : array();
         $action = $this->formAction( $action, @$_SERVER['REQUEST_URI'] );
         $formName = 'form' . ++self::$instance;
         $cfg = $this->configElement( $formName, $attr );
@@ -371,6 +414,7 @@ class Form
     /**
      * Populate html element attribute
      * Passing null to any attribute, yield to default attribute in $cfg
+     *
      * @param string $name
      * @param array $attr
      * @return array
@@ -393,6 +437,7 @@ class Form
 
     /**
      * Get value for all text related html element
+     *
      * @param string $name
      * @param string $defaultValue
      * @return string
@@ -422,6 +467,7 @@ class Form
 
     /**
      * Get value for html select element
+     *
      * @param string $name
      * @param string $selected
      * @return string|array
@@ -456,6 +502,7 @@ class Form
 
     /**
      * Get value for html radio element
+     *
      * @param string $name
      * @param string $value
      * @param bool $checked
@@ -487,6 +534,7 @@ class Form
 
     /**
      * Get value for html checkbox element
+     *
      * @param string $name
      * @param string $value
      * @param bool $checked
@@ -517,6 +565,7 @@ class Form
 
     /**
      * Build option list for html select element
+     *
      * @param string $name
      * @param array $options
      * @param int $instance
@@ -551,6 +600,7 @@ class Form
 
     /**
      * Cast html element attribute property
+     *
      * @param array $attr
      * @return array
      */
@@ -573,6 +623,7 @@ class Form
 
     /**
      * Fix html element standalone property
+     *
      * @param array $attr
      * @return array
      */
@@ -589,6 +640,7 @@ class Form
 
     /**
      * Remove any empty|broken html element property
+     *
      * @param array $attr
      * @return array
      */
@@ -612,6 +664,7 @@ class Form
 
     /**
      * Remove extra spaces around any generated html element
+     *
      * @param $text
      * @return string
      */
@@ -631,6 +684,7 @@ class Form
 
     /**
      * Prepare url for combining with GET
+     *
      * @param string $action
      * @param string $request_script
      * @return mixed|string
@@ -651,6 +705,7 @@ class Form
 
     /**
      * Check if element is an array
+     *
      * @param string $name
      * @return bool
      */
@@ -662,6 +717,7 @@ class Form
 
     /**
      * Get element name
+     *
      * @param string $name
      * @return string
      */
@@ -673,6 +729,7 @@ class Form
 
     /**
      * Get element css class
+     *
      * @param string $name
      * @return string
      */
@@ -684,6 +741,7 @@ class Form
 
     /**
      * Get element css id
+     *
      * @param string $name
      * @return string
      */
@@ -699,6 +757,7 @@ class Form
 
     /**
      * Set html select element name
+     *
      * @param string $name
      * @return string
      */
