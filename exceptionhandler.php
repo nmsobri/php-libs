@@ -5,6 +5,9 @@
  * Note:When Using This Class..U dont Need to Use Try Catch Block
  * @author slier
  */
+
+namespace utility;
+
 class ExceptionHandler
 {
 

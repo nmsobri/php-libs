@@ -6,6 +6,9 @@
  * Root element <configs></configs>
  * @author slier
  */
+
+namespace utility;
+
 class Config
 {
 

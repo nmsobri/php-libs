@@ -4,6 +4,9 @@
  * Pagination class
  * @author slier
  */
+
+namespace utility;
+
 class Pagination
 {
 

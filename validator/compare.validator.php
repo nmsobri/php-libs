@@ -1,5 +1,7 @@
 <?php
 
+namespace utility\validator;
+
 class CompareValidator extends ValidatorStrategy
 {
 

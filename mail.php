@@ -14,6 +14,8 @@
 // License: LGPL, see LICENSE
 /////////////////////////////////////////////////
 
+namespace utility;
+
 class Mail
 {
 

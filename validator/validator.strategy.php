@@ -1,5 +1,7 @@
 <?php
 
+namespace utility\validator;
+
 abstract class ValidatorStrategy
 {
     const E = 'Please correct following errors:';

@@ -1,5 +1,7 @@
 <?php
 
+namespace utility\validator;
+
 abstract class AlnumValidatorStrategy extends ValidatorStrategy
 {
 

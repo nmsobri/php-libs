@@ -6,6 +6,9 @@
  * But This Class Make Cookie Available In Current Request
  * @author slier
  */
+
+namespace utility;
+
 class Cookie
 {
 

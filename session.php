@@ -5,6 +5,9 @@
  * Session Class
  * @author slier
  */
+
+namespace utility;
+
 class Session
 {
 

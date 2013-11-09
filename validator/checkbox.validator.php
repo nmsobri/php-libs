@@ -1,6 +1,8 @@
 <?php
 
-class CheckBoxValidator extends ValidatorStrategy
+namespace utility\validator;
+
+class CheckboxValidator extends ValidatorStrategy
 {
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+namespace utility\validator;
+
 class RegexValidator extends ValidatorStrategy
 {
 

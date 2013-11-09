@@ -7,6 +7,9 @@
  * $obj->resize(150, 100, 0);
  * $obj->save('output.jpg', 100);
  */
+
+namespace utility;
+
 class Image
 {
 

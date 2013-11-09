@@ -6,6 +6,8 @@
  *
  */
 
+namespace utility;
+
 class Authentication
 {
 

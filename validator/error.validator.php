@@ -3,6 +3,9 @@
  * Error Validator
  * use in Validator::invalidateValidation() to give user friendly error message after marked overall validation as failed
  */
+
+namespace utility\validator;
+
 class ErrorValidator extends ValidatorStrategy
 {
 

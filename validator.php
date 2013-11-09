@@ -1,5 +1,7 @@
 <?php
 
+namespace utility;
+
 class Validator
 {
 

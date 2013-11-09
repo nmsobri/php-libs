@@ -9,6 +9,9 @@
  *   PRIMARY KEY (`id`)
  *   ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
  */
+
+namespace utility;
+
 class Category
 {
 

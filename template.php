@@ -5,6 +5,9 @@
  * Template Class
  * @author slier
  */
+
+namespace utility;
+
 class Template
 {
 

@@ -5,6 +5,8 @@
  * @author slier
  */
 
+namespace utility;
+
 class Database extends PDO
 {
 

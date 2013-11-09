@@ -3,19 +3,21 @@
 /**
  * Class For Handling File Upload
  * @author slier
- * @example
  *
- *     $upload = new FileUpload('./upload/',$_FILES['upload'],array('.png','.jpg'));
- *     if($upload->upload())
- *     {
- *       echo 'successfully upload';
- *       echo $upload->getUploadedFileInfo();
- *     }
- *     else
- *     {
- *       echo $upload->showError();
- *     }
+ * $upload = new FileUpload('./upload/',$_FILES['upload'],array('.png','.jpg'));
+ * if($upload->upload())
+ * {
+ *   echo 'successfully upload';
+ *   echo $upload->getUploadedFileInfo();
+ * }
+ * else
+ * {
+ *   echo $upload->showError();
+ * }
  */
+
+namespace utility;
+
 class Upload
 {
 
