@@ -36,12 +36,12 @@ class Config
     /**
      * @param string $fileName
      * @param string $rootName
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct( $fileName, $rootName )
     {
         if ( !file_exists( $fileName ) ) {
-            throw new Exception( "File {$fileName} not found" );
+            throw new \Exception( "File {$fileName} not found" );
         }
         $this->fileName = $fileName;
         $this->rootName = $rootName;
@@ -76,7 +76,7 @@ class Config
 
     /**
      * Read the configuration file
-     * @throws Exception
+     * @throws \Exception
      * @return mixed
      */
     public function read()
@@ -86,7 +86,7 @@ class Config
             $rootName = $xml->getName();
 
             if ( $rootName != $this->rootName ) {
-                throw new Exception( "File {$this->fileName} should have root <{$this->rootName}>" );
+                throw new \Exception( "File {$this->fileName} should have root <{$this->rootName}>" );
             }
 
             foreach ( $xml->children() as $child ) {
@@ -102,13 +102,13 @@ class Config
 
     /**
      * Write to configuration file
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     public function write()
     {
         if ( !is_writable( $this->fileName ) ) {
-            throw new Exception( "File {$this->fileName} is not writable" );
+            throw new \Exception( "File {$this->fileName} is not writable" );
         }
 
         $xml = new SimpleXMLElement( '<configs></configs>' );

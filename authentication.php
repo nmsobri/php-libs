@@ -89,8 +89,8 @@ class Authentication
 
 
     /**
-     * @param Pdo $db
-     * @param stdClass $obj
+     * @param \Pdo $db
+     * @param \stdClass $obj
      * @param stdClass::query query to run
      * @param stdClass::bind array|single value to bind to placeholder inside query
      * @param stdClass::remember whether to use cookie to store auth result
@@ -104,7 +104,7 @@ class Authentication
      * $obj->query = "SELECT * FROM users WHERE username=:age AND password=:password"
      * $obj->bind = array(':username'=>$username, ':password'=>$password)
      */
-    public function login( PDO $db, stdClass $obj )
+    public function login( \PDO $db, \stdClass $obj )
     {
         $this->db = $db;
         $this->login_param = $obj;

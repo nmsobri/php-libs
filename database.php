@@ -23,12 +23,13 @@ class Database extends PDO
      * @param string $dsn mysql:host=localhost;dbname=db_name
      * @param string $username
      * @param string $password
+     * @throws \PDOException
      */
     public function __construct( $dsn, $username, $password )
     {
         try {
             if ( !preg_match( '#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#', $dsn ) ) {
-                throw new PDOException( 'Invalid dsn, dsn should be in the following format [dbtype:host=localhost;dbname=db_name]' );
+                throw new \PDOException( 'Invalid dsn, dsn should be in the following format [dbtype:host=localhost;dbname=db_name]' );
             }
             $this->db = new PDO( $dsn, $username, $password );
             $this->db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
@@ -165,7 +166,7 @@ class Database extends PDO
      * Setup where clause
      * @param string $where raw sql condition
      * @param mixed $bind value to bind
-     * @throws PDOException
+     * @throws \PDOException
      * @example where( "username = ? and password = ?", array( $username, $password ) )
      * @example where( "username = :username and password = :password", array( ':username' => $username, ':password' => $password ) )
      * @return \Database for chaining
@@ -173,7 +174,7 @@ class Database extends PDO
     public function where( $where, $bind = null )
     {
         if ( preg_match( '/where/i', $this->query ) ) {
-            throw new PDOException( 'There is a where clause already in the sql statement' );
+            throw new \PDOException( 'There is a where clause already in the sql statement' );
         }
         else {
             $this->bind( $bind );

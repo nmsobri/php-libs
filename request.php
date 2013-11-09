@@ -23,14 +23,14 @@ class Request
 
     /**
      * Check either post data exist
-     * @throws Exception if upload file size exceed php.ini post_max_size
+     * @throws \Exception if upload file size exceed php.ini post_max_size
      * @return bool
      */
     public function isPost()
     {
         if( intval( @$_SERVER['CONTENT_LENGTH'] ) > 0 && count( $_POST ) === 0 ){
             #change this to save $_SESSION data and return false, then check in the else block of existence of the $_SESSION data for proper error message instead of Exception
-            throw new Exception( 'PHP discarded POST data because of request exceeding post_max_size.' );
+            throw new \Exception( 'PHP discarded POST data because of request exceeding post_max_size.' );
         }
         return $_POST;
     }
@@ -58,7 +58,7 @@ class Request
 
     /**
      * Convert post request to a get request
-     * @throws Exception if upload file size exceed php.ini post_max_size
+     * @throws \Exception if upload file size exceed php.ini post_max_size
      * @return bool
      */
     public function postToGet()
@@ -87,7 +87,7 @@ class Request
 
         if( intval( @$_SERVER['CONTENT_LENGTH'] ) > 0 && count( $_POST ) === 0 ){
             #change this to save $_SESSION data and return false, then check in the else block of existence of the $_SESSION data for proper error message instead of Exception
-            throw new Exception( 'PHP discarded POST data because of request exceeding post_max_size.' );
+            throw new \Exception( 'PHP discarded POST data because of request exceeding post_max_size.' );
         }
 
         return false;

@@ -24,20 +24,20 @@ class Image
     /**
      * @param string $file
      * @param array $extensions
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct( $file, array $extensions = null )
     {
         $this->file = $file;
         $this->extensions = !is_null( $extensions ) ? $extensions : $this->extensions;
 
-        try {
-            if ( !$this->isFile() ) {
-                throw new Exception( 'File does not exist' );
+        try{
+            if( !$this->isFile() ){
+                throw new \Exception( 'File does not exist' );
             }
 
-            if ( !$this->isAllowedExtensions() ) {
-                throw new Exception( 'File extension is not allowed' );
+            if( !$this->isAllowedExtensions() ){
+                throw new \Exception( 'File extension is not allowed' );
             }
 
             #Open up the file
@@ -46,7 +46,8 @@ class Image
             #Get width and height
             $this->width = imagesx( $this->image );
             $this->height = imagesy( $this->image );
-        } catch ( Exception $e ) {
+        }
+        catch( \Exception $e ){
             echo $e->getMessage();
         }
     }
@@ -74,7 +75,7 @@ class Image
 
 
         #if option is 'crop', then crop too
-        if ( $option == 'crop' ) {
+        if( $option == 'crop' ){
             $this->crop( $optimalWidth, $optimalHeight, $newWidth, $newHeight );
         }
     }
@@ -89,16 +90,16 @@ class Image
     public function save( $savePath, $imageQuality = 100 )
     {
         $extension = pathinfo( $savePath, PATHINFO_EXTENSION );
-        switch ( $extension ) {
+        switch( $extension ){
             case 'jpg':
             case 'jpeg':
-                if ( imagetypes() & IMG_JPG ) {
+                if( imagetypes() & IMG_JPG ){
                     imagejpeg( $this->imageResized, $savePath, $imageQuality );
                 }
                 break;
 
             case 'gif':
-                if ( imagetypes() & IMG_GIF ) {
+                if( imagetypes() & IMG_GIF ){
                     imagegif( $this->imageResized, $savePath );
                 }
                 break;
@@ -110,7 +111,7 @@ class Image
                 /* Invert quality setting as 0 is best, not 9 */
                 $invertScaleQuality = 9 - $scaleQuality;
 
-                if ( imagetypes() & IMG_PNG ) {
+                if( imagetypes() & IMG_PNG ){
                     imagepng( $this->imageResized, $savePath, $invertScaleQuality );
                 }
                 break;
@@ -136,17 +137,17 @@ class Image
 
         $extension = $this->getExtension();
 
-        switch ( $extension ) {
+        switch( $extension ){
             case 'jpg':
             case 'jpeg':
-                if ( imagetypes() & IMG_JPG ) {
+                if( imagetypes() & IMG_JPG ){
                     header( 'Content-Type:' . $mime );
                     imagejpeg( $this->imageResized, null, $imageQuality );
                 }
                 break;
 
             case 'gif':
-                if ( imagetypes() & IMG_GIF ) {
+                if( imagetypes() & IMG_GIF ){
                     header( 'Content-Type:' . $mime );
                     imagegif( $this->imageResized );
                 }
@@ -159,7 +160,7 @@ class Image
                 /* Invert quality setting as 0 is best, not 9 */
                 $invertScaleQuality = 9 - $scaleQuality;
 
-                if ( imagetypes() & IMG_PNG ) {
+                if( imagetypes() & IMG_PNG ){
                     header( 'Content-Type:' . $mime );
                     imagepng( $this->imageResized, null, $invertScaleQuality );
                 }
@@ -190,7 +191,7 @@ class Image
         $ext = getimagesize( $this->file );
         $ext = $ext[2];
 
-        switch ( $ext ) {
+        switch( $ext ){
             case IMAGETYPE_GIF:
                 return 'gif';
                 break;
@@ -230,7 +231,7 @@ class Image
         /* Get extension */
         $extension = $this->getExtension();
 
-        switch ( $extension ) {
+        switch( $extension ){
             case 'jpg':
                 $img = @imagecreatefromjpeg( $this->file );
                 break;
@@ -262,7 +263,7 @@ class Image
     protected function getDimensions( $newWidth, $newHeight, $option )
     {
 
-        switch ( $option ) {
+        switch( $option ){
             case 'exact':
                 $optimalWidth = $newWidth;
                 $optimalHeight = $newHeight;
@@ -328,26 +329,26 @@ class Image
     protected function getSizeByAuto( $newWidth, $newHeight )
     {
         #image to be resize is wider (landscape)
-        if ( $this->height < $this->width ) {
+        if( $this->height < $this->width ){
             $optimalWidth = $newWidth;
             $optimalHeight = $this->getSizeByFixedWidth( $newWidth );
         }
         #image to be resize is taller (portrait)
-        elseif ( $this->height > $this->width ) {
+        elseif( $this->height > $this->width ){
             $optimalWidth = $this->getSizeByFixedHeight( $newHeight );
             $optimalHeight = $newHeight;
         }
         #image to be resize is a square
-        else {
-            if ( $newHeight < $newWidth ) {
+        else{
+            if( $newHeight < $newWidth ){
                 $optimalWidth = $newWidth;
                 $optimalHeight = $this->getSizeByFixedWidth( $newWidth );
             }
-            else if ( $newHeight > $newWidth ) {
+            else if( $newHeight > $newWidth ){
                 $optimalWidth = $this->getSizeByFixedHeight( $newHeight );
                 $optimalHeight = $newHeight;
             }
-            else {
+            else{
                 #Sqaure being resize to a square
                 $optimalWidth = $newWidth;
                 $optimalHeight = $newHeight;
@@ -370,10 +371,10 @@ class Image
         $heightRatio = $this->height / $newHeight;
         $widthRatio = $this->width / $newWidth;
 
-        if ( $heightRatio < $widthRatio ) {
+        if( $heightRatio < $widthRatio ){
             $optimalRatio = $heightRatio;
         }
-        else {
+        else{
             $optimalRatio = $widthRatio;
         }
 
@@ -426,10 +427,10 @@ class Image
     {
         $fileExtension = $this->getExtension();
 
-        if ( in_array( $fileExtension, $this->extensions ) ) {
+        if( in_array( $fileExtension, $this->extensions ) ){
             return true;
         }
-        else {
+        else{
             return false;
         }
     }

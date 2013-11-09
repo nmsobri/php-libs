@@ -180,7 +180,7 @@ class Template
     /**
      * Fetch the template output, and return it to caller
      * @param string $template_file filename (with path) to the template to be processed
-     * @throws Exception
+     * @throws \Exception
      * @return string |bool
      */
     private function getOutput( $template_file )
@@ -193,7 +193,7 @@ class Template
             ob_end_clean();
         }
         else {
-            throw new Exception( "The template file '$template_file' does not exist" );
+            throw new \Exception( "The template file '$template_file' does not exist" );
         }
         return ( !empty( $output ) ) ? $output : false;
     }
@@ -202,7 +202,7 @@ class Template
     /**
      * Sets the template directory
      * @param string $dir path to the template dir
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     public function setTemplateDir( $dir )
@@ -213,7 +213,7 @@ class Template
             $this->templateDir = $template_dir;
         }
         else {
-            throw new Exception( "The template directory '$dir' does not exist" );
+            throw new \Exception( "The template directory '$dir' does not exist" );
         }
     }
 
@@ -221,7 +221,7 @@ class Template
     /**
      * Sets the cache directory
      * @param string $dir path to the cache dir you want to use
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     public function setCacheDir( $dir )
@@ -232,7 +232,7 @@ class Template
             $this->cacheDir = $cache_dir;
         }
         else {
-            throw new Exception( "The cache directory '$dir' either does not exist, or is not writable" );
+            throw new \Exception( "The cache directory '$dir' either does not exist, or is not writable" );
         }
     }
 
@@ -291,8 +291,8 @@ class Template
      * Checks if the template in $template is cached
      * @param string $file filename of the template
      * @see setCacheLifetime, setCacheDir, setCaching
-     * @throws Exception
-     * @return bool|Exception
+     * @throws \Exception
+     * @return bool
      */
     public function isCached( $file )
     {
@@ -318,7 +318,7 @@ class Template
             return $isCached;
         }
         else {
-            throw new Exception( 'Error with cache directory whether not exist or not writable' );
+            throw new \Exception( 'Error with cache directory whether not exist or not writable' );
         }
     }
 
@@ -328,8 +328,8 @@ class Template
      * @param string $content template output that will be saved in cache
      * @param string $file filename of the template to cache
      * @see getCache, clearCache
-     * @throws Exception
-     * @return void|Exception
+     * @throws \Exception
+     * @return void
      */
     private function addCache( $content, $file )
     {
@@ -339,11 +339,11 @@ class Template
             $filename = $this->cacheDir . $cacheId . basename( $file );
 
             if( file_put_contents( $filename, $content ) == FALSE ) {
-                throw new Exception( "Unable to write to cache" );
+                throw new \Exception( "Unable to write to cache" );
             }
         }
         else {
-            throw new Exception( 'Error with cache directory whether not exist or not writable' );
+            throw new \Exception( 'Error with cache directory whether not exist or not writable' );
         }
     }
 
@@ -354,8 +354,8 @@ class Template
      * @example index.php?id=10
      * @example index.php?id=15
      * @see addCache, clearCache
-     * @throws Exception
-     * @return string|bool|Exception
+     * @throws \Exception
+     * @return string|bool
      */
     private function getCache( $file )
     {
@@ -367,7 +367,7 @@ class Template
             return isset( $content ) ? $content : false;
         }
         else {
-            throw new Exception( 'Error with cache directory wether not exist or not writable' );
+            throw new \Exception( 'Error with cache directory wether not exist or not writable' );
         }
     }
 
@@ -376,7 +376,7 @@ class Template
      * Deletes the stored cache files
      * @param string $file
      * @see addCache, getCache
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     private function delCacheFile( $file )
@@ -386,7 +386,7 @@ class Template
                 unlink( $file );
             }
             else {
-                throw new Exception( "Unable to unlink {$file}" );
+                throw new \Exception( "Unable to unlink {$file}" );
             }
         }
     }
@@ -411,14 +411,14 @@ class Template
     /**
      * Populate passed in variable to template so it become local to template
      * @param array $data
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     private function populateVar( $data )
     {
         if( ( count( $data ) > 0 ) ) {
             if( !$this->isAssocArray( $data ) ) {
-                throw new Exception( 'Array passed to template must be an associative array' );
+                throw new \Exception( 'Array passed to template must be an associative array' );
             }
             else {
                 foreach( $data as $key => $val ) {

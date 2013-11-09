@@ -24,10 +24,10 @@ class ExceptionHandler
 
 
     /**
-     * @param Exception $e
+     * @param \Exception $e
      * @return void
      */
-    public function exceptionHandler( Exception $e )
+    public function exceptionHandler( \Exception $e )
     {
         echo '<div style="background-color:#eee;border:1px dashed #999999;padding:10px;margin-top:60px;margin-left:auto;margin-right:auto;width:1000px">' . '<br>';
         echo '<h3>Exception Has Occured</h3>';
