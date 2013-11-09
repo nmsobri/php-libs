@@ -26,7 +26,7 @@ class Request
      */
     public function isPost()
     {
-        if ( intval( @$_SERVER['CONTENT_LENGTH'] ) > 0 && count( $_POST ) === 0 ) {
+        if( intval( @$_SERVER['CONTENT_LENGTH'] ) > 0 && count( $_POST ) === 0 ){
             #change this to save $_SESSION data and return false, then check in the else block of existence of the $_SESSION data for proper error message instead of Exception
             throw new Exception( 'PHP discarded POST data because of request exceeding post_max_size.' );
         }
@@ -61,34 +61,34 @@ class Request
      */
     public function postToGet()
     {
-        if ( $_FILES ) {
+        if( $_FILES ){
             return $this->isPost();
         }
 
         #Quickly delete session data if this $_GET data do not exist (make session only available on this page and only when GET data is exist)
-        if ( !@$_GET['post'] ) {
-            unset( $_SESSION[$_SERVER['PHP_SELF'] . 'POST'] );
+        if( !isset( $_GET['post'] ) ){
+            $this->session->delete( sprintf( '%sPOST', $_SERVER['PHP_SELF'] ) );
         }
 
-        if ( count( $_POST ) > 0 || count( $_FILES ) > 0 ) {
+        if( count( $_POST ) > 0 ){
             #Unique identification to this flash data
-            $this->session->flash( $_SERVER['PHP_SELF'] . 'POST', $_POST );
-            $path = ( $_SERVER['QUERY_STRING'] != '' ) ? ( isset( $_GET['post'] ) ) ? $_SERVER['REQUEST_URI'] : $_SERVER['REQUEST_URI'] . '&post=t' : $_SERVER['REQUEST_URI'] . '?post=t';
-            header( 'Location: ' . $path );
-            exit;
+            $this->session->flash( sprintf( '%sPOST', $_SERVER['PHP_SELF'] ), $_POST );
+            $path = ( !empty( $_SERVER['QUERY_STRING'] ) ) ? ( isset( $_GET['post'] ) ) ? $_SERVER['REQUEST_URI'] : $_SERVER['REQUEST_URI'] . '&post=t' : $_SERVER['REQUEST_URI'] . '?post=t';
+            $this->session->redirect( $path );
         }
-        elseif ( $this->session->check( $_SERVER['PHP_SELF'] . 'POST' ) || $this->session->check( $_SERVER['PHP_SELF'] . 'FILES' ) ) {
-            $_POST = $this->session->get( $_SERVER['PHP_SELF'] . 'POST' ); //just a convenience so validation object can access to post data
-            $this->session->keepFlash( $_SERVER['PHP_SELF'] . 'POST' );
+
+        if( $this->session->check( sprintf( '%sPOST', $_SERVER['PHP_SELF'] ) ) ){
+            $_POST = $this->session->get( sprintf( '%sPOST', $_SERVER['PHP_SELF'] ) );
+            $this->session->keepFlash( sprintf( '%sPOST', $_SERVER['PHP_SELF'] ) );
             return true;
         }
-        elseif ( intval( @$_SERVER['CONTENT_LENGTH'] ) > 0 && count( $_POST ) === 0 ) {
+
+        if( intval( @$_SERVER['CONTENT_LENGTH'] ) > 0 && count( $_POST ) === 0 ){
             #change this to save $_SESSION data and return false, then check in the else block of existence of the $_SESSION data for proper error message instead of Exception
             throw new Exception( 'PHP discarded POST data because of request exceeding post_max_size.' );
         }
-        else {
-            return false;
-        }
+
+        return false;
     }
 
 
