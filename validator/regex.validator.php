@@ -16,7 +16,7 @@ class RegexValidator extends ValidatorStrategy
      * string $attr['field']
      * string $attr['errors']['empty']
      *
-     * @example new RegexValidator( 'gender', $_POST['gender'], '/[a-z]+$/' )
+     * new RegexValidator( 'gender', $_POST['gender'], '/[a-z]+$/' )
      */
     public function __construct( $name, $value, $regex, array $attr = null )
     {

@@ -16,7 +16,7 @@ class DateValidator extends ValidatorStrategy
      * string $attr['errors']['empty']
      * string $attr['errors']['date']
      *
-     * @example new DateValidator( 'dob', $_POST['dob'] )
+     * new DateValidator( 'dob', $_POST['dob'] )
      */
     public function __construct( $name, $value, array $attr = null )
     {

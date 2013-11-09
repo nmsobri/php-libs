@@ -21,12 +21,12 @@ class NumberValidator extends AlnumValidatorStrategy
      * string $attr['errors']['number_decimal_fixed'] error if not floating point or have exact length
      * string $attr['errors']['number_decimal_range'] error if not floating point or length not in between range
      *
-     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>10) ) check for text that length equal to 10
-     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array('min'=>10)) ) check for text that length equal to 10
-     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array(3,10) ) ) check for text that length in between 3 and 10
-     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array( 'min'=>3,'max'=> 10) ) ) check for text that length between 3 and 10
-     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array( 'max'=> 8) ) ) check for text that length in between 1 and 8
-     * @example new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array(5,7), 'allow_num' => true ) ) check for text that length between 5 to 7 and can contain number
+     * new NumberValidator( 'name', $_POST['salary'], array( 'length'=>10) ) check for text that length equal to 10
+     * new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array('min'=>10)) ) check for text that length equal to 10
+     * new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array(3,10) ) ) check for text that length in between 3 and 10
+     * new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array( 'min'=>3,'max'=> 10) ) ) check for text that length between 3 and 10
+     * new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array( 'max'=> 8) ) ) check for text that length in between 1 and 8
+     * new NumberValidator( 'name', $_POST['salary'], array( 'length'=>array(5,7), 'allow_num' => true ) ) check for text that length between 5 to 7 and can contain number
      */
     public function __construct( $name, $value, array $attr = null )
     {

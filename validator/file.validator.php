@@ -16,7 +16,7 @@ class FileValidator extends ValidatorStrategy
      * string $attr['errors']['empty']
      * string $attr['errors']['extension']
      *
-     * @example new FileValidator( 'user_image' , $_FILES['image'] )
+     * new FileValidator( 'user_image' , $_FILES['image'] )
      */
     public function __construct( $name, $value, array $ext = null, array $attr = null )
     {

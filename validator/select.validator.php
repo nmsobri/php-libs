@@ -13,7 +13,7 @@ class SelectValidator extends ValidatorStrategy
      * string $attr['field']
      * string $attr['errors']['empty']
      *
-     * @example new SelectValidator( 'country' , $_POST['country'] )
+     * new SelectValidator( 'country' , $_POST['country'] )
      */
     public function __construct( $name, $value, array $attr = null )
     {

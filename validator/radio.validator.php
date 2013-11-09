@@ -14,7 +14,7 @@ class RadioValidator extends ValidatorStrategy
      * string $attr['field']
      * string $attr['errors']['empty']
      *
-     * @example new RadioValidator( 'gender', $_POST['gender'] )
+     * new RadioValidator( 'gender', $_POST['gender'] )
      */
     public function __construct( $name, $value, array $attr = null )
     {

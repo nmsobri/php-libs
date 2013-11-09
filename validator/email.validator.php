@@ -15,7 +15,7 @@ class EmailValidator extends ValidatorStrategy
      * string $attr['errors']['empty']
      * string $attr['errors']['email']
      *
-     * @example new EmailValidator( 'email', $_POST['email'] )
+     * new EmailValidator( 'email', $_POST['email'] )
      */
     public function __construct( $name, $value, array $attr = null )
     {

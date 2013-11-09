@@ -10,31 +10,31 @@ class TextValidator extends AlnumValidatorStrategy
      * @param string $value
      * @param array $attr
      *
-     * @param bool $attr ['required']
-     * @param string $attr ['field']
-     * @param bool $attr ['allow_num']
-     * @param bool $attr ['allow_space']
-     * @param int|array $attr ['length']
-     * @param string $attr ['errors']['empty'] error if empty
-     * @param string $attr ['errors']['text'] eror if not text
-     * @param string $attr ['errors']['text_fixed'] error if not text or have exact length
-     * @param string $attr ['errors']['text_range'] error if not text or length not in between range
-     * @param string $attr ['errors']['text_number'] error if not text or number
-     * @param string $attr ['errors']['text_space'] error if not text or space
-     * @param string $attr ['errors']['text_number_fixed'] error if not text or number or have exact length
-     * @param string $attr ['errors']['text_space_fixed'] error if not text or space or have exact length
-     * @param string $attr ['errors']['text_number_range'] error if not text or number or length not in between range
-     * @param string $attr ['errors']['text_space_range'] error if not text or space or length not in between range
-     * @param string $attr ['errors']['text_number_space'] error if not text or number or space
-     * @param string $attr ['errors']['text_number_space_fixed'] error if not test or number or space or have exact length
-     * @param string $attr ['errors']['text_number_space_range'] error if not text or number or space or length in between range
+     * bool $attr ['required']
+     * string $attr ['field']
+     * bool $attr ['allow_num']
+     * bool $attr ['allow_space']
+     * int|array $attr ['length']
+     * string $attr['errors']['empty'] error if empty
+     * string $attr['errors']['text'] eror if not text
+     * string $attr['errors']['text_fixed'] error if not text or have exact length
+     * string $attr['errors']['text_range'] error if not text or length not in between range
+     * string $attr['errors']['text_number'] error if not text or number
+     * string $attr['errors']['text_space'] error if not text or space
+     * string $attr['errors']['text_number_fixed'] error if not text or number or have exact length
+     * string $attr['errors']['text_space_fixed'] error if not text or space or have exact length
+     * string $attr['errors']['text_number_range'] error if not text or number or length not in between range
+     * string $attr['errors']['text_space_range'] error if not text or space or length not in between range
+     * string $attr['errors']['text_number_space'] error if not text or number or space
+     * string $attr['errors']['text_number_space_fixed'] error if not test or number or space or have exact length
+     * string $attr['errors']['text_number_space_range'] error if not text or number or space or length in between range
      *
-     * @example new TextValidator( 'name', $_POST['name'], array( 'length'=>10) ) check for text that length equal to 10
-     * @example new TextValidator( 'name', $_POST['name'], array( 'length'=>array('min'=>10)) ) check for text that length equal to 10
-     * @example new TextValidator( 'name', $_POST['name'], array( 'length'=>array(3,10) ) ) check for text that length in between 3 and 10
-     * @example new TextValidator( 'name', $_POST['name'], array( 'length'=>array( 'min'=>3,'max'=> 10) ) ) check for text that length between 3 and 10
-     * @example new TextValidator( 'name', $_POST['name'], array( 'length'=>array( 'max'=> 8) ) ) check for text that length in between 1 and 8
-     * @example new TextValidator( 'name', $_POST['name'], array( 'length'=>array(5,7), 'allow_num' => true ) ) check for text that length between 5 to 7 and can contain number
+     * new TextValidator( 'name', $_POST['name'], array( 'length'=>10) ) check for text that length equal to 10
+     * new TextValidator( 'name', $_POST['name'], array( 'length'=>array('min'=>10)) ) check for text that length equal to 10
+     * new TextValidator( 'name', $_POST['name'], array( 'length'=>array(3,10) ) ) check for text that length in between 3 and 10
+     * new TextValidator( 'name', $_POST['name'], array( 'length'=>array( 'min'=>3,'max'=> 10) ) ) check for text that length between 3 and 10
+     * new TextValidator( 'name', $_POST['name'], array( 'length'=>array( 'max'=> 8) ) ) check for text that length in between 1 and 8
+     * new TextValidator( 'name', $_POST['name'], array( 'length'=>array(5,7), 'allow_num' => true ) ) check for text that length between 5 to 7 and can contain number
      */
     public function __construct( $name, $value, array $attr = null )
     {
