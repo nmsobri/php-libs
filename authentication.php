@@ -91,16 +91,16 @@ class Authentication
     /**
      * @param \Pdo $db
      * @param \stdClass $obj
-     * @param stdClass::query query to run
-     * @param stdClass::bind array|single value to bind to placeholder inside query
-     * @param stdClass::remember whether to use cookie to store auth result
+     *
+     * stdClass::query query to run
+     * stdClass::bind array|single value to bind to placeholder inside query
+     * stdClass::remember whether to use cookie to store auth result
+     *
      * @return boolean
      *
-     * @example
      * $obj->query = "SELECT * FROM users WHERE username=? AND password=?"
      * $obj->bind = array($username, $password)
      *
-     * @example
      * $obj->query = "SELECT * FROM users WHERE username=:age AND password=:password"
      * $obj->bind = array(':username'=>$username, ':password'=>$password)
      */
@@ -109,11 +109,11 @@ class Authentication
         $this->db = $db;
         $this->login_param = $obj;
 
-        if ( !isset( $this->login_param->bind ) ) {
+        if( !isset( $this->login_param->bind ) ){
             $this->login_param->bind = array();
         }
 
-        if ( !isset( $this->login_param->remember ) ) {
+        if( !isset( $this->login_param->remember ) ){
             $this->login_param->remember = false;
         }
 
@@ -127,22 +127,22 @@ class Authentication
      */
     public function isAuth()
     {
-        if ( !is_null( $this->login_param ) ) {
+        if( !is_null( $this->login_param ) ){
             $this->login_data = $this->db->query( $this->login_param->query, $this->bind() )->execute();
             @list( $this->login_data ) = $this->login_data;
 
-            if ( count( $this->login_data ) > 0 ) {
+            if( count( $this->login_data ) > 0 ){
                 $this->saveHash( $this->login_data );
                 return true;
             }
         }
-        else {
-            if ( $this->session->check( $this->auth_name ) ) {
+        else{
+            if( $this->session->check( $this->auth_name ) ){
                 return $this->checkHash();
             }
 
-            if ( $this->cookie->check( $this->auth_name ) ) {
-                if ( $this->checkHash() ) {
+            if( $this->cookie->check( $this->auth_name ) ){
+                if( $this->checkHash() ){
                     $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
                     return true;
                 }
@@ -151,13 +151,14 @@ class Authentication
         return false;
     }
 
+
     /**
      * Get auth data from session
      * @return mixed
      */
     public function getAuthData()
     {
-        if ( $this->auth_data == null ) {
+        if( $this->auth_data == null ){
             $this->checkHash();
         }
 
@@ -166,20 +167,21 @@ class Authentication
 
 
     /**
-     * Update/change auth data
+     * Edit auth data
      * Auth data usually is row from database
-     * @example Auth data = ['id'=>1, 'level'=>'admin', 'dept'=>'hr']
-     * @param str $key key in auth data
+     * Auth data = ['id'=>1, 'level'=>'admin', 'dept'=>'hr']
+     *
+     * @param string $key key in auth data
      * @param mixed $val
      * @return void
      */
     public function updateAuthData( $key, $val )
     {
-        if ( $this->auth_data == null ) {
+        if( $this->auth_data == null ){
             $this->checkHash();
         }
 
-        if ( array_key_exists( $key, $this->auth_data ) ) {
+        if( array_key_exists( $key, $this->auth_data ) ){
             $this->auth_data[$key] = $val;
             $this->saveHash( $this->auth_data );
         }
@@ -189,6 +191,7 @@ class Authentication
     /**
      * Return login data
      * Typically database data
+     *
      * @return mixed
      */
     public function getLoginData()
@@ -199,6 +202,7 @@ class Authentication
 
     /**
      * Store hash for encryption/decryption
+     *
      * @param string $hash
      * @return void
      */
@@ -210,6 +214,7 @@ class Authentication
 
     /**
      * Store hash for auth checking
+     *
      * @param string $hash
      * @return void
      */
@@ -221,6 +226,7 @@ class Authentication
 
     /**
      * Method To Logout User
+     *
      * @access public
      * @return boolean
      */
@@ -230,7 +236,7 @@ class Authentication
         $this->session->unsetSession();
         $this->cookie->delete( $this->auth_name );
 
-        if ( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) ) return true;
+        if( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) ) return true;
         else
             return false;
     }
@@ -238,16 +244,17 @@ class Authentication
 
     /**
      * Bind a value to Pdo placeholder
+     *
      * @return mixed
      */
     protected function bind()
     {
         $bind = NULL;
 
-        if ( is_array( $this->login_param->bind ) ) {
+        if( is_array( $this->login_param->bind ) ){
             $bind = $this->login_param->bind;
         }
-        else {
+        else{
             $bind = array( $this->login_param->bind );
         }
 
@@ -257,6 +264,7 @@ class Authentication
 
     /**
      * Save hash auth data to session/cookie
+     *
      * @param mixed $data
      * @return void
      */
@@ -264,13 +272,15 @@ class Authentication
     {
         $this->session->set( $this->auth_name, $this->createHash( $data ) );
 
-        if ( @$this->login_param->remember ) {
+        if( @$this->login_param->remember ){
             $this->cookie->set( $this->auth_name, $this->createHash( $data ) );
         }
     }
 
+
     /**
      * Create hashing for auth data
+     *
      * @param mixed $data
      * @return mixed
      */
@@ -287,27 +297,28 @@ class Authentication
 
     /**
      * Check auth hash from session/cookie against recreation hash
+     *
      * @return boolean
      */
     protected function checkHash()
     {
-        if ( $this->session->check( $this->auth_name ) ) {
+        if( $this->session->check( $this->auth_name ) ){
             $auth_data = $this->session->get( $this->auth_name );
             $auth_key = $auth_data['key'];
             $auth_hash = strrev( $this->decode( $auth_data['hash'] ) );
 
-            if ( $this->hash . $auth_key . $this->hash == $auth_hash ) {
+            if( $this->hash . $auth_key . $this->hash == $auth_hash ){
                 $this->auth_data = unserialize( $this->decode( $auth_key ) );
                 return true;
             }
         }
 
-        if ( $this->cookie->check( $this->auth_name ) ) {
+        if( $this->cookie->check( $this->auth_name ) ){
             $auth_data = $this->cookie->get( $this->auth_name );
             $auth_key = $auth_data['key'];
             $auth_hash = strrev( $this->decode( $auth_data['hash'] ) );
 
-            if ( $this->hash . $auth_key . $this->hash == $auth_hash ) {
+            if( $this->hash . $auth_key . $this->hash == $auth_hash ){
                 $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
                 $this->auth_data = unserialize( $this->decode( $auth_key ) );
                 return true;

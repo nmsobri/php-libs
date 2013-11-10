@@ -6,7 +6,6 @@ class Request
 {
 
     /**
-     *
      * @var Session
      */
     protected $session;
@@ -23,6 +22,7 @@ class Request
 
     /**
      * Check either post data exist
+     *
      * @throws \Exception if upload file size exceed php.ini post_max_size
      * @return bool
      */
@@ -38,6 +38,7 @@ class Request
 
     /**
      * Check either get data exist
+     *
      * @return bool
      */
     public function isGet()
@@ -48,6 +49,7 @@ class Request
 
     /**
      * Check either an ajax request
+     *
      * @return bool
      */
     public function isAjax()
@@ -58,6 +60,7 @@ class Request
 
     /**
      * Convert post request to a get request
+     *
      * @throws \Exception if upload file size exceed php.ini post_max_size
      * @return bool
      */

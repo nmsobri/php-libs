@@ -30,6 +30,7 @@ class Validator
 
     /**
      * Add validator strategy
+     *
      * @param string $name
      * @param ValidatorStrategy $strategy
      * @return void
@@ -42,6 +43,7 @@ class Validator
 
     /**
      * Perform the validation
+     *
      * @return bool
      */
     public function isValid()
@@ -60,6 +62,7 @@ class Validator
 
     /**
      * Custom method to mark any form field as invalidate (failed validation)
+     *
      * @param string $name
      * @param string $message
      * @return void
@@ -77,6 +80,7 @@ class Validator
      * Custom method to mark overall validation process as invalid
      * Typical use is login system, all input passed validation, but somehow no valid user is found
      * So use this method to mark overall process as invalid
+     *
      * @param boolean $message
      * @return void
      */
@@ -89,6 +93,7 @@ class Validator
 
     /**
      * Method to check whether validation is successful or fail
+     *
      * @return bool
      */
     public function isError()
@@ -99,6 +104,7 @@ class Validator
 
     /**
      * Method to get the error for particular/individual validator strategy
+     *
      * @param string $name
      * @example $obj->getError('username')
      * @return string
@@ -111,6 +117,7 @@ class Validator
 
     /**
      * Method to populate error field
+     *
      * @return array of message
      */
     public function getAllError()
@@ -128,6 +135,7 @@ class Validator
 
     /**
      * Method to create block of error message (usually used at the top of the form)
+     *
      * @param string $template
      * @return string of message
      */

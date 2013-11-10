@@ -18,8 +18,8 @@ class Session
 
 
     /**
-     *
      * Constructor method
+     *
      * @param string $sessionLimiter
      * @param int $sessionExpired
      *
@@ -35,6 +35,7 @@ class Session
 
     /**
      * Free all session variables
+     *
      * @return void
      */
     public function unsetSession()
@@ -45,6 +46,7 @@ class Session
 
     /**
      * Destroys A Session And All Data Registered To A Session
+     *
      * @return void
      */
     public function destroySession()
@@ -55,6 +57,7 @@ class Session
 
     /**
      * Get The Current Session Id
+     *
      * @return void
      */
     public function getSessionId()
@@ -65,6 +68,7 @@ class Session
 
     /**
      * Regenerate Session Id
+     *
      * @return void
      */
     public function regenerateSessionId()
@@ -76,6 +80,7 @@ class Session
     /**
      * Setting session data
      * Produce $_SESSION[$name]=$value
+     *
      * @param string $name
      * @param mixed $value
      * @return void
@@ -88,6 +93,7 @@ class Session
 
     /**
      * Set session so that only exist on next request
+     *
      * @param string $key
      * @param mixed $val
      * @return void
@@ -102,6 +108,7 @@ class Session
     /**
      * Set session so it keep exist on only for next request
      * If this method is call without parameter,all flash session var will be keep for next request
+     *
      * @param mixed $keys
      * @return void
      */
@@ -109,8 +116,8 @@ class Session
     {
         $keys = ( $keys === null ) ? array_keys( $_SESSION['flash'] ) : func_get_args();
 
-        foreach ( $keys as $key ) {
-            if ( isset( $_SESSION['flash'][$key] ) ) {
+        foreach( $keys as $key ){
+            if( isset( $_SESSION['flash'][$key] ) ){
                 $_SESSION['flash'][$key] = 'new';
             }
         }
@@ -120,6 +127,7 @@ class Session
     /**
      * Clear flash session
      * If this method is call without parameter,all flash session will be deleted
+     *
      * @param string $needles key in flash session to be search
      */
     public function clearFlash( $needles = null )
@@ -127,19 +135,19 @@ class Session
         $needles = ( $needles === null ) ? null : func_get_args();
         $haystacks = array_keys( $_SESSION['flash'] );
 
-        if ( !is_null( $needles ) ) {
-            foreach ( $haystacks as $haystack ) {
-                foreach ( $_SESSION[$haystack] as $ses_key => $ses_val ) {
-                    foreach ( $needles as $needle ) {
-                        if ( $needle == $ses_key ) {
+        if( !is_null( $needles ) ){
+            foreach( $haystacks as $haystack ){
+                foreach( $_SESSION[$haystack] as $ses_key => $ses_val ){
+                    foreach( $needles as $needle ){
+                        if( $needle == $ses_key ){
                             unset( $_SESSION[$haystack][$ses_key] );
                         }
                     }
                 }
             }
         }
-        else {
-            foreach ( $haystacks as $haystack ) {
+        else{
+            foreach( $haystacks as $haystack ){
                 unset( $_SESSION['flash'][$haystack], $_SESSION[$haystack] );
             }
         }
@@ -148,6 +156,7 @@ class Session
 
     /**
      * Delete Session Variable
+     *
      * @param string $name
      * @return void
      */
@@ -158,14 +167,14 @@ class Session
 
 
     /**
-     *
      * Get Session Variable
+     *
      * @param string $name
      * @return mixed
      */
     public function get( $name )
     {
-        if ( isset( $this->session[$name] ) ) {
+        if( isset( $this->session[$name] ) ){
             return $this->session[$name];
         }
     }
@@ -173,6 +182,7 @@ class Session
 
     /**
      * Check For Existence Of Session Variable
+     *
      * @param string $name
      * @return bool
      */
@@ -184,6 +194,7 @@ class Session
 
     /**
      * Get All Session List
+     *
      * @return array
      */
     public function getSessionList()
@@ -194,6 +205,7 @@ class Session
 
     /**
      * Start the session
+     *
      * @access private
      */
     private function startSession()
@@ -207,6 +219,7 @@ class Session
      * Set how long cached page in client cache should be store
      * Does not affect session lifetime
      * Use in conjunction with session_cache_limiter != 'nocache'
+     *
      * @param mixed $delay
      * @return void
      */
@@ -218,7 +231,8 @@ class Session
 
     /**
      * Set session cache limiter whether to permit client to cache page content or not
-     * @possible value public, private, private_no_expire, nocache
+     * Possible value public, private, private_no_expire, nocache
+     *
      * @param mixed $limit
      * @return void
      */
@@ -230,11 +244,12 @@ class Session
 
     /**
      * Init session flash data
+     *
      * @return void
      */
     private function initFlashData()
     {
-        if ( !isset( $_SESSION['flash'] ) ) {
+        if( !isset( $_SESSION['flash'] ) ){
             $_SESSION['flash'] = array();
         }
         $this->expireFlash();
@@ -243,21 +258,20 @@ class Session
 
     /**
      * Expire flash session data
+     *
      * @return void
      */
     private function expireFlash()
     {
         static $run;
-        if ( $run === TRUE ) return;
+        if( $run === TRUE ) return;
 
-        if ( !empty( $_SESSION['flash'] ) ) {
-            foreach ( $_SESSION['flash'] as $key => $state ) {
-                if ( $state === 'old' ) {
-                    #Flash has expired
+        if( !empty( $_SESSION['flash'] ) ){
+            foreach( $_SESSION['flash'] as $key => $state ){
+                if( $state === 'old' ){
                     unset( $_SESSION['flash'][$key], $_SESSION[$key] );
                 }
-                else {
-                    #Mark it old,so it expire in next request
+                else{
                     $_SESSION['flash'][$key] = 'old';
                 }
             }
@@ -268,6 +282,7 @@ class Session
 
     /**
      * Redirect User
+     *
      * @param string $path
      * @return void
      */

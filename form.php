@@ -357,6 +357,7 @@ class Form
 
     /**
      * Get form data
+     *
      * @return array
      */
     protected function &getFormData()
@@ -372,6 +373,7 @@ class Form
 
     /**
      * Create form action
+     *
      * @param string $action
      * @param string $request_script
      * @return string
@@ -394,6 +396,7 @@ class Form
 
     /**
      * Extract $_GET data from url
+     *
      * @param string $url
      * @return array
      */

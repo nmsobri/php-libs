@@ -21,9 +21,9 @@ class ExceptionHandler
     }
 
 
-
-
     /**
+     * Exception handler
+     *
      * @param \Exception $e
      * @return void
      */
@@ -41,8 +41,6 @@ class ExceptionHandler
         echo "</pre>";
         echo '</div>';
     }
-
-
 
 
 }

@@ -21,9 +21,9 @@ class Cookie
 
     /**
      * Check key in cookie
-     * @param string $name
-     * @return bool
      *
+     * @param $name
+     * @return bool
      */
     public function check( $name )
     {
@@ -33,9 +33,9 @@ class Cookie
 
     /**
      * Get the value of the given cookie name.
-     * @param string $name
-     * @return mixed
      *
+     * @param $name
+     * @return null
      */
     public function get( $name )
     {
@@ -45,35 +45,36 @@ class Cookie
 
     /**
      * Set a cookie. Silently does nothing if headers have already been sent.
-     * @param string $name
-     * @param mixed $value
+     *
+     * @param $name
+     * @param $value
      * @param int $expiry
      * @param string $path
      * @param bool $domain
-     *
-     * @example $obj->set('user','slier') single dimension cookie
-     * @example $obj->set('user['name']','slier') multi dimension cookie
-     * @example $obj->set('user['age']','28') single dimension cookie
      * @return bool
+     *
+     * set('user','slier') single dimension cookie
+     * set('user['name']','slier') multi dimension cookie
+     * set('user['age']','28') single dimension cookie
      */
     public function set( $name, $value, $expiry = self::OneYear, $path = '/', $domain = false )
     {
         $returnVal = false;
-        if ( !headers_sent() ) {
-            if ( $domain === false ) {
+        if( !headers_sent() ){
+            if( $domain === false ){
                 $domain = $_SERVER['HTTP_HOST'];
             }
 
-            if ( is_numeric( $expiry ) ) {
+            if( is_numeric( $expiry ) ){
                 $expiry += time();
             }
-            else {
+            else{
                 $expiry = strtotime( $expiry );
             }
 
             $returnVal = @setcookie( $name, $value, $expiry, $path, $domain );
 
-            if ( $returnVal ) {
+            if( $returnVal ){
                 $_COOKIE[$name] = $value;
             }
         }
@@ -82,22 +83,24 @@ class Cookie
 
 
     /**
-     * @param string $name
-     * @param bool $remove_from_global Set to true to remove this cookie from this request.
+     * Delete cookie
+     *
+     * @param $name
+     * @param bool $remove_from_global remove cookie from this request.
      * @param string $path
      * @param bool $domain
-     * @return mixed
+     * @return bool
      */
     public function delete( $name, $remove_from_global = true, $path = '/', $domain = false )
     {
         $return = false;
-        if ( !headers_sent() ) {
-            if ( $domain === false ) {
+        if( !headers_sent() ){
+            if( $domain === false ){
                 $domain = $_SERVER['HTTP_HOST'];
             }
 
             $return = setcookie( $name, '', time() - 3600, $path, $domain );
-            if ( $remove_from_global ) {
+            if( $remove_from_global ){
                 unset( $_COOKIE[$name] );
             }
         }

@@ -98,8 +98,8 @@ class Pagination
 
 
     /**
-     *
      * Constructor Method
+     *
      * @param int $totalItems
      * @param int $limit
      */
@@ -117,11 +117,12 @@ class Pagination
 
     /**
      * Setup all necessary variables
+     *
      * @return void
      */
     protected function init()
     {
-        if ( !is_numeric( $this->itemsPerPage ) OR $this->itemsPerPage <= 0 ) {
+        if( !is_numeric( $this->itemsPerPage ) OR $this->itemsPerPage <= 0 ){
             $this->itemsPerPage = $this->limit;
         }
 
@@ -130,11 +131,11 @@ class Pagination
         $this->currentPage = ( !empty( $_GET['page'] ) ) ? $_GET['page'] : 1;
 
 
-        if ( $this->currentPage < 1 Or !is_numeric( $this->currentPage ) ) {
+        if( $this->currentPage < 1 Or !is_numeric( $this->currentPage ) ){
             $this->currentPage = 1;
         }
 
-        if ( $this->currentPage > $this->totalPages && $this->totalPages > 0 ) {
+        if( $this->currentPage > $this->totalPages && $this->totalPages > 0 ){
             $this->currentPage = $this->totalPages;
         }
 
@@ -142,13 +143,13 @@ class Pagination
         $this->prevPage = $this->currentPage - 1;
         $this->nextPage = $this->currentPage + 1;
 
-        if ( $_GET ) {
+        if( $_GET ){
             $args = explode( "&", $_SERVER['QUERY_STRING'] );
 
-            foreach ( $args as $arg ) {
+            foreach( $args as $arg ){
                 $keyval = explode( "=", $arg );
 
-                if ( $keyval[0] != "page" And $keyval[0] != "ipp" ) {
+                if( $keyval[0] != "page" And $keyval[0] != "ipp" ){
                     $this->queryString .= "&" . $arg;
                 }
             }
@@ -158,55 +159,56 @@ class Pagination
 
     /**
      * Method to create pagination link
+     *
      * @return string
      */
     protected function paginate()
     {
-        if ( $this->totalPages > 1 ) {
-            if ( $this->currentPage != 1 And $this->totalItems >= 1 ) {
+        if( $this->totalPages > 1 ){
+            if( $this->currentPage != 1 And $this->totalItems >= 1 ){
                 $this->return = '<a class="paginate" href="' . $_SERVER['PHP_SELF'] . '?page=' . $this->prevPage . '&ipp=' . $this->itemsPerPage . $this->queryString . '">&laquo;Previous</a>';
             }
-            else {
+            else{
                 $this->return = '<span class="inactive">&laquo;Previous</span>';
             }
 
             $this->start_range = $this->currentPage - floor( $this->midRange / 2 );
             $this->end_range = $this->currentPage + floor( $this->midRange / 2 );
 
-            if ( $this->start_range <= 0 ) {
+            if( $this->start_range <= 0 ){
                 $this->start_range = 1;
                 $this->end_range += abs( $this->start_range ) + 1;
             }
 
-            if ( $this->end_range > $this->totalPages ) {
+            if( $this->end_range > $this->totalPages ){
                 $this->start_range -= $this->end_range - $this->totalPages;
                 $this->end_range = $this->totalPages;
             }
 
             $this->range = range( $this->start_range, $this->end_range );
 
-            for ( $i = 1; $i <= $this->totalPages; $i++ ) {
-                if ( $this->range[0] > 2 And $i == $this->range[0] ) {
+            for( $i = 1; $i <= $this->totalPages; $i++ ){
+                if( $this->range[0] > 2 And $i == $this->range[0] ){
                     $this->return .= " ... ";
                 }
 
-                if ( $i == 1 Or $i == $this->totalPages Or in_array( $i, $this->range ) ) {
-                    if ( $i == $this->currentPage ) {
+                if( $i == 1 Or $i == $this->totalPages Or in_array( $i, $this->range ) ){
+                    if( $i == $this->currentPage ){
                         $this->return .= '<a title="Go to page ' . $i . ' of ' . $this->totalPages . '" class="current" href="#">' . $i . '</a>';
                     }
-                    else {
+                    else{
                         $this->return .= '<a class="paginate" title="Go to page ' . $i . ' of ' . $this->totalPages . '" href="' . $_SERVER['PHP_SELF'] . '?page=' . $i . '&ipp=' . $this->itemsPerPage . $this->queryString . '">' . $i . '</a>';
                     }
                 }
 
-                if ( @$this->range[$this->midRange - 1] < $this->totalPages - 1 And $i == @$this->range[$this->midRange - 1] ) {
+                if( @$this->range[$this->midRange - 1] < $this->totalPages - 1 And $i == @$this->range[$this->midRange - 1] ){
                     $this->return .= " ... ";
                 }
             }
-            if ( $this->currentPage != $this->totalPages And $this->totalItems >= 1 ) {
+            if( $this->currentPage != $this->totalPages And $this->totalItems >= 1 ){
                 $this->return .= '<a class="paginate" href="' . $_SERVER['PHP_SELF'] . '?page=' . $this->nextPage . '&ipp=' . $this->itemsPerPage . $this->queryString . '">Next&raquo;</a>';
             }
-            else {
+            else{
                 $this->return .= '<span class="inactive">Next&raquo;</span>';
             }
         }
@@ -215,6 +217,7 @@ class Pagination
 
     /**
      * Method to create selection menu for item per page
+     *
      * @return string
      */
     public function showItemPerPage()
@@ -222,17 +225,17 @@ class Pagination
         $items = '';
         $ipp_array = array( 10, 25, 50, 100 );
 
-        if ( !in_array( $this->limit, $ipp_array ) ) {
+        if( !in_array( $this->limit, $ipp_array ) ){
             array_push( $ipp_array, $this->limit );
             sort( $ipp_array );
         }
 
-        if ( $this->totalItems > $this->limit ) {
-            foreach ( $ipp_array as $ipp_opt ) {
-                if ( $ipp_opt == $this->itemsPerPage ) {
+        if( $this->totalItems > $this->limit ){
+            foreach( $ipp_array as $ipp_opt ){
+                if( $ipp_opt == $this->itemsPerPage ){
                     $items .= '<option selected value="' . $ipp_opt . '">' . $ipp_opt . '</option>';
                 }
-                else {
+                else{
                     $items .= '<option value="' . $ipp_opt . '">' . $ipp_opt . '</option>';
                 }
             }
@@ -244,27 +247,29 @@ class Pagination
 
     /**
      * Method to create selection menu for jump to page
+     *
      * @return string
      */
     public function showJumpMenu()
     {
-        if ( $this->totalPages > 1 ) {
+        if( $this->totalPages > 1 ){
             $option = '';
-            for ( $i = 1; $i <= $this->totalPages; $i++ ) {
-                if ( $i == $this->currentPage ) {
+            for( $i = 1; $i <= $this->totalPages; $i++ ){
+                if( $i == $this->currentPage ){
                     $option .= '<option value="' . $i . '" selected>' . $i . '</option>';
                 }
-                else {
+                else{
                     $option .= '<option value="' . $i . '">' . $i . '</option>';
                 }
             }
-            return '<span class="paginate">Page:</span><select class="paginate" onchange="window.location=' . "'" . $_SERVER['PHP_SELF'] . "?page='+this[this.selectedIndex].value+'&ipp=" . $this->itemsPerPage . $this->queryString . "';return false". '">' . $option . '</select>';
+            return '<span class="paginate">Page:</span><select class="paginate" onchange="window.location=' . "'" . $_SERVER['PHP_SELF'] . "?page='+this[this.selectedIndex].value+'&ipp=" . $this->itemsPerPage . $this->queryString . "';return false" . '">' . $option . '</select>';
         }
     }
 
 
     /**
      * Method to show the pagination link
+     *
      * @return string
      */
     public function showPaginator()
@@ -276,6 +281,7 @@ class Pagination
     /**
      * Method to get current page number
      * Used in sql query for pagination
+     *
      * @return int
      */
     public function getPageStart()
@@ -287,6 +293,7 @@ class Pagination
     /**
      * Method to get current page number
      * Used in sql query for pagination
+     *
      * @return int
      */
     public function getPageLimit()

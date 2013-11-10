@@ -19,6 +19,8 @@ class AutoLoad
 
 
     /**
+     * Class loader
+     *
      * @param string $class
      * @return mixed
      */
@@ -38,6 +40,8 @@ class AutoLoad
 
 
     /**
+     * Get path to class location
+     *
      * @param string $class
      * @return string
      */
@@ -48,6 +52,8 @@ class AutoLoad
 
 
     /**
+     * Get class name from class path
+     *
      * @param string $class
      * @return string
      */
@@ -58,6 +64,8 @@ class AutoLoad
 
 
     /**
+     * Convert camel case class name to dot(.)
+     *
      * @param string $class
      * @return string
      */

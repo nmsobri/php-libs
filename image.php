@@ -13,11 +13,34 @@ namespace utility;
 class Image
 {
 
+    /**
+     * @var bool|resource cloning original image
+     */
     protected $image;
+
+    /**
+     * @var int width of resource image
+     */
     protected $width;
+
+    /**
+     * @var int height of resource image
+     */
     protected $height;
+
+    /**
+     * @var resource of resize image
+     */
     protected $imageResized;
+
+    /**
+     * @var null|string orinal file
+     */
     protected $file = null;
+
+    /**
+     * @var array extension
+     */
     protected $extensions = array( 'jpg', 'png', 'gif' );
 
 
@@ -54,8 +77,8 @@ class Image
 
 
     /**
-     *
      * Resize the image
+     *
      * @param int $newWidth
      * @param int $newHeight
      * @param string $option exact|portrait|landscape|auto|crop
@@ -83,6 +106,7 @@ class Image
 
     /**
      * Save the image
+     *
      * @param string $savePath fullpath to filename
      * @param int $imageQuality
      * @return void
@@ -126,6 +150,7 @@ class Image
 
     /**
      * Output image to browser
+     *
      * @param int $imageQuality
      * @return void
      */
@@ -174,6 +199,7 @@ class Image
 
     /**
      * Get file name
+     *
      * @return string
      */
     public function getFileName()
@@ -184,6 +210,7 @@ class Image
 
     /**
      * Get file extension
+     *
      * @return string
      */
     public function getExtension()
@@ -224,6 +251,7 @@ class Image
 
     /**
      * Create blank image
+     *
      * @return resource|boolean
      */
     protected function openImage()
@@ -253,8 +281,8 @@ class Image
 
 
     /**
-     *
      * Get the optimal size for width and height of an image based on option
+     *
      * @param int $newWidth
      * @param int $newHeight
      * @param string $option exact|potrait|landscape|auto|crop
@@ -292,8 +320,8 @@ class Image
 
 
     /**
-     *
      * Get optimal width when height is fixed
+     *
      * @param int $newHeight
      * @return int
      */
@@ -306,8 +334,8 @@ class Image
 
 
     /**
-     *
      * Get optimal height when width is fixed
+     *
      * @param int $newWidth
      * @return int
      */
@@ -320,8 +348,8 @@ class Image
 
 
     /**
-     *
      * Get optimal width and height when resize is auto
+     *
      * @param int $newWidth
      * @param int $newHeight
      * @return array
@@ -361,6 +389,7 @@ class Image
 
     /**
      * Get the optimal width and height for cropping
+     *
      * @param int $newWidth
      * @param int $newHeight
      * @return array
@@ -386,8 +415,8 @@ class Image
 
 
     /**
-     *
      * Crop the image
+     *
      * @param int $optimalWidth
      * @param int $optimalHeight
      * @param int $newWidth
@@ -408,8 +437,8 @@ class Image
 
 
     /**
-     *
      * Check file existence
+     *
      * @return bool
      */
     protected function isFile()
@@ -419,8 +448,8 @@ class Image
 
 
     /**
-     *
      * Check is uploaded image is in allowed extension
+     *
      * @return bool
      */
     protected function isAllowedExtensions()
