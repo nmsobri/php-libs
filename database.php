@@ -7,7 +7,7 @@
 
 namespace utility;
 
-class Database extends PDO
+class Database extends \PDO
 {
 
     protected $db = null;
