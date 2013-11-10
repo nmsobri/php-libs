@@ -86,7 +86,7 @@ class Validator
      */
     public function invalidateValidation( $message )
     {
-        $this->validators[] = new ErrorValidator( $message );
+        $this->validators[] = new validator\ErrorValidator( $message );
         $this->isError = true;
     }
 

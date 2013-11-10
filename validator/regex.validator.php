@@ -23,12 +23,14 @@ class RegexValidator extends ValidatorStrategy
     public function __construct( $name, $value, $regex, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidatorGenericAttr( $name, $value, $regex, $attr );
+        $this->data['regex'] = $regex;
+        $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 
     /**
      * Perform validation
+     *
      * @return bool
      */
     public function isValid()
@@ -52,19 +54,8 @@ class RegexValidator extends ValidatorStrategy
 
 
     /**
-     * @param $name
-     * @param $value
-     * @param array $regex
-     * @param $attr
-     */
-    protected function configValidatorGenericAttr( $name, $value, $regex, $attr )
-    {
-        parent::configValidatorGenericAttr( $name, $value, $attr );
-        $this->data['regex'] = $regex;
-    }
-
-
-    /**
+     * Config validator error attr
+     *
      * @param array $attr
      * @return array
      */

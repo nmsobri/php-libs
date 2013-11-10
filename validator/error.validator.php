@@ -11,7 +11,7 @@ class ErrorValidator extends ValidatorStrategy
 
     /**
      *
-     * @access protected
+     * @var error message
      */
     protected $error_msg = null;
 
@@ -28,6 +28,7 @@ class ErrorValidator extends ValidatorStrategy
 
     /**
      * Implement abstract method
+     *
      * @return boolean
      */
     public function isValid()
@@ -39,6 +40,7 @@ class ErrorValidator extends ValidatorStrategy
 
     /**
      * Implement abstract method
+     *
      * @param array $attr
      */
     protected function configErrors( array $attr )

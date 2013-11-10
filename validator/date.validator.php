@@ -23,11 +23,14 @@ class DateValidator extends ValidatorStrategy
     public function __construct( $name, $value, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
+        $this->data['version'] = isset( $attr['version'] ) ? $attr['version'] : 'us';
         $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 
     /**
+     * Perform validation
+     *
      * @return bool
      */
     public function isValid()
@@ -52,19 +55,11 @@ class DateValidator extends ValidatorStrategy
     }
 
 
-    /**
-     * @param $name
-     * @param $value
-     * @param array $attr
-     */
-    protected function configValidatorGenericAttr( $name, $value, array $attr )
-    {
-        parent::configValidatorGenericAttr( $name, $value, $attr );
-        $this->data['version'] = isset( $attr['version'] ) ? $attr['version'] : 'us';
-    }
 
 
     /**
+     * Config validator error attr
+     *
      * @param array $attr
      * @return array
      */

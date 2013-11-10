@@ -6,6 +6,8 @@ abstract class AlnumValidatorStrategy extends ValidatorStrategy
 {
 
     /**
+     * Config validator length attr
+     *
      * @param $length
      */
     protected function configValidatorLengthAttr( $length )
@@ -47,6 +49,8 @@ abstract class AlnumValidatorStrategy extends ValidatorStrategy
 
 
     /**
+     * Check is array an associative array
+     *
      * @param $array
      * @return bool
      */

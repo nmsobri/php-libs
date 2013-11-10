@@ -41,7 +41,10 @@ class TextValidator extends AlnumValidatorStrategy
     public function __construct( $name, $value, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
+        $this->data['allow_num'] = isset( $attr['allow_num'] ) ? ( boolean )$attr['allow_num'] : false;
+        $this->data['allow_space'] = isset( $attr['allow_space'] ) ? ( boolean )$attr['allow_space'] : false;
         $this->configValidatorGenericAttr( $name, $value, $attr );
+        $this->configValidatorLengthAttr( @$attr['length'] );
     }
 
 
@@ -67,6 +70,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation is mandatory
+     *
      * @return bool
      */
     protected function checkRequired()
@@ -80,6 +85,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation for fix length
+     *
      * @return bool
      */
     protected function checkFixText()
@@ -93,6 +100,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation for range length
+     *
      * @return bool
      */
     protected function checkRangeText()
@@ -106,6 +115,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation
+     *
      * @return bool
      */
     protected function checkText()
@@ -119,6 +130,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation with number for fix length
+     *
      * @return bool
      */
     protected function checkFixTextWithNumber()
@@ -142,6 +155,7 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation without number for fix length
      * @return bool
      */
     protected function checkFixTextWithoutNumber()
@@ -165,6 +179,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation with number for range length
+     *
      * @return bool
      */
     protected function checkRangeTextWithNumber()
@@ -188,6 +204,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation without number for range length
+     *
      * @return bool
      */
     protected function checkRangeTextWithoutNumber()
@@ -211,6 +229,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation with number
+     *
      * @return bool
      */
     protected function checkTextWithNumber()
@@ -234,6 +254,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation without number
+     *
      * @return bool
      */
     protected function checkTextWithoutNumber()
@@ -258,20 +280,8 @@ class TextValidator extends AlnumValidatorStrategy
 
 
     /**
-     * @param $name
-     * @param $value
-     * @param array $attr
-     */
-    protected function configValidatorGenericAttr( $name, $value, array $attr )
-    {
-        parent::configValidatorGenericAttr( $name, $value, $attr );
-        $this->configValidatorLengthAttr( @$attr['length'] );
-        $this->data['allow_num'] = isset( $attr['allow_num'] ) ? ( boolean )$attr['allow_num'] : false;
-        $this->data['allow_space'] = isset( $attr['allow_space'] ) ? ( boolean )$attr['allow_space'] : false;
-    }
-
-
-    /**
+     * Config validator error attr
+     *
      * @param array $attr
      * @return array
      */

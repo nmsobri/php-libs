@@ -27,6 +27,7 @@ class RadioValidator extends ValidatorStrategy
 
     /**
      * Perform validation
+     *
      * @return bool
      */
     public function isValid()
@@ -44,6 +45,12 @@ class RadioValidator extends ValidatorStrategy
     }
 
 
+    /**
+     * Config validator error attr
+     *
+     * @param array $attr
+     * @return array
+     */
     protected function configErrors( array $attr )
     {
         $cfg = array(

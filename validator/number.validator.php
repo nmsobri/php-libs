@@ -33,11 +33,15 @@ class NumberValidator extends AlnumValidatorStrategy
     public function __construct( $name, $value, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
+        $this->data['decimal'] = isset( $attr['decimal'] ) ? $attr['decimal'] : 0;
         $this->configValidatorGenericAttr( $name, $value, $attr );
+        $this->configValidatorLengthAttr( @$attr['length'] );
     }
 
 
     /**
+     * Perform validation
+     *
      * @return bool
      */
     public function isValid()
@@ -59,6 +63,8 @@ class NumberValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check is validation mandatory
+     *
      * @return bool
      */
     protected function checkRequired()
@@ -72,6 +78,8 @@ class NumberValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation for fix length
+     *
      * @return bool
      */
     protected function checkFixNumber()
@@ -94,6 +102,8 @@ class NumberValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation for range length
+     *
      * @return bool
      */
     protected function checkRangeNumber()
@@ -117,6 +127,8 @@ class NumberValidator extends AlnumValidatorStrategy
 
 
     /**
+     * Check validation
+     *
      * @return bool
      */
     protected function checkNumber()
@@ -140,19 +152,8 @@ class NumberValidator extends AlnumValidatorStrategy
 
 
     /**
-     * @param $name
-     * @param $value
-     * @param array $attr
-     */
-    protected function configValidatorGenericAttr( $name, $value, $attr )
-    {
-        parent::configValidatorGenericAttr( $name, $value, $attr );
-        $this->configValidatorLengthAttr( @$attr['length'] );
-        $this->data['decimal'] = isset( $attr['decimal'] ) ? $attr['decimal'] : 0;
-    }
-
-
-    /**
+     * Config validator error attr
+     *
      * @param array $attr
      * @return array
      */

@@ -23,11 +23,14 @@ class FileValidator extends ValidatorStrategy
     public function __construct( $name, $value, array $ext = null, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidatorGenericAttr( $name, $value, $ext, $attr );
+        $this->data['extension'] = $ext;
+        $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 
     /**
+     * Perform validation
+     *
      * @return bool
      */
     public function isValid()
@@ -52,19 +55,8 @@ class FileValidator extends ValidatorStrategy
 
 
     /**
-     * @param $name
-     * @param $value
-     * @param array $ext
-     * @param $attr
-     */
-    protected function configValidatorGenericAttr( $name, $value, $ext, $attr )
-    {
-        parent::configValidatorGenericAttr( $name, $value, $attr );
-        $this->data['extension'] = $ext;
-    }
-
-
-    /**
+     * Config validator error attr
+     *
      * @param array $attr
      * @return array
      */

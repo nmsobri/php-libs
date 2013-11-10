@@ -107,12 +107,10 @@ abstract class ValidatorStrategy
      */
     protected function configValidatorGenericAttr( $name, $value, array $attr )
     {
-        $data = array(
-            'value' => $value,
-            'errors' => $this->configErrors( $attr ),
-            'required' => isset( $attr['required'] ) ? (bool)$attr['required'] : true,
-            'field' => isset( $attr['field'] ) ? $attr['field'] : $name
-        );
-        $this->data = $data;
+        $this->data['value'] = $value;
+        $this->data['errors'] = $this->configErrors( $attr );
+        $this->data['required'] = isset( $attr['required'] ) ? (bool)$attr['required'] : true;
+        $this->data['field'] = isset( $attr['field'] ) ? $attr['field'] : $name;
+
     }
 }

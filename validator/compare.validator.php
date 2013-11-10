@@ -24,11 +24,15 @@ class CompareValidator extends ValidatorStrategy
     public function __construct( $name, $value, $comparisonValue, $comparisonField, array $attr = null )
     {
         $attr = !is_null( $attr ) ? $attr : array();
-        $this->configValidatorGenericAttr( $name, $value, $comparisonValue, $comparisonField, $attr );
+        $this->data['compare_value'] = $comparisonValue;
+        $this->data['compare_field'] = $comparisonField;
+        $this->configValidatorGenericAttr( $name, $value, $attr );
     }
 
 
     /**
+     * Perform validation
+     *
      * @return bool
      */
     public function isValid()
@@ -50,21 +54,8 @@ class CompareValidator extends ValidatorStrategy
 
 
     /**
-     * @param $name
-     * @param $value
-     * @param array $comparisonValue
-     * @param $comparisonField
-     * @param $attr
-     */
-    protected function configValidatorGenericAttr( $name, $value, $comparisonValue, $comparisonField, $attr )
-    {
-        parent::configValidatorGenericAttr( $name, $value, $attr );
-        $this->data['compare_value'] = $comparisonValue;
-        $this->data['compare_field'] = $comparisonField;
-    }
-
-
-    /**
+     * Config validator error attr
+     *
      * @param array $attr
      * @return array
      */

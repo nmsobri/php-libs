@@ -26,6 +26,7 @@ class SelectValidator extends ValidatorStrategy
 
     /**
      * Perform validation
+     *
      * @return bool
      */
     public function isValid()
@@ -41,6 +42,8 @@ class SelectValidator extends ValidatorStrategy
 
 
     /**
+     * Config validator error attr
+     *
      * @param array $attr
      * @return array
      */
