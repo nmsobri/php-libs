@@ -32,10 +32,10 @@ class Validator
      * Add validator strategy
      *
      * @param string $name
-     * @param ValidatorStrategy $strategy
+     * @param validator\ValidatorStrategy $strategy
      * @return void
      */
-    public function addValidator( $name, ValidatorStrategy $strategy )
+    public function addValidator( $name, validator\ValidatorStrategy $strategy )
     {
         $this->validators[$name] = $strategy;
     }

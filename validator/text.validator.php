@@ -262,7 +262,7 @@ class TextValidator extends AlnumValidatorStrategy
      * @param $value
      * @param array $attr
      */
-    protected function configValidatorGenericAttr( $name, $value, $attr )
+    protected function configValidatorGenericAttr( $name, $value, array $attr )
     {
         parent::configValidatorGenericAttr( $name, $value, $attr );
         $this->configValidatorLengthAttr( @$attr['length'] );
