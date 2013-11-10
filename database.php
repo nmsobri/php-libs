@@ -20,27 +20,19 @@ class Database extends \PDO
 
 
     /**
-     * @param $dsn mysql:host=localhost;dbname=db_name
+     * @param $dsn db:host=localhost;dbname=db_name
      * @param $username
      * @param $password
      * @throws \Exception
      */
     public function __construct( $dsn, $username, $password )
     {
-        try{
-            if( !preg_match( '#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#', $dsn ) ){
-                throw new \PDOException( 'Invalid dsn, dsn should be in the following format [dbtype:host=localhost;dbname=db_name]' );
-            }
-            $this->db = new \PDO( $dsn, $username, $password );
-            $this->db->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+        if( !preg_match( '#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#', $dsn ) ){
+            throw new \PDOException( 'Invalid dsn, dsn should be in the following format [dbtype:host=localhost;dbname=db_name]' );
         }
-        catch( \PDOException $e ){
-            $msg = "Message: {$e->getMessage()}";
-            $msg .= "\nFile:   {$e->getFile()}";
-            $msg .= "\nLine:   {$e->getLine()}";
-            echo nl2br( $msg );
-            exit(); /* cause pdo is stupid , its not stopping execution flow on exception */
-        }
+
+        $this->db = new \PDO( $dsn, $username, $password );
+        $this->db->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
     }
 
 
@@ -183,13 +175,12 @@ class Database extends \PDO
     public function where( $where, $bind = null )
     {
         if( preg_match( '/where/i', $this->query ) ){
-            throw new \PDOException( 'There is a where clause already in the sql statement' );
+            throw new \PDOException( 'There is a where clause already inside the sql statement' );
         }
-        else{
-            $this->bind( $bind );
-            $this->where = ' WHERE ' . $where;
-            return $this;
-        }
+
+        $this->bind( $bind );
+        $this->where = ' WHERE ' . $where;
+        return $this;
     }
 
 
@@ -236,31 +227,21 @@ class Database extends \PDO
     /**
      * Execute the query
      *
-     * @return void
+     * @return mixed
      */
     public function execute()
     {
-        try{
-            $sql = $this->query . $this->where . $this->order . $this->limit;
-            $stmt = $this->db->prepare( $sql );
-            $stmt->execute( $this->bind );
-            $count = $this->count; //cache this value cause if use directly, statement below will always make $this->count = null
-            $this->query = $this->where = $this->order = $this->limit = $this->count = $this->bind = null;
+        $sql = $this->query . $this->where . $this->order . $this->limit;
+        $stmt = $this->db->prepare( $sql );
+        $stmt->execute( $this->bind );
+        $count = $this->count; //cache this value cause if use directly, statement below will always make $this->count = null
+        $this->query = $this->where = $this->order = $this->limit = $this->count = $this->bind = null;
 
-            if( preg_match( '/^sel/i', trim( $sql ) ) ){
-                return ( $count ) ? count( $stmt->fetchAll( PDO::FETCH_ASSOC ) ) : $stmt->fetchAll( PDO::FETCH_ASSOC );
-            }
-            else{
-                return $stmt->rowCount();
-            }
+        if( preg_match( '/^sel/i', trim( $sql ) ) ){
+            return ( $count ) ? count( $stmt->fetchAll( \PDO::FETCH_ASSOC ) ) : $stmt->fetchAll( \PDO::FETCH_ASSOC );
         }
-        catch( PDOException $e ){
-            $msg = "Message: {$e->getMessage()}";
-            $msg .= "\nFile:   {$e->getFile()}";
-            $msg .= "\nLine:   {$e->getLine()}";
-            echo nl2br( $msg );
-            exit();
-        }
+
+        return $stmt->rowCount();
     }
 
 
@@ -284,7 +265,7 @@ class Database extends \PDO
                     }
                 }
                 else{
-                    foreach( $bind as $key => $val ){
+                    foreach( $bind as $val ){
                         $this->bind[] = $val;
                     }
                 }
