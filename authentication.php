@@ -8,15 +8,10 @@
 
 namespace utility;
 
+use utility\authentication\AuthParam;
+
 class Authentication
 {
-
-    /**
-     * Store Db Object
-     * @var Database
-     */
-    private $db = null;
-
 
     /**
      * Store Session Object
@@ -33,17 +28,17 @@ class Authentication
 
 
     /**
-     * Store stdClass object using for login
-     * @var StdClass
+     * Store utility\authentication AuthParam object using for login
+     * @var AuthParam
      */
-    private $login_param = null;
+    private $login = null;
 
 
     /**
      * Store result from querying the database
      * @var mixed
      */
-    private $login_data = null;
+    private $login_result = null;
 
 
     /**
@@ -89,86 +84,71 @@ class Authentication
 
 
     /**
-     * @param \Pdo $db
-     * @param \stdClass $obj
+     * Attempt login
      *
-     * stdClass::query query to run
-     * stdClass::bind array|single value to bind to placeholder inside query
-     * stdClass::remember whether to use cookie to store auth result
+     * @param AuthParam $login
+     *
+     * (new AuthParamBuilder())->setDatabase( $db )
+     * ->setQuery( 'SELECT * FROM users WHERE username=?', [ $_POST['username'] ] )
+     * ->setPassword( $_POST['password'] )
+     * ->setPasswordcolumn( 'password' )->build();
      *
      * @return boolean
-     *
-     * $obj->query = "SELECT * FROM users WHERE username=? AND password=?"
-     * $obj->bind = array($username, $password)
-     *
-     * $obj->query = "SELECT * FROM users WHERE username=:age AND password=:password"
-     * $obj->bind = array(':username'=>$username, ':password'=>$password)
      */
-    public function login( \PDO $db, \stdClass $obj )
+    public function login( AuthParam $login )
     {
-        $this->db = $db;
-        $this->login_param = $obj;
-
-        if( !isset( $this->login_param->bind ) ){
-            $this->login_param->bind = array();
-        }
-
-        if( !isset( $this->login_param->remember ) ){
-            $this->login_param->remember = false;
-        }
-
+        $this->login = $login;
         return $this->isAuth();
     }
 
 
     /**
      * Check whether user is authenticate
+     *
      * @return boolean
      */
     public function isAuth()
     {
-        if( !is_null( $this->login_param ) ){
-            $this->login_data = $this->db->query( $this->login_param->query, $this->bind() )->execute();
-            @list( $this->login_data ) = $this->login_data;
+        if( !is_null( $this->login ) ){
+            return $this->doLogin();
+        }
 
-            if( count( $this->login_data ) > 0 ){
-                $this->saveHash( $this->login_data );
+        if( $this->session->check( $this->auth_name ) ){
+            return $this->checkHash();
+        }
+
+        if( $this->cookie->check( $this->auth_name ) ){
+            if( $this->checkHash() ){
+                $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
                 return true;
             }
         }
-        else{
-            if( $this->session->check( $this->auth_name ) ){
-                return $this->checkHash();
-            }
 
-            if( $this->cookie->check( $this->auth_name ) ){
-                if( $this->checkHash() ){
-                    $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
-                    return true;
-                }
-            }
-        }
         return false;
     }
 
 
     /**
-     * Get auth data from session
+     * Get auth data (query result from database)
+     *
      * @return mixed
      */
     public function getAuthData()
     {
-        if( $this->auth_data == null ){
+        if( is_null( $this->auth_data ) ){
+
+            if( !is_null( $this->login_result ) ){
+                return $this->login_result;
+            }
             $this->checkHash();
         }
-
         return $this->auth_data;
     }
 
 
     /**
      * Edit auth data
-     * Auth data usually is row from database
+     * Auth data is a row from database represent a user
      * Auth data = ['id'=>1, 'level'=>'admin', 'dept'=>'hr']
      *
      * @param string $key key in auth data
@@ -189,14 +169,13 @@ class Authentication
 
 
     /**
-     * Return login data
-     * Typically database data
-     *
-     * @return mixed
+     * Hash plain password (mostly use in register to hash password to store on db)
+     * @param $password
+     * @return bool|string
      */
-    public function getLoginData()
+    public function hashPassword( $password )
     {
-        return $this->login_data;
+        return password_hash( $password, PASSWORD_DEFAULT );
     }
 
 
@@ -236,29 +215,36 @@ class Authentication
         $this->session->unsetSession();
         $this->cookie->delete( $this->auth_name );
 
-        if( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) ) return true;
+        if( !$this->session->check( $this->auth_name ) and !$this->cookie->check( $this->auth_name ) )
+            return true;
         else
             return false;
     }
 
 
     /**
-     * Bind a value to Pdo placeholder
+     * Attempt login
      *
-     * @return mixed
+     * @return bool
+     * @throws \Exception
      */
-    protected function bind()
+    protected function doLogin()
     {
-        $bind = NULL;
+        $this->login_result = $this->login->getDatabase()->query( $this->login->getQuery(), $this->login->getQueryBind() )->execute();
 
-        if( is_array( $this->login_param->bind ) ){
-            $bind = $this->login_param->bind;
-        }
-        else{
-            $bind = array( $this->login_param->bind );
+        @list( $this->login_result ) = $this->login_result; #flatten the array
+
+        if( count( $this->login_result ) > 0 && !isset( $this->login_result[$this->login->getPasswordColumn()] ) ){
+            throw new \Exception( sprintf( 'Column %s does not exist in the query %s', $this->login->getPasswordColumn(), $this->login->getQuery() ) );
         }
 
-        return $bind;
+        if( count( $this->login_result ) > 0 ){
+            if( password_verify( $this->login->getPassword(), @$this->login_result[$this->login->getPasswordColumn()] ) ){
+                $this->saveHash( $this->login_result );
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -271,8 +257,7 @@ class Authentication
     protected function saveHash( $data )
     {
         $this->session->set( $this->auth_name, $this->createHash( $data ) );
-
-        if( @$this->login_param->remember ){
+        if( $this->login->getRemember() ){
             $this->cookie->set( $this->auth_name, $this->createHash( $data ) );
         }
     }
@@ -287,10 +272,8 @@ class Authentication
     protected function createHash( $data )
     {
         $auth_data = array();
-
         $auth_data['key'] = $this->encode( serialize( $data ) );
         $auth_data['hash'] = $this->encode( strrev( $this->hash . $auth_data['key'] . $this->hash ) );
-
         return $auth_data;
     }
 
@@ -351,8 +334,6 @@ class Authentication
         $decrypted = rtrim( mcrypt_decrypt( MCRYPT_RIJNDAEL_256, md5( $this->encryption_key ), base64_decode( $string ), MCRYPT_MODE_CBC, md5( md5( $this->encryption_key ) ) ), "\0" );
         return $decrypted;
     }
-
-
 }
 
 
