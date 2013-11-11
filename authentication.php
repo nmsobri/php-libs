@@ -256,9 +256,9 @@ class Authentication
      */
     protected function saveHash( $data )
     {
-        $this->session->set( $this->auth_name, $this->createHash( $data ) );
+        $this->session->set( $this->auth_name, serialize( $this->createHash( $data ) ) );
         if( $this->login->getRemember() ){
-            $this->cookie->set( $this->auth_name, $this->createHash( $data ) );
+            $this->cookie->set( $this->auth_name, serialize( $this->createHash( $data ) ) );
         }
     }
 
@@ -286,7 +286,7 @@ class Authentication
     protected function checkHash()
     {
         if( $this->session->check( $this->auth_name ) ){
-            $auth_data = $this->session->get( $this->auth_name );
+            $auth_data = unserialize( $this->session->get( $this->auth_name ) );
             $auth_key = $auth_data['key'];
             $auth_hash = strrev( $this->decode( $auth_data['hash'] ) );
 
@@ -297,12 +297,13 @@ class Authentication
         }
 
         if( $this->cookie->check( $this->auth_name ) ){
-            $auth_data = $this->cookie->get( $this->auth_name );
+            $raw_auth_data = $this->cookie->get( $this->auth_name );
+            $auth_data = unserialize( $raw_auth_data );
             $auth_key = $auth_data['key'];
             $auth_hash = strrev( $this->decode( $auth_data['hash'] ) );
 
             if( $this->hash . $auth_key . $this->hash == $auth_hash ){
-                $this->session->set( $this->auth_name, $this->cookie->get( $this->auth_name ) );
+                $this->session->set( $this->auth_name, $raw_auth_data );
                 $this->auth_data = unserialize( $this->decode( $auth_key ) );
                 return true;
             }
