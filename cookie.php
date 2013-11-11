@@ -3,7 +3,7 @@
 /**
  * Class For Handling Cookie
  * Cookie Always Exist In Next Request
- * But This Class Make Cookie Available In Current Request
+ * This Class Make Cookie Available In Current Request
  * @author slier
  */
 
@@ -39,12 +39,13 @@ class Cookie
      */
     public function get( $name )
     {
-        return ( isset( $_COOKIE[$name] ) ? $_COOKIE[$name] : null );
+        return isset( $_COOKIE[$name] ) ? $_COOKIE[$name] : null;
     }
 
 
     /**
      * Set a cookie. Silently does nothing if headers have already been sent.
+     * Value must be a string, if it is an array, serialize it first
      *
      * @param $name
      * @param $value
@@ -54,14 +55,14 @@ class Cookie
      * @return bool
      *
      * set('user','slier') single dimension cookie
-     * set('user['name']','slier') multi dimension cookie
-     * set('user['age']','28') single dimension cookie
      */
-    public function set( $name, $value, $expiry = self::OneYear, $path = '/', $domain = false )
+    public function set( $name, $value, $expiry = self::OneYear, $path = '/', $domain = null )
     {
         $returnVal = false;
+
         if( !headers_sent() ){
-            if( $domain === false ){
+
+            if( is_null( $domain ) ){
                 $domain = $_SERVER['HTTP_HOST'];
             }
 
@@ -86,21 +87,23 @@ class Cookie
      * Delete cookie
      *
      * @param $name
-     * @param bool $remove_from_global remove cookie from this request.
+     * @param bool $clear remove cookie from this request.
      * @param string $path
      * @param bool $domain
      * @return bool
      */
-    public function delete( $name, $remove_from_global = true, $path = '/', $domain = false )
+    public function delete( $name, $clear = true, $path = '/', $domain = null )
     {
         $return = false;
+
         if( !headers_sent() ){
-            if( $domain === false ){
+            if( is_null( $domain ) ){
                 $domain = $_SERVER['HTTP_HOST'];
             }
 
             $return = setcookie( $name, '', time() - 3600, $path, $domain );
-            if( $remove_from_global ){
+
+            if( $clear ){
                 unset( $_COOKIE[$name] );
             }
         }
