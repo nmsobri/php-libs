@@ -20,9 +20,9 @@ class Database extends \PDO
 
 
     /**
-     * @param $dsn db:host=localhost;dbname=db_name
-     * @param $username
-     * @param $password
+     * @param string $dsn db:host=localhost;dbname=db_name
+     * @param string $username
+     * @param string $password
      * @throws \Exception
      */
     public function __construct( $dsn, $username, $password )
@@ -39,8 +39,8 @@ class Database extends \PDO
     /**
      * Run raw query
      *
-     * @param $sql
-     * @param null $bind
+     * @param string $sql
+     * @param array $bind
      * @return Database
      *
      * query('select * from user')
@@ -58,7 +58,7 @@ class Database extends \PDO
     /**
      * Query to select data
      *
-     * @param $table
+     * @param string $table
      * @param string $column
      * @return Database
      */
@@ -73,9 +73,9 @@ class Database extends \PDO
     /**
      * Insert a value into a table
      *
-     * @param $table
+     * @param string $table
      * @param array $data
-     * @param null $bind
+     * @param array $bind
      * @return Database
      *
      * insert('users', array( array( 'username'=> '?', 'password'=> '?' ) ), array( $username, $password ) )
@@ -108,9 +108,9 @@ class Database extends \PDO
     /**
      * Update a value in a table
      *
-     * @param $table
+     * @param string $table
      * @param array $data
-     * @param null $bind
+     * @param array $bind
      * @return Database
      *
      * update('users', array( array( 'username'=> '?', 'password'=> '?' ) ), array( $username, $password ) )
@@ -139,7 +139,7 @@ class Database extends \PDO
     /**
      * Delete a record from a table
      *
-     * @param $table
+     * @param string $table
      * @return Database
      */
     public function delete( $table )
@@ -164,8 +164,8 @@ class Database extends \PDO
     /**
      * Setup where clause
      *
-     * @param $where
-     * @param mixed $bind
+     * @param string $where
+     * @param array $bind
      * @return Database
      * @throws \PDOException
      *
@@ -202,8 +202,8 @@ class Database extends \PDO
     /**
      * Setup limit clause
      *
-     * @param $start
-     * @param $limit
+     * @param int $start
+     * @param int $limit
      * @return Database
      */
     public function limit( $start, $limit )
@@ -265,7 +265,7 @@ class Database extends \PDO
                     }
                 }
                 else{
-                    foreach( $bind as $val ){
+                    foreach( $bind as $key => $val ){
                         $this->bind[] = $val;
                     }
                 }
