@@ -115,6 +115,7 @@ class Image
      */
     public function save( $savePath, $imageQuality = 100 )
     {
+        umask( 0 );
         $extension = pathinfo( $savePath, PATHINFO_EXTENSION );
         switch( $extension ){
             case 'jpg':
