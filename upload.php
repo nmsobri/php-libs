@@ -3,17 +3,6 @@
 /**
  * Class For Handling File Upload
  * @author slier
- *
- * $upload = new FileUpload('./upload/',$_FILES['upload'],array('.png','.jpg'));
- * if($upload->upload())
- * {
- *   echo 'successfully upload';
- *   echo $upload->getUploadedFileInfo();
- * }
- * else
- * {
- *   echo $upload->showError();
- * }
  */
 
 namespace utility;
@@ -106,13 +95,24 @@ class Upload
 
 
     /**
-     * @param string $uploadDir
-     * @param $file
-     * @param $extensions
+     * @param string $upload_dir
+     * @param resource $_FILES ['element']
+     * @param array $extensions ['txt', 'doc', 'pdf']
+     *
+     * $upload = new FileUpload( 'upload/', $_FILES['upload'], ['doc','txt'] );
+     * if( $upload->upload() )
+     * {
+     *   print 'successfully upload';
+     *   print $upload->getUploadedFileInfo();
+     * }
+     * else
+     * {
+     *   print $upload->showError();
+     * }
      */
-    public function __construct( $uploadDir, $file, $extensions )
+    public function __construct( $upload_dir, $file, array $extensions )
     {
-        $this->uploadDir = $this->constructUploadDir( $uploadDir );
+        $this->uploadDir = $this->constructUploadDir( $upload_dir );
         $this->theFile = $file['name'];
         $this->theTempFile = $file['tmp_name'];
         $this->httpError = $file['error'];
@@ -127,10 +127,10 @@ class Upload
      */
     public function upload()
     {
-        $newName = $this->setFileName();
-        $this->copyFile = $newName . $this->getExtension( $this->theFile );
+        $file_name = $this->setFileName();
+        $this->copyFile = $file_name . '.' . $this->getExtension( $this->theFile );
 
-        if( !$this->checkFileName( $newName ) ){
+        if( !$this->checkFileName( $file_name ) ){
             return false;
         }
 
@@ -155,13 +155,13 @@ class Upload
      *
      * @return string
      */
-    public function showError()
+    public function showError( $template = '%s<br>' )
     {
-        $msg_string = null;
+        $messages = null;
         foreach( $this->message as $value ){
-            $msg_string .= $value . '<br>' . PHP_EOL;
+            $messages .= sprintf( $template, $value );
         }
-        return $msg_string;
+        return $messages;
     }
 
 
@@ -226,18 +226,13 @@ class Upload
 
 
     /**
-     * Get full path to file
+     * Get full path to uploaded file
      *
      * @return null|string
      */
     public function getFullPathToFile()
     {
-        if( is_null( $this->fullPathToFile ) ){
-            trigger_error( 'Please call method upload() first', E_USER_ERROR );
-        }
-        else{
-            return $this->fullPathToFile;
-        }
+        return $this->fullPathToFile;
     }
 
 
@@ -248,12 +243,7 @@ class Upload
      */
     public function getFileName()
     {
-        if( is_null( $this->fullPathToFile ) ){
-            trigger_error( 'Pleease call method upload() first', E_USER_ERROR );
-        }
-        else{
-            return basename( $this->fullPathToFile );
-        }
+        return basename( $this->fullPathToFile );
     }
 
 
@@ -275,19 +265,14 @@ class Upload
                     $this->fullPathToFile = $newfile;
                     return true;
                 }
-                else{
-                    return false;
-                }
-            }
-            else{
-                $this->message[] = $this->errorText( 14 );
+                $this->message[] = $this->errorText( 4 );
                 return false;
             }
-        }
-        else{
-            $this->message[] = $this->errorText( 15 );
+            $this->message[] = $this->errorText( 14 );
             return false;
         }
+        $this->message[] = $this->errorText( 15 );
+        return false;
     }
 
 
@@ -298,15 +283,12 @@ class Upload
      */
     private function setFileName()
     {
-        if( empty( $this->theFile ) ){
-            return null;
-        }
-
-        $name = substr( $this->theFile, 0, strpos( $this->theFile, '.' ) );
+        $name = pathinfo( $this->theFile, PATHINFO_FILENAME );
 
         if( $this->renameFile ){
             $name .= strtotime( 'now' );
         }
+
         return $name;
     }
 
@@ -320,29 +302,24 @@ class Upload
     private function checkFileName( $name )
     {
         if( !is_null( $name ) ){
+
             if( strlen( $name ) > $this->filenameLength ){
                 $this->message[] = $this->errorText( 13 );
                 return false;
             }
-            else{
-                if( $this->filenameCheck ){
-                    if( preg_match( "/^[a-z0-9_]*$/i", $name ) ){
-                        return true;
-                    }
-                    else{
-                        $this->message[] = $this->errorText( 12 );
-                        return false;
-                    }
+
+            if( $this->filenameCheck ){
+                if( !preg_match( '#^[a-z0-9_]*$#i', $name ) ){
+                    $this->message[] = $this->errorText( 12 );
+                    return false;
                 }
-                else{
-                    return true;
-                }
+                return true;
             }
+            return true;
         }
-        else{
-            $this->message[] = $this->errorText( 10 );
-            return false;
-        }
+
+        $this->message[] = $this->errorText( 10 );
+        return false;
     }
 
 
@@ -356,14 +333,12 @@ class Upload
         $extension = $this->getExtension( $this->theFile );
         $ext_array = $this->allowedExtensions;
 
-        if( in_array( $extension, $ext_array ) ){
-            return true;
-        }
-        else{
+        if( !in_array( $extension, $ext_array ) ){
             $this->showAllowedExtensions();
             $this->message[] = $this->errorText( 11 );
             return false;
         }
+        return true;
     }
 
 
@@ -375,8 +350,7 @@ class Upload
      */
     private function getExtension( $file )
     {
-        $ext = strtolower( strrchr( $file, '.' ) );
-        return $ext;
+        return pathinfo( $file, PATHINFO_EXTENSION );
     }
 
 
@@ -394,13 +368,9 @@ class Upload
                 mkdir( $directory, 0777 );
                 return true;
             }
-            else{
-                return false;
-            }
+            return false;
         }
-        else{
-            return true;
-        }
+        return true;
     }
 
 
@@ -415,14 +385,12 @@ class Upload
         if( $this->replaceOldFile ){
             return false;
         }
-        else{
-            if( file_exists( $this->uploadDir . $file_name ) ){
-                return true;
-            }
-            else{
-                return false;
-            }
+
+        if( file_exists( $this->uploadDir . $file_name ) ){
+            return true;
         }
+
+        return false;
     }
 
 
@@ -434,14 +402,17 @@ class Upload
     public function getUploadedFileInfo()
     {
         $file = $this->fullPathToFile;
-        $str = 'File name: ' . basename( $file ) . '<br />';
-        $str .= 'File size: ' . filesize( $file ) . ' bytes<br />';
+        $str = 'File name: ' . basename( $file ) . '<br>';
+        $str .= 'File size: ' . filesize( $file ) . ' bytes<br>';
+
         if( function_exists( 'mime_content_type' ) ){
-            $str .= 'Mime type: ' . mime_content_type( $file ) . '<br />';
+            $str .= 'Mime type: ' . mime_content_type( $file ) . '<br>';
         }
+
         if( $img_dim = getimagesize( $file ) ){
-            $str .= 'Image dimensions: x = ' . $img_dim[0] . 'px, y = ' . $img_dim[1] . 'px<br />';
+            $str .= 'Image dimensions: x = ' . $img_dim[0] . 'px, y = ' . $img_dim[1] . 'px<br>';
         }
+
         return $str;
     }
 
@@ -491,7 +462,7 @@ class Upload
      */
     private function showAllowedExtensions()
     {
-        $this->extErrorString = implode( ' ', $this->allowedExtensions );
+        $this->extErrorString = implode( ', ', $this->allowedExtensions );
     }
 
 
@@ -505,10 +476,9 @@ class Upload
         if( is_uploaded_file( $this->theTempFile ) ){
             return true;
         }
-        else{
-            $this->message[] = $this->errorText( $this->httpError );
-            return false;
-        }
+
+        $this->message[] = $this->errorText( $this->httpError );
+        return false;
     }
 
 
