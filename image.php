@@ -1,11 +1,8 @@
 <?php
 
 /**
- *Class Image Resize
- * @example
- * $obj = new Image('input.jpg', array('jpg','png'));
- * $obj->resize(150, 100, 0);
- * $obj->save('output.jpg', 100);
+ * Class image resize
+ * @author slier
  */
 
 namespace utility;
@@ -39,40 +36,46 @@ class Image
     protected $file = null;
 
     /**
+     * @var string original file name;
+     */
+    protected $file_name;
+    /**
      * @var array extension
      */
     protected $extensions = array( 'jpg', 'png', 'gif' );
 
 
     /**
-     * @param string $file
+     * @param string|array $file
      * @param array $extensions
      * @throws \Exception
+     *
+     * Normal file
+     * $obj = new Image('input.jpg', array('jpg','png'));
+     * $obj->resize(150, 100, 'auto');
+     * $obj->save('/path/output.jpg', 100);
+     *
+     * Uploaded file
+     * $obj = new Image($_FILES['elem'], array('jpg', 'png');
+     * $obj->resize(150, 100, 'auto');
+     * $obj->save('/path/output.jpg');
      */
     public function __construct( $file, array $extensions = null )
     {
-        $this->file = $file;
+        $this->setupFile( $file );
         $this->extensions = !is_null( $extensions ) ? $extensions : $this->extensions;
 
-        try{
-            if( !$this->isFile() ){
-                throw new \Exception( 'File does not exist' );
-            }
-
-            if( !$this->isAllowedExtensions() ){
-                throw new \Exception( 'File extension is not allowed' );
-            }
-
-            #Open up the file
-            $this->image = $this->openImage();
-
-            #Get width and height
-            $this->width = imagesx( $this->image );
-            $this->height = imagesy( $this->image );
+        if( !$this->isFile() ){
+            throw new \Exception( 'File is not exist' );
         }
-        catch( \Exception $e ){
-            echo $e->getMessage();
+
+        if( !$this->isAllowedExtensions() ){
+            throw new \Exception( 'File extension is not allowed' );
         }
+
+        $this->image = $this->openImage();
+        $this->width = imagesx( $this->image );
+        $this->height = imagesy( $this->image );
     }
 
 
@@ -95,7 +98,6 @@ class Image
         #Resample - create image canvas of x, y size
         $this->imageResized = imagecreatetruecolor( $optimalWidth, $optimalHeight );
         imagecopyresampled( $this->imageResized, $this->image, 0, 0, 0, 0, $optimalWidth, $optimalHeight, $this->width, $this->height );
-
 
         #if option is 'crop', then crop too
         if( $option == 'crop' ){
@@ -129,10 +131,10 @@ class Image
                 break;
 
             case 'png':
-                /* Scale quality from 0-100 to 0-9 */
+                #Scale quality from 0-100 to 0-9
                 $scaleQuality = round( ( $imageQuality / 100 ) * 9 );
 
-                /* Invert quality setting as 0 is best, not 9 */
+                #Invert quality setting as 0 is best, not 9
                 $invertScaleQuality = 9 - $scaleQuality;
 
                 if( imagetypes() & IMG_PNG ){
@@ -158,8 +160,6 @@ class Image
     {
         $mime = getimagesize( $this->file );
         $mime = $mime['mime'];
-
-
         $extension = $this->getExtension();
 
         switch( $extension ){
@@ -179,10 +179,10 @@ class Image
                 break;
 
             case 'png':
-                /* Scale quality from 0-100 to 0-9 */
+                #Scale quality from 0-100 to 0-9
                 $scaleQuality = round( ( $imageQuality / 100 ) * 9 );
 
-                /* Invert quality setting as 0 is best, not 9 */
+                #Invert quality setting as 0 is best, not 9
                 $invertScaleQuality = 9 - $scaleQuality;
 
                 if( imagetypes() & IMG_PNG ){
@@ -204,7 +204,7 @@ class Image
      */
     public function getFileName()
     {
-        return pathinfo( $this->file, PATHINFO_BASENAME );
+        return pathinfo( $this->file_name, PATHINFO_BASENAME );
     }
 
 
@@ -256,7 +256,7 @@ class Image
      */
     protected function openImage()
     {
-        /* Get extension */
+        #Get extension
         $extension = $this->getExtension();
 
         switch( $extension ){
@@ -396,7 +396,6 @@ class Image
      */
     protected function getOptimalCrop( $newWidth, $newHeight )
     {
-
         $heightRatio = $this->height / $newHeight;
         $widthRatio = $this->width / $newWidth;
 
@@ -425,12 +424,12 @@ class Image
      */
     protected function crop( $optimalWidth, $optimalHeight, $newWidth, $newHeight )
     {
-        /* Find center - this will be used for the crop */
+        #Find center - this will be used for the crop
         $cropStartX = ( $optimalWidth / 2 ) - ( $newWidth / 2 );
         $cropStartY = ( $optimalHeight / 2 ) - ( $newHeight / 2 );
 
         $crop = $this->imageResized;
-        /* Now crop from center to exact requested size */
+        #Now crop from center to exact requested size
         $this->imageResized = imagecreatetruecolor( $newWidth, $newHeight );
         imagecopyresampled( $this->imageResized, $crop, 0, 0, $cropStartX, $cropStartY, $newWidth, $newHeight, $newWidth, $newHeight );
     }
@@ -461,6 +460,23 @@ class Image
         }
         else{
             return false;
+        }
+    }
+
+
+    /**
+     * Setup file resource
+     *
+     * @param $file
+     */
+    protected function setupFile( $file )
+    {
+        if( is_array( $file ) ){
+            $this->file = $file['tmp_name'];
+            $this->file_name = $file['name'];
+        }
+        else{
+            $this->file = $this->file_name = $file;
         }
     }
 
