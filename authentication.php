@@ -91,14 +91,35 @@ class Authentication
      * (new AuthParamBuilder())->setDatabase( $db )
      * ->setQuery( 'SELECT * FROM users WHERE username=?', [ $_POST['username'] ] )
      * ->setPassword( $_POST['password'] )
-     * ->setPasswordcolumn( 'password' )->build();
+     * ->setPasswordcolumn( 'password' )
+     * ->build();
      *
      * @return boolean
      */
     public function login( AuthParam $login )
     {
         $this->login = $login;
-        return $this->isAuth();
+        return $this->doLogin();
+    }
+
+
+    /**
+     * Attempt login using open id
+     * Authentication is perform by third party service likfe fb
+     * Just serach if this user have account with us and create session for it
+     *
+     * @param AuthParam $login
+     *
+     * (new AuthParamBuilder())->setDatabase( $db )
+     * ->setQuery( 'SELECT * FROM users WHERE username=?', [ $_POST['username'] ] )
+     * ->build();
+     *
+     * @return boolean
+     */
+    public function openidLogin( AuthParam $login )
+    {
+        $this->login = $login;
+        return $this->openidDoLogin();
     }
 
 
@@ -109,9 +130,7 @@ class Authentication
      */
     public function isAuth()
     {
-        if( !is_null( $this->login ) ){
-            return $this->doLogin();
-        }
+
 
         if( $this->session->check( $this->auth_name ) ){
             return $this->checkHash();
@@ -243,6 +262,25 @@ class Authentication
                 $this->saveHash( $this->login_result );
                 return true;
             }
+        }
+        return false;
+    }
+
+
+    /**
+     * Attempt login
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    protected function openidDoLogin()
+    {
+        $this->login_result = $this->login->getDatabase()->query( $this->login->getQuery(), $this->login->getQueryBind() )->execute();
+        @list( $this->login_result ) = $this->login_result; #flatten the array
+
+        if( count( $this->login_result ) > 0 ){
+            $this->saveHash( $this->login_result );
+            return true;
         }
         return false;
     }

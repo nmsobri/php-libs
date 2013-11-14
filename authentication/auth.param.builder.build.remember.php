@@ -2,9 +2,12 @@
 
 namespace utility\authentication;
 
-class AuthParamBuilderDone
+/**
+ * Class AuthParamBuilderBuildRemember
+ * @package utility\authentication
+ */
+class AuthParamBuilderBuildRemember
 {
-
 
     /**
      * @var null|AuthParam
@@ -22,6 +25,19 @@ class AuthParamBuilderDone
 
 
     /**
+     * Set for persistent login
+     *
+     * @param $remember
+     * @return AuthParamBuilderDone
+     */
+    public function setRemember( $remember )
+    {
+        $this->auth_param->setRemember( $remember );
+        return new AuthParamBuilderDone( $this->auth_param );
+    }
+
+
+    /**
      * Completing build the AuthParam object
      */
     public function build()
@@ -30,3 +46,4 @@ class AuthParamBuilderDone
     }
 
 }
+

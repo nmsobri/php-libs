@@ -2,7 +2,7 @@
 
 namespace utility\authentication;
 
-class AuthParamBuilderPassword
+class AuthParamBuilderBuildPassword
 {
 
     /**
@@ -30,6 +30,15 @@ class AuthParamBuilderPassword
     {
         $this->auth_param->setPassword( $password );
         return new AuthParamBuilderPasswordColumn( $this->auth_param );
+    }
+
+
+    /**
+     * Completing build the AuthParam object
+     */
+    public function build()
+    {
+        return $this->auth_param;
     }
 
 }

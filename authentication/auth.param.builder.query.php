@@ -24,12 +24,12 @@ class AuthParamBuilderQuery
      *
      * @param $query
      * @param $bind
-     * @return AuthParamBuilderPassword
+     * @return AuthParamBuilderBuildPassword
      */
     public function setQuery( $query, $bind )
     {
         $this->auth_param->setQuery( $query, $bind );
-        return new AuthParamBuilderPassword( $this->auth_param );
+        return new AuthParamBuilderBuildPassword( $this->auth_param );
     }
 
 }
