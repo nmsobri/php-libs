@@ -437,7 +437,6 @@ class Form
         );
 
         return array_merge( $cfg, $attr );
-
     }
 
 
@@ -467,7 +466,6 @@ class Form
             $value = $defaultValue;
         }
         return $value;
-
     }
 
 
@@ -487,7 +485,7 @@ class Form
         if( isset( $formData[$elem_name] ) ){
             if( $this->isElementAnArray( $name ) ){
                 foreach( $formData[$elem_name] as $elem ){
-                    foreach( $elem as $key => $val ){
+                    foreach( $elem as $val ){
                         $value[] = $val;
                     }
                     array_shift( $formData[$elem_name] );
@@ -521,7 +519,7 @@ class Form
         $elem_name = $this->getElementName( $name );
 
         if( isset( $formData[$elem_name] ) ){
-            if( $this->isElementAnArray( $name ) && $formData[$elem_name][0] == $value ){
+            if( $this->isElementAnArray( $name ) && @$formData[$elem_name][0] == $value ){
                 $radio_checked = 'checked';
                 array_shift( $formData[$elem_name] );
             }
@@ -553,7 +551,7 @@ class Form
         $elem_name = $this->getElementName( $name );
 
         if( isset( $formData[$elem_name] ) ){
-            if( $this->isElementAnArray( $name ) && $formData[$elem_name][0] == $value ){
+            if( $this->isElementAnArray( $name ) && @$formData[$elem_name][0] == $value ){
                 $checkbox_checked = 'checked';
                 array_shift( $formData[$elem_name] );
             }
