@@ -1,11 +1,13 @@
 <?php
-/**
- * Error Validator
- * use in Validator::invalidateValidation() to give user friendly error message after marked overall validation as failed
- */
 
 namespace utility\validator;
 
+/**
+ * Class ErrorValidator
+ * @package utility\validator
+ * Error Validator
+ * use in Validator::invalidateValidation() to give user friendly error message after marked overall validation as failed
+ */
 class ErrorValidator extends ValidatorStrategy
 {
 

@@ -1,11 +1,11 @@
 <?php
 
-/**
- * Class To Generate Html Form Element
- */
-
 namespace utility;
 
+/**
+ * Class Form
+ * @package utility
+ */
 class Form
 {
 

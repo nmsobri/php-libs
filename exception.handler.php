@@ -1,13 +1,12 @@
 <?php
 
-/**
- * Exception Class
- * Note:When Using This Class..U dont Need to Use Try Catch Block
- * @author slier
- */
-
 namespace utility;
 
+/**
+ * Class ExceptionHandler
+ * @package utility
+ * Note:When Using This Class..U dont Need to Use Try Catch Block
+ */
 class ExceptionHandler
 {
 

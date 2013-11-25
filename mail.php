@@ -1,21 +1,11 @@
 <?php
 
-/////////////////////////////////////////////////
-// phpmailer - PHP email class
-//
-// Version 0.9, 04/16/2001
-//
-// Class for sending email using either
-// sendmail, PHP mail(), or SMTP.  Methods are
-// based upon the standard AspEmail(tm) classes.
-//
-// Author: Brent R. Matzelle
-//
-// License: LGPL, see LICENSE
-/////////////////////////////////////////////////
-
 namespace utility;
 
+/**
+ * Class Mail
+ * @package utility
+ */
 class Mail
 {
 

@@ -1,15 +1,12 @@
 <?php
 
-/*
- * Class to authenticate a user
- * @author slier
- *
- */
-
 namespace utility;
-
 use utility\authentication\AuthParam;
 
+/**
+ * Class Authentication
+ * @package utility
+ */
 class Authentication
 {
 

@@ -1,12 +1,11 @@
 <?php
 
-/**
- * Class image resize
- * @author slier
- */
-
 namespace utility;
 
+/**
+ * Class Image
+ * @package utility
+ */
 class Image
 {
 

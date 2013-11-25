@@ -2,6 +2,10 @@
 
 namespace utility;
 
+/**
+ * Class AutoLoad
+ * @package utility
+ */
 class AutoLoad
 {
 

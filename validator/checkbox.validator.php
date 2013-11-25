@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class CheckboxValidator
+ * @package utility\validator
+ */
 class CheckboxValidator extends ValidatorStrategy
 {
 

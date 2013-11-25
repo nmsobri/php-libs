@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class DateValidator
+ * @package utility\validator
+ */
 class DateValidator extends ValidatorStrategy
 {
 

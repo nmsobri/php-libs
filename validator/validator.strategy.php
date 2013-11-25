@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class ValidatorStrategy
+ * @package utility\validator
+ */
 abstract class ValidatorStrategy
 {
     const E = 'Please correct following errors:';

@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class RadioValidator
+ * @package utility\validator
+ */
 class RadioValidator extends ValidatorStrategy
 {
 

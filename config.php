@@ -1,14 +1,14 @@
 <?php
 
+namespace utility;
+
 /**
+ * Class Config
+ * @package utility
  * Class to store configuration entities
  * Use Xml File As A Configuration File
  * Root element <configs></configs>
- * @author slier
  */
-
-namespace utility;
-
 class Config
 {
 

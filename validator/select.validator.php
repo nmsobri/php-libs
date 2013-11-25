@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class SelectValidator
+ * @package utility\validator
+ */
 class SelectValidator extends ValidatorStrategy
 {
     /**

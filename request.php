@@ -2,6 +2,10 @@
 
 namespace utility;
 
+/**
+ * Class Request
+ * @package utility
+ */
 class Request
 {
 

@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class RegexValidator
+ * @package utility\validator
+ */
 class RegexValidator extends ValidatorStrategy
 {
 

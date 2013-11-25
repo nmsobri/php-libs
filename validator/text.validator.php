@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class TextValidator
+ * @package utility\validator
+ */
 class TextValidator extends AlnumValidatorStrategy
 {
 

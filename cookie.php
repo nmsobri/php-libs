@@ -1,14 +1,12 @@
 <?php
 
-/**
- * Class For Handling Cookie
- * Cookie Always Exist In Next Request
- * This Class Make Cookie Available In Current Request
- * @author slier
- */
-
 namespace utility;
 
+/**
+ * Class Cookie
+ * @package utility
+ * This Class Make Cookie Available In Current Request
+ */
 class Cookie
 {
 

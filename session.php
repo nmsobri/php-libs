@@ -1,13 +1,11 @@
 <?php
 
-/**
- *
- * Session Class
- * @author slier
- */
-
 namespace utility;
 
+/**
+ * Class Session
+ * @package utility
+ */
 class Session
 {
 

@@ -1,12 +1,11 @@
 <?php
 
-/**
- * Class For Handling File Upload
- * @author slier
- */
-
 namespace utility;
 
+/**
+ * Class Upload
+ * @package utility
+ */
 class Upload
 {
 

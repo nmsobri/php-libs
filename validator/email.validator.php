@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class EmailValidator
+ * @package utility\validator
+ */
 class EmailValidator extends ValidatorStrategy
 {
 

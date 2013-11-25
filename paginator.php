@@ -1,13 +1,12 @@
 <?php
 
-/**
- * Pagination class
- * @author slier
- */
-
 namespace utility;
 
-class Pagination
+/**
+ * Class Paginator
+ * @package utility
+ */
+class Paginator
 {
 
     /**

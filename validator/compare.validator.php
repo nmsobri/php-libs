@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class CompareValidator
+ * @package utility\validator
+ */
 class CompareValidator extends ValidatorStrategy
 {
 

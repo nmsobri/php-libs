@@ -2,6 +2,10 @@
 
 namespace utility;
 
+/**
+ * Class Validator
+ * @package utility
+ */
 class Validator
 {
 

@@ -2,6 +2,10 @@
 
 namespace utility\validator;
 
+/**
+ * Class FileValidator
+ * @package utility\validator
+ */
 class FileValidator extends ValidatorStrategy
 {
 

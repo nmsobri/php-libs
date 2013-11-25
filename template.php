@@ -1,13 +1,11 @@
 <?php
 
-/**
- *
- * Template Class
- * @author slier
- */
-
 namespace utility;
 
+/**
+ * Class Template
+ * @package utility
+ */
 class Template
 {
 

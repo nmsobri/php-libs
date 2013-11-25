@@ -1,12 +1,11 @@
 <?php
 
-/**
- * Class Database
- * @author slier
- */
-
 namespace utility;
 
+/**
+ * Class Database
+ * @package utility
+ */
 class Database extends \PDO
 {
 

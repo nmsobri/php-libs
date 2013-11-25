@@ -12,6 +12,10 @@
 
 namespace utility;
 
+/**
+ * Class Category
+ * @package utility
+ */
 class Category
 {
 
