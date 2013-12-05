@@ -8,48 +8,87 @@ namespace utility;
  */
 class Loader
 {
-
-    protected $include_dir = null;
+    /**
+     * Include dir
+     * @var array
+     */
+    protected static $dirs = array();
 
 
     /**
-     * @param string $include_dir
+     *Make it static
      */
-    public function __construct( $include_dir )
+    private function __construct()
     {
-        $this->include_dir = $include_dir;
-        spl_autoload_register( array( $this, 'loader' ) );
+
+    }
+
+
+    /**
+     * Register autoload
+     * @param $dirs
+     */
+    public static function register( $dirs )
+    {
+        self::setDirectory( $dirs );
+        spl_autoload_register( array( __CLASS__, 'loader' ) );
+    }
+
+
+    /**
+     * Unregister autoload
+     */
+    public static function unregister()
+    {
+        spl_autoload_unregister( array( __CLASS__, 'loader' ) );
+    }
+
+
+    /**
+     * Set include directory
+     * @param $dirs
+     */
+    protected static function setDirectory( $dirs )
+    {
+        if( is_array( $dirs ) || is_object( $dirs ) ){
+            foreach( $dirs as $dir ){
+                self::setDirectory( $dir );
+            }
+        }
+        else if( is_string( $dirs ) ){
+            if( !in_array( $dirs, self::$dirs ) ) self::$dirs[] = $dirs;
+        }
     }
 
 
     /**
      * Class loader
-     *
      * @param string $class
      * @return mixed
      */
-    public function loader( $class )
+    protected static function loader( $class )
     {
         if( class_exists( $class, false ) ){
             return true;
         }
 
         $class = str_replace( '\\', '/', $class );
-        $file = $this->include_dir . $this->getClassPath( $class ) . $this->camelToDashed( $this->getClassName( $class ) ) . '.php';
 
-        if( is_readable( $file ) ){
-            include( $file );
+        foreach( self::$dirs as $dir ){
+            $file = $dir . self::getClassPath( $class ) . self::camelToDot( self::getClassName( $class ) ) . '.php';
+            if( is_readable( $file ) ){
+                return require $file;
+            }
         }
     }
 
 
     /**
      * Get path to class location
-     *
      * @param string $class
      * @return string
      */
-    protected function getClassPath( $class )
+    protected static function getClassPath( $class )
     {
         return substr( $class, 0, strrpos( $class, '/' ) + 1 );
     }
@@ -57,11 +96,10 @@ class Loader
 
     /**
      * Get class name from class path
-     *
      * @param string $class
      * @return string
      */
-    protected function getClassName( $class )
+    protected static function getClassName( $class )
     {
         return substr( $class, strrpos( $class, '/' ) + 1 );
     }
@@ -69,13 +107,12 @@ class Loader
 
     /**
      * Convert camel case class name to dot(.)
-     *
      * @param string $class
      * @return string
      */
-    function camelToDot( $class )
+    protected static function camelToDot( $class )
     {
         return strtolower( preg_replace( '/([a-zA-Z])(?=[A-Z])/', '$1.', $class ) );
     }
 
-} 
+}
