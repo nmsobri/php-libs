@@ -6,7 +6,7 @@ namespace utility;
  * Class AutoLoad
  * @package utility
  */
-class AutoLoad
+class Loader
 {
 
     protected $include_dir = null;
@@ -73,7 +73,7 @@ class AutoLoad
      * @param string $class
      * @return string
      */
-    function camelToDashed( $class )
+    function camelToDot( $class )
     {
         return strtolower( preg_replace( '/([a-zA-Z])(?=[A-Z])/', '$1.', $class ) );
     }
