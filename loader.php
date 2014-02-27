@@ -26,6 +26,8 @@ class Loader
 
     /**
      * Register autoload
+     * If the class is having namespace, the class must be located
+     * in its directory namespace
      * @param $dirs
      */
     public static function register( $dirs )
