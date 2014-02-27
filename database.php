@@ -19,7 +19,7 @@ class Database extends \PDO
 
 
     /**
-     * @param string $dsn db:host=localhost;dbname=db_name
+     * @param string $dsn db_type:host=localhost;dbname=db_name
      * @param string $username
      * @param string $password
      * @throws \Exception
