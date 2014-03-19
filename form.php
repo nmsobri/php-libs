@@ -42,6 +42,10 @@ class Form
      * string $attr['id']
      * string $attr['class']
      * string $attr['placeholder']
+     * bool $attr['autofocus']
+     * bool $attr['autocomplete']
+     * bool $attr['required']
+     * string $attr['pattern']
      * bool $attr['disabled'] remove from $_POST
      * bool $attr['readonly']
      *
@@ -49,11 +53,18 @@ class Form
      */
     public function text( $name, $defaultValue = null, array $attr = null )
     {
-        $attr = !is_null( $attr ) ? $attr : array(); #Cast to an array if $attribute exist otherwise create an empty array
+        $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
         $value = $this->getTextValue( $name, $defaultValue );
-        return $this->removeExtraSpaces( sprintf( '<input type="text" name="%s" id="%s" class="%s" value="%s" placeholder="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $value, $cfg['placeholder'], $cfg['readonly'], $cfg['disabled'] ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<input type="text" name="%s" id="%s" class="%s" value="%s" %s %s %s %s %s %s %s>',
+                $name, $cfg['id'], $cfg['class'], $value, $cfg['placeholder'],
+                $cfg['autocomplete'],$cfg['autofocus'],$cfg['required'],
+                $cfg['pattern'],$cfg['readonly'], $cfg['disabled']
+            )
+        );
     }
 
 
@@ -67,6 +78,9 @@ class Form
      * string $attr['id']
      * string $attr['class']
      * string $attr['placeholder']
+     * bool $attr['autofocus']
+     * bool $attr['required']
+     * string $attr['pattern']
      * bool $attr['disabled']
      * bool $attr['readonly']
      * int $attr['cols']
@@ -80,7 +94,14 @@ class Form
         $cfg = $this->configElement( $name, $attr );
         $defaultValue = ( is_null( $defaultValue ) ) ? '' : $defaultValue;
         $value = $this->getTextValue( $name, $defaultValue );
-        return $this->removeExtraSpaces( sprintf( '<textarea name="%s" id="%s" class="%s" placeholder="%s" cols="%d" rows="%d" %s %s>%s</textarea>', $name, $cfg['id'], $cfg['class'], $cfg['placeholder'], $cfg['cols'], $cfg['rows'], $cfg['readonly'], $cfg['disabled'], $value ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<textarea name="%s" id="%s" class="%s" cols="%d" rows="%d" %s %s %s %s %s %s>%s</textarea>',
+                $name, $cfg['id'], $cfg['class'], $cfg['cols'], $cfg['rows'],
+                $cfg['placeholder'],$cfg['autofocus'],$cfg['required'],
+                $cfg['pattern'],$cfg['readonly'], $cfg['disabled'], $value
+            )
+        );
     }
 
 
@@ -93,6 +114,10 @@ class Form
      * string $attr['id']
      * string $attr['class']
      * string $attr['placeholder']
+     * bool $attr['autofocus']
+     * bool $attr['autocomplete']
+     * bool $attr['required']
+     * string $attr['pattern']
      * bool $attr['disabled']
      * bool $attr['readonly']
      *
@@ -102,7 +127,14 @@ class Form
     {
         $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
-        return $this->removeExtraSpaces( sprintf( '<input type="password" name="%s" id="%s" class="%s" placeholder="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['placeholder'], $cfg['readonly'], $cfg['disabled'] ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<input type="password" name="%s" id="%s" class="%s" %s %s %s %s %s %s %s>',
+                $name, $cfg['id'], $cfg['class'], $cfg['placeholder'],
+                $cfg['autofocus'],$cfg['autocomplete'],$cfg['required'],
+                $cfg['pattern'],$cfg['readonly'], $cfg['disabled']
+            )
+        );
     }
 
 
@@ -116,6 +148,8 @@ class Form
      *
      * string $attr['id']
      * string $attr['class']
+     * bool $attr['autofocus']
+     * bool $attr['required']
      * bool $attr['disabled']
      * bool $attr['readonly']
      * bool $attr['multiple']
@@ -177,7 +211,14 @@ class Form
 
         $value = $this->getSelectValue( $name, $selected );
         $optionsList = $this->buildSelectOption( $name, $options, $instance, $optionsList, $value );
-        return $this->removeExtraSpaces( sprintf( '<select name="%s" id="%s" class="%s" %s %s %s %s>%s</select>', $name, $cfg['id'], $cfg['class'], $cfg['size'], $cfg['multiple'], $cfg['readonly'], $cfg['disabled'], $optionsList ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<select name="%s" id="%s" class="%s" %s %s %s %s %s %s>%s</select>',
+                $name, $cfg['id'], $cfg['class'], $cfg['size'],
+                $cfg['multiple'],$cfg['autofocus'],$cfg['required'],
+                $cfg['readonly'], $cfg['disabled'], $optionsList
+            )
+        );
     }
 
 
@@ -191,6 +232,8 @@ class Form
      *
      * string $attr['id']
      * string $attr['class']
+     * bool $attr['autofocus']
+     * bool $attr['required']
      * bool $attr['disabled']
      * bool $attr['readonly']
      *
@@ -202,7 +245,14 @@ class Form
         $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
         $radio_checked = $this->getRadioValue( $name, $value, $checked );
-        return $this->removeExtraSpaces( sprintf( '<input type="radio" name="%s" id="%s" class="%s" value="%s" %s %s %s>', $name, $cfg['id'], $cfg['class'], $value, $radio_checked, $cfg['readonly'], $cfg['disabled'] ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<input type="radio" name="%s" id="%s" class="%s" value="%s" %s %s %s %s %s>',
+                $name, $cfg['id'], $cfg['class'], $value, $radio_checked,
+                $cfg['autofocus'],$cfg['required'],$cfg['readonly'],
+                $cfg['disabled']
+            )
+        );
     }
 
 
@@ -216,6 +266,8 @@ class Form
      *
      * string $attr['id']
      * string $attr['class']
+     * bool $attr['autofocus']
+     * bool $attr['required']
      * bool $attr['disabled']
      * bool $attr['readonly']
      *
@@ -227,7 +279,14 @@ class Form
         $cfg = $this->configElement( $name, $attr );
         $checked = ( is_null( $checked ) ) ? false : ( boolean )$checked;
         $checkbox_checked = $this->getCheckboxValue( $name, $value, $checked );
-        return $this->removeExtraSpaces( sprintf( '<input type="checkbox" name="%s" id="%s" class="%s" value="%s" %s %s %s>', $name, $cfg['id'], $cfg['class'], $value, $checkbox_checked, $cfg['readonly'], $cfg['disabled'] ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<input type="checkbox" name="%s" id="%s" class="%s" value="%s" %s %s %s %s %s>',
+                $name, $cfg['id'], $cfg['class'], $value, $checkbox_checked,
+                $cfg['autofocus'],$cfg['required'],$cfg['readonly'],
+                $cfg['disabled']
+            )
+        );
     }
 
 
@@ -239,7 +298,9 @@ class Form
      *
      * string $attr['id']
      * string $attr['class']
-     * bool $attr['disabled'] remove from $_POST data
+     * bool $attr['autofocus']
+     * bool $attr['required']
+     * bool $attr['disabled']
      * bool $attr['readonly']
      *
      * @return string
@@ -248,7 +309,13 @@ class Form
     {
         $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
-        return $this->removeExtraSpaces( sprintf( '<input type="file" name="%s" id="%s" class="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<input type="file" name="%s" id="%s" class="%s" %s %s %s %s>',
+                $name, $cfg['id'], $cfg['class'],$cfg['autofocus'],
+                $cfg['required'],$cfg['readonly'], $cfg['disabled']
+            )
+        );
     }
 
 
@@ -269,7 +336,12 @@ class Form
         $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
         $value = $this->getTextValue( $name, $value );
-        return $this->removeExtraSpaces( sprintf( '<input type="hidden" name="%s" value="%s" id="%s" class="%s">', $name, $value, $cfg['id'], $cfg['class'] ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<input type="hidden" name="%s" value="%s" id="%s" class="%s">',
+                $name, $value, $cfg['id'], $cfg['class']
+            )
+        );
     }
 
 
@@ -283,6 +355,7 @@ class Form
      *
      * string $attr['id']
      * string $attr['class']
+     * bool $attr['autofocus']
      * bool $attr['disabled']
      * bool $attr['readonly']
      *
@@ -292,7 +365,13 @@ class Form
     {
         $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
-        return $this->removeExtraSpaces( sprintf( '<input type="button" name="%s" value="%s" id="%s" class="%s" %s %s>', $name, $value, $cfg['id'], $cfg['class'], $cfg['readonly'], $cfg['disabled'] ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<input type="button" name="%s" value="%s" id="%s" class="%s" %s %s %s>',
+                $name, $value, $cfg['id'], $cfg['class'],$cfg['autofocus'],
+                $cfg['readonly'], $cfg['disabled']
+            )
+        );
     }
 
 
@@ -305,6 +384,12 @@ class Form
      *
      * string $attr['id']
      * string $attr['class']
+     * bool $attr['autofocus']
+     * bool $attr['formnovalidate']
+     * string $attr['formaction']
+     * string $attr['formenctype']
+     * string $attr['formmethod']
+     * string $attr['formtarget']
      * bool $attr['disabled']
      * bool $attr['readonly']
      *
@@ -314,7 +399,15 @@ class Form
     {
         $attr = !is_null( $attr ) ? $attr : array();
         $cfg = $this->configElement( $name, $attr );
-        return $this->removeExtraSpaces( sprintf( '<input type="submit" name="%s" id="%s" class="%s" value="%s" %s %s>', $name, $cfg['id'], $cfg['class'], $value, $cfg['readonly'], $cfg['disabled'] ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<input type="submit" name="%s" id="%s" class="%s" value="%s" %s %s %s %s %s %s %s %s>',
+                $name, $cfg['id'], $cfg['class'], $value,$cfg['autofocus'],
+                $cfg['formnovalidate'],$cfg['formaction'],$cfg['formenctype'],
+                $cfg['formmethod'],$cfg['formtarget'],$cfg['readonly'],
+                $cfg['disabled']
+            )
+        );
     }
 
 
@@ -330,6 +423,7 @@ class Form
      *
      * string $attr['id']
      * string $attr['class']
+     * bool $attr['novalidate']
      * string $attr['target']
      * bool $attr[upload]
      *
@@ -341,7 +435,13 @@ class Form
         $action = $this->formAction( $action, @$_SERVER['REQUEST_URI'] );
         $formName = 'form' . ++self::$instance;
         $cfg = $this->configElement( $formName, $attr );
-        return $this->removeExtraSpaces( sprintf( '<form name="%s" id="%s" class="%s" method="%s" action="%s" target="%s" %s>', $formName, $cfg['id'], $cfg['class'], $this->form_method, $action, $cfg['target'], $cfg['upload'] ) );
+
+        return $this->removeExtraSpaces(
+            sprintf( '<form name="%s" id="%s" class="%s" method="%s" action="%s" target="%s" %s %s>',
+                $formName, $cfg['id'], $cfg['class'], $this->form_method,
+                $action, $cfg['target'],$cfg['novalidate'],$cfg['upload']
+            )
+        );
     }
 
 
@@ -362,10 +462,12 @@ class Form
      */
     protected function &getFormData()
     {
-        if( $this->form_method == 'post' ){
+        if( $this->form_method == 'post' )
+        {
             return $_POST;
         }
-        else{
+        else
+        {
             return $_GET;
         }
     }
@@ -428,12 +530,18 @@ class Form
     protected function configElement( $name, array $attr )
     {
         $attr = $this->castConfigElementAttribute( $attr );
-        $attr = $this->fixStandaloneConfigElementAttribute( $attr );
+        $attr = $this->setupConfigElementAttribute( $attr );
         $attr = $this->removeEmptyEconfigElementAttribute( $attr );
 
-        $cfg = array( 'id' => $this->getElementId( $name ), 'class' => $this->getElementClass( $name ),
-            'disabled' => null, 'readonly' => null, 'placeholder' => null, 'cols' => 20, 'rows' => 3,
-            'multiple' => null, 'size' => null, 'target' => '_self', 'upload' => null
+        $cfg = array(
+            'id' => $this->getElementId( $name ),
+            'class' => $this->getElementClass( $name ),'disabled' => null,
+            'readonly' => null, 'placeholder' => null,'autofocus'=>null,
+            'autocomplete'=>null,'required'=>null,'pattern'=>null,
+            'novalidate'=>null,'formnovalidate'=>null,'formaction'=>null,
+            'formenctype'=>null,'formmethod'=>null,'formtarget'=>null,
+            'cols' => 20, 'rows' => 3,'multiple' => null, 'size' => null,
+            'target' => '_self', 'upload' => null
         );
 
         return array_merge( $cfg, $attr );
@@ -453,16 +561,20 @@ class Form
         $formData = & $this->getFormData();
         $elem_name = $this->getElementName( $name );
 
-        if( isset( $formData[$elem_name] ) ){
-            if( $this->isElementAnArray( $name ) ){
+        if( isset( $formData[$elem_name] ) )
+        {
+            if( $this->isElementAnArray( $name ) )
+            {
                 $value = $formData[$elem_name][0];
                 array_shift( $formData[$elem_name] );
             }
-            else{
+            else
+            {
                 $value = $formData[$elem_name];
             }
         }
-        else{
+        else
+        {
             $value = $defaultValue;
         }
         return $value;
@@ -482,21 +594,27 @@ class Form
         $formData = & $this->getFormData();
         $elem_name = $this->getElementName( $name );
 
-        if( isset( $formData[$elem_name] ) ){
-            if( $this->isElementAnArray( $name ) ){
-                foreach( $formData[$elem_name] as $elem ){
-                    foreach( $elem as $val ){
+        if( isset( $formData[$elem_name] ) )
+        {
+            if( $this->isElementAnArray( $name ) )
+            {
+                foreach( $formData[$elem_name] as $elem )
+                {
+                    foreach( $elem as $val )
+                    {
                         $value[] = $val;
                     }
                     array_shift( $formData[$elem_name] );
                     break;
                 }
             }
-            else{
+            else
+            {
                 $value = $formData[$elem_name];
             }
         }
-        else{
+        else
+        {
             $value = $selected;
         }
 
@@ -518,17 +636,21 @@ class Form
         $formData = & $this->getFormData();
         $elem_name = $this->getElementName( $name );
 
-        if( isset( $formData[$elem_name] ) ){
-            if( $this->isElementAnArray( $name ) && @$formData[$elem_name][0] == $value ){
+        if( isset( $formData[$elem_name] ) )
+        {
+            if( $this->isElementAnArray( $name ) && @$formData[$elem_name][0] == $value )
+            {
                 $radio_checked = 'checked';
                 array_shift( $formData[$elem_name] );
             }
-            elseif( $formData[$elem_name] == $value ){
+            elseif( $formData[$elem_name] == $value )
+            {
 
                 $radio_checked = 'checked';
             }
         }
-        elseif( $checked ){
+        elseif( $checked )
+        {
             $radio_checked = 'checked';
         }
 
@@ -550,16 +672,20 @@ class Form
         $formData = & $this->getFormData();
         $elem_name = $this->getElementName( $name );
 
-        if( isset( $formData[$elem_name] ) ){
-            if( $this->isElementAnArray( $name ) && @$formData[$elem_name][0] == $value ){
+        if( isset( $formData[$elem_name] ) )
+        {
+            if( $this->isElementAnArray( $name ) && @$formData[$elem_name][0] == $value )
+            {
                 $checkbox_checked = 'checked';
                 array_shift( $formData[$elem_name] );
             }
-            elseif( $formData[$elem_name] == $value ){
+            elseif( $formData[$elem_name] == $value )
+            {
                 $checkbox_checked = 'checked';
             }
         }
-        elseif( $checked ){
+        elseif( $checked )
+        {
             $checkbox_checked = 'checked';
 
         }
@@ -579,20 +705,25 @@ class Form
      */
     protected function buildSelectOption( $name, $options, &$instance, &$optionsList, $value )
     {
-        foreach( $options as $key => $val ){
-            if( is_array( $val ) ){
+        foreach( $options as $key => $val )
+        {
+            if( is_array( $val ) )
+            {
                 $instance++;
                 $optionsList .= sprintf( '<optgroup label="%s">', $key );
                 $this->select( $name, $val );
                 $instance--;
                 $optionsList .= '</optgroup>';
             }
-            else{
+            else
+            {
                 $optionsList .= sprintf( '<option value="%s"', $key );
-                if( is_array( $value ) && in_array( $key, $value ) ){
+                if( is_array( $value ) && in_array( $key, $value ) )
+                {
                     $optionsList .= ' selected';
                 }
-                elseif( $key == $value ){
+                elseif( $key == $value )
+                {
                     $optionsList .= ' selected';
                 }
                 $optionsList .= sprintf( '>%s</option>', $val );
@@ -615,12 +746,23 @@ class Form
         @$attr['disabled'] = (boolean)$attr['disabled'];
         @$attr['readonly'] = (boolean)$attr['readonly'];
         @$attr['placeholder'] = (string)$attr['placeholder'];
+        @$attr['autofocus'] = (boolean)$attr['autofocus'];
+        @$attr['autocomplete'] = is_null( $attr['autocomplete'] ) ? null : (boolean)$attr['autocomplete'];
+        @$attr['required'] = (boolean)$attr['required'];
+        @$attr['pattern'] = (string)$attr['pattern'];
+        @$attr['novalidate'] = (boolean)$attr['novalidate'];
+        @$attr['formnovalidate'] = (boolean)$attr['formnovalidate'];
+        @$attr['formaction'] = (string)$attr['formaction'];
+        @$attr['formenctype'] = (string)$attr['formenctype'];
+        @$attr['formmethod'] = (string)$attr['formmethod'];
+        @$attr['formtarget'] = (string)$attr['formtarget'];
         @$attr['cols'] = is_bool( $attr['cols'] ) ? 0 : (int)$attr['cols'];
         @$attr['rows'] = is_bool( $attr['rows'] ) ? 0 : (int)$attr['rows'];
         @$attr['multiple'] = (boolean)$attr['multiple'];
         @$attr['size'] = is_bool( $attr['size'] ) ? 0 : (int)$attr['size'];;
         @$attr['target'] = (string)$attr['target'];
         @$attr['upload'] = (boolean)$attr['upload'];
+
         return $attr;
     }
 
@@ -631,13 +773,25 @@ class Form
      * @param array $attr
      * @return array
      */
-    protected function fixStandaloneConfigElementAttribute( array $attr )
+    protected function setupConfigElementAttribute( array $attr )
     {
         $attr['disabled'] = ( $attr['disabled'] ) ? 'disabled' : null;
         $attr['readonly'] = ( $attr['readonly'] ) ? 'readonly' : null;
         $attr['multiple'] = ( $attr['multiple'] ) ? 'multiple' : null;
+        $attr['required'] = ( $attr['required'] ) ? 'required' : null;
+        $attr['autofocus'] = ( $attr['autofocus'] ) ? 'autofocus' : null;
+        $attr['novalidate'] = ( $attr['novalidate'] ) ? 'novalidate' : null;
         $attr['upload'] = ( $attr['upload'] ) ? 'enctype="multipart/form-data"' : null;
+        $attr['formnovalidate'] = ( $attr['formnovalidate'] ) ? 'formnovalidate' : null;
+        $attr['pattern'] = ( $attr['pattern'] ) ? sprintf('pattern="%s"', $attr['pattern']) : null;
+        $attr['autocomplete'] = ( $attr['autocomplete'] === true ) ? 'autocomplete="on"' : ( ( $attr['autocomplete'] === false ) ? 'autocomplete="off"' : null );
+        $attr['formaction'] = ( $attr['formaction'] ) ? sprintf( 'formaction="%s"', $attr['formaction'] ) : null;
+        $attr['formmethod'] = ( $attr['formmethod'] ) ? sprintf( 'formmethod="%s"', $attr['formmethod'] ) : null;
+        $attr['formtarget'] = ( $attr['formtarget'] ) ? sprintf( 'formtarget="%s"', $attr['formtarget'] ) : null;
+        $attr['placeholder'] = ( $attr['placeholder'] ) ? sprintf( 'placeholder="%s"', $attr['placeholder']) : null;
+        $attr['formenctype'] = ( $attr['formenctype'] ) ? sprintf( 'formenctype="%s"', $attr['formenctype'] ) : null;
         $attr['size'] = ( is_int( $attr['size'] ) && $attr['size'] != 0 ) ? sprintf( 'size="%d"', $attr['size'] ) : null;
+
         return $attr;
     }
 
@@ -650,17 +804,17 @@ class Form
      */
     protected function removeEmptyEconfigElementAttribute( array $attr )
     {
-        if( !$attr['id'] ) unset( $attr['id'] );
-        if( !$attr['class'] ) unset( $attr['class'] );
-        if( !$attr['disabled'] ) unset( $attr['disabled'] );
-        if( !$attr['readonly'] ) unset( $attr['readonly'] );
-        if( !$attr['placeholder'] ) unset( $attr['placeholder'] );
-        if( !$attr['cols'] ) unset( $attr['cols'] );
-        if( !$attr['rows'] ) unset( $attr['rows'] );
-        if( !$attr['multiple'] ) unset( $attr['multiple'] );
-        if( !$attr['size'] ) unset( $attr['size'] );
-        if( !$attr['target'] ) unset( $attr['target'] );
-        if( !$attr['upload'] ) unset( $attr['upload'] );
+
+        $attrs = array('id','class','disabled','readonly', 'placeholder',
+            'autofocus','autocomplete','required','pattern','novalidate',
+            'formnovalidate','formaction','formenctype','formmethod',
+            'formtarget', 'cols','rows','multiple', 'size','target','upload'
+        );
+
+        foreach( $attrs as $val )
+        {
+            if( !$attr[$val] ) unset( $attr[$val] );
+        }
 
         return $attr;
     }
@@ -674,15 +828,16 @@ class Form
      */
     protected function removeExtraSpaces( $text )
     {
-        return preg_replace_callback( "#(\s+(?=>))|(\s{2,}(?!>))#", function ( $match ) {
-            if( @$match[1] ){
-                return '';
-            }
-            if( @$match[2] ){
-                return ' ';
-            }
-        }, $text );
-
+        return preg_replace_callback( '#(\s+(?=>))|(\s{2,}(?!>))#',
+            function ( $match ){
+                if( @$match[1] ){
+                    return '';
+                }
+                if( @$match[2] ){
+                    return ' ';
+                }
+            }, $text
+        );
     }
 
 
@@ -698,8 +853,8 @@ class Form
         $action = parse_url( $action );
         $request_script = parse_url( $request_script );
 
-        if( isset( $action['query'] ) || isset( $request_script['query'] ) ){
-
+        if( isset( $action['query'] ) || isset( $request_script['query'] ) )
+        {
             return $action['path'] . '?';
         }
 
@@ -752,7 +907,8 @@ class Form
     protected function getElementId( $name )
     {
         static $instance = 0;
-        if( $this->isElementAnArray( $name ) ){
+        if( $this->isElementAnArray( $name ) )
+        {
             $name .= ++$instance;
         }
         return preg_replace( '#\[]#', '', $name . '_id' );
@@ -770,22 +926,23 @@ class Form
         static $instance = 0;
         static $cache_name = null;
 
-        if( is_null( $cache_name ) ){
+        if( is_null( $cache_name ) )
+        {
             $cache_name = $name;
         }
 
-        if( $cache_name != $name ){
+        if( $cache_name != $name )
+        {
             $instance = 0;
             $cache_name = $name;
         }
 
-        if( $this->isElementAnArray( $name ) ){
+        if( $this->isElementAnArray( $name ) )
+        {
             $name = $this->getElementName( $name ) . sprintf( '[%s][]', $instance++ );
         }
         return $name;
     }
 
 }
-
-
 ?>
