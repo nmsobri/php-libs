@@ -22,16 +22,19 @@ class Database extends \PDO
      * @param string $dsn db_type:host=localhost;dbname=db_name
      * @param string $username
      * @param string $password
+     * @param int $fetch_mode \PDO::FETCH_OBJ | \PDO::FETCH_ASSOC
      * @throws \Exception
      */
-    public function __construct( $dsn, $username, $password )
+    public function __construct( $dsn, $username, $password, $fetch_mode = \PDO::FETCH_OBJ )
     {
-        if( !preg_match( '#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#', $dsn ) ){
+        if( !preg_match( '#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#', $dsn ) )
+        {
             throw new \PDOException( 'Invalid dsn, dsn should be in the following format [dbtype:host=localhost;dbname=db_name]' );
         }
 
         $this->db = new \PDO( $dsn, $username, $password );
         $this->db->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+        $this->db->setAttribute( \PDO::ATTR_DEFAULT_FETCH_MODE, $fetch_mode );
     }
 
 
@@ -237,7 +240,7 @@ class Database extends \PDO
         $this->query = $this->where = $this->order = $this->limit = $this->count = $this->bind = null;
 
         if( preg_match( '/^sel/i', trim( $sql ) ) ){
-            return ( $count ) ? count( $stmt->fetchAll( \PDO::FETCH_ASSOC ) ) : $stmt->fetchAll( \PDO::FETCH_ASSOC );
+            return ( $count ) ? count( $stmt->fetchAll() ) : $stmt->fetchAll();
         }
 
         return $stmt->rowCount();
