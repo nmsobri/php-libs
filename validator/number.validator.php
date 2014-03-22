@@ -50,7 +50,7 @@ class NumberValidator extends AlnumValidatorStrategy
      */
     public function isValid()
     {
-        if( empty( $this->data['value'] ) ){
+        if( $this->data['value'] == '' ){
             return $this->checkRequired();
         }
 
