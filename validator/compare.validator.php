@@ -46,6 +46,10 @@ class CompareValidator extends ValidatorStrategy
                 $this->messages = ( $this->data['errors']['empty'] ) ? $this->data['errors']['empty'] : $this->errorText( ValidatorStrategy::E_EMPTY, array( $this->data['field'] ) );
                 return false;
             }
+            elseif( !empty( $this->data['compare_value'] ) ){
+                $this->messages = ( $this->data['errors']['equal'] ) ? $this->data['errors']['equal'] : $this->errorText( ValidatorStrategy::E_NOT_MATCH, array( $this->data['field'], $this->data['compare_field'] ) );
+                return false;
+            }
             return true;
         }
 
