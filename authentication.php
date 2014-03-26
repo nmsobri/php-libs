@@ -250,12 +250,12 @@ class Authentication
 
         @list( $this->login_result ) = $this->login_result; #flatten the array
 
-        if( count( $this->login_result ) > 0 && !isset( $this->login_result[$this->login->getPasswordColumn()] ) ){
+        if( count( $this->login_result ) > 0 && !isset( $this->login_result->{$this->login->getPasswordColumn()} ) ){
             throw new \Exception( sprintf( 'Column %s does not exist in the query %s', $this->login->getPasswordColumn(), $this->login->getQuery() ) );
         }
 
         if( count( $this->login_result ) > 0 ){
-            if( password_verify( $this->login->getPassword(), @$this->login_result[$this->login->getPasswordColumn()] ) ){
+            if( password_verify( $this->login->getPassword(), @$this->login_result->{$this->login->getPasswordColumn()} ) ){
                 $this->saveHash( $this->login_result );
                 return true;
             }
