@@ -9,12 +9,51 @@ namespace utility;
 class Database extends \PDO
 {
 
-    protected $db = null;
+    /**
+     * @var null|\PDO
+     */
+    protected $pdo = null;
+
+
+    /**
+     * @var null|string
+     */
     protected $bind = null;
+
+
+    /**
+     * @var null|string
+     */
     protected $query = null;
+
+
+    /**
+     * @var null|string
+     */
     protected $where = null;
+
+
+    /**
+     * @var null|string
+     */
     protected $order = null;
+
+
+    /**
+     * @var null|string
+     */
+    protected $group = null;
+
+
+    /**
+     * @var null|string
+     */
     protected $limit = null;
+
+
+    /**
+     * @var null|boolean
+     */
     protected $count = null;
 
 
@@ -27,14 +66,29 @@ class Database extends \PDO
      */
     public function __construct( $dsn, $username, $password, $fetch_mode = \PDO::FETCH_OBJ )
     {
-        if( !preg_match( '#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#', $dsn ) )
+        $format = '#[a-zA-Z]+:host=(http://)?[a-zA-Z0-9.]+;dbname=[a-zA-Z0-9]+#';
+
+        if( !preg_match( $format, $dsn ) )
         {
-            throw new \PDOException( 'Invalid dsn, dsn should be in the following format [dbtype:host=localhost;dbname=db_name]' );
+            $error = 'Invalid dsn, dsn should be in the following format';
+            $error .= ' [dbtype:host=localhost;dbname=db_name]';
+            throw new \PDOException( $error );
         }
 
-        $this->db = new \PDO( $dsn, $username, $password );
-        $this->db->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
-        $this->db->setAttribute( \PDO::ATTR_DEFAULT_FETCH_MODE, $fetch_mode );
+        $this->pdo = new \PDO( $dsn, $username, $password );
+        $this->pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+        $this->pdo->setAttribute( \PDO::ATTR_DEFAULT_FETCH_MODE, $fetch_mode );
+    }
+
+
+    /**
+     * Return Pdo instance so we can use raw power of \Pdo
+     *
+     * @return null|\PDO
+     */
+    public function pdo()
+    {
+        return $this->pdo;
     }
 
 
@@ -67,7 +121,7 @@ class Database extends \PDO
     public function select( $table, $column = '*' )
     {
         $column = ( is_string( $column ) ) ? $column : implode( ',', $column );
-        $this->query = 'SELECT ' . $column . ' FROM ' . $table;
+        $this->query = sprintf( 'SELECT %s FROM %s', $column, $table );
         return $this;
     }
 
@@ -89,20 +143,27 @@ class Database extends \PDO
         $values = null;
         $this->bind( $bind );
 
-        foreach( $data as $key => $val ){
-            $columns .= $key . ',';
-            if( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) ){
-                $values .= $val . ',';
+        foreach( $data as $key => $val )
+        {
+            $columns .= sprintf( '%s,', $key );
+
+            if( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) )
+            {
+                $values .= sprintf( '%s,',$val );
             }
-            else{
-                $values .= '"' . $val . '"' . ',';
+            else
+            {
+                $values .= sprintf( '"%s",', $val );
             }
         }
 
-        $columns = '(' . trim( $columns, ',' ) . ')';
-        $values = '(' . trim( $values, ',' ) . ')';
+        $columns = sprintf( '(%s)', trim( $columns, ',' ) );
+        $values = sprintf( '(%s)', trim( $values, ',' ) );
 
-        $this->query = 'INSERT INTO ' . $table . $columns . ' VALUES ' . $values;
+        $this->query = sprintf( 'INSERT INTO %s %s VALUES %s', $table,
+            $columns , $values
+        );
+
         return $this;
     }
 
@@ -123,17 +184,20 @@ class Database extends \PDO
         $segment = null;
         $this->bind( $bind );
 
-        foreach( $data as $key => $val ){
-            if( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) ){
-                $segment .= $key . '=' . $val . ',';
+        foreach( $data as $key => $val )
+        {
+            if( preg_match( '#(:.*|\?{1}|.*?\(.*?\))#', $val ) )
+            {
+                $segment .= sprintf( '%s=%s,', $key, $val );
             }
-            else{
-                $segment .= $key . '="' . $val . '",';
+            else
+            {
+                $segment .= sprintf('%s="%s",', $key, $val);
             }
         }
 
-        $segment = substr( $segment, 0, -1 );
-        $this->query = 'UPDATE ' . $table . ' SET ' . $segment;
+        $segment = trim( $segment, ',' );
+        $this->query = sprintf( 'UPDATE %s SET %s', $table, $segment );
         return $this;
     }
 
@@ -146,7 +210,7 @@ class Database extends \PDO
      */
     public function delete( $table )
     {
-        $this->query = 'DELETE FROM ' . $table;
+        $this->query = sprintf( 'DELETE FROM %s', $table );
         return $this;
     }
 
@@ -176,12 +240,14 @@ class Database extends \PDO
      */
     public function where( $where, $bind = null )
     {
-        if( preg_match( '/where/i', $this->query ) ){
-            throw new \PDOException( 'There is a where clause already inside the sql statement' );
+        if( preg_match( '/where/i', $this->query ) )
+        {
+            $error = 'There is a where clause already inside the sql statement';
+            throw new \PDOException( $error );
         }
 
         $this->bind( $bind );
-        $this->where = ' WHERE ' . $where;
+        $this->where = sprintf(' WHERE %s', $where );
         return $this;
     }
 
@@ -189,14 +255,27 @@ class Database extends \PDO
     /**
      * Setup order by clause
      *
-     * @param string $order sorting the result
+     * @param string $order
      * @return Database
      *
      * orderby( 'date Asc')
      */
     public function orderby( $order )
     {
-        $this->order = ' ORDER BY ' . $order;
+        $this->order = sprintf(' ORDER BY %s', $order );
+        return $this;
+    }
+
+
+    /**
+     * Setup group by clause
+     *
+     * @param string $group
+     * @return Database
+     */
+    public function groupby( $group )
+    {
+        $this->group = sprintf(' GROUP BY %s', $group );
         return $this;
     }
 
@@ -210,7 +289,7 @@ class Database extends \PDO
      */
     public function limit( $start, $limit )
     {
-        $this->limit = ' LIMIT ' . $start . ',' . $limit;
+        $this->limit = sprintf( ' LIMIT %s,%s', $start, $limit );
         return $this;
     }
 
@@ -222,7 +301,7 @@ class Database extends \PDO
      */
     public function getLastInsertId()
     {
-        return $this->db->lastInsertId();
+        return $this->pdo->lastInsertId();
     }
 
 
@@ -230,16 +309,42 @@ class Database extends \PDO
      * Execute the query
      *
      * @return mixed
+     * @throws \Exception
      */
     public function execute()
     {
-        $sql = $this->query . $this->where . $this->order . $this->limit;
-        $stmt = $this->db->prepare( $sql );
-        $stmt->execute( $this->bind );
-        $count = $this->count; //cache this value cause if use directly, statement below will always make $this->count = null
-        $this->query = $this->where = $this->order = $this->limit = $this->count = $this->bind = null;
+        try
+        {
+            $count = $this->count;
+            $sql = sprintf( '%s%s%s%s%s', $this->query, $this->where,
+                $this->order, $this->group,$this->limit
+            );
 
-        if( preg_match( '/^sel/i', trim( $sql ) ) ){
+            $stmt = $this->pdo->prepare( $sql );
+            $stmt->execute( $this->bind );
+            $this->resetProp();
+            return $this->result( $stmt, $sql, $count );
+        }
+        catch( \PDOException $e )
+        {
+            $e = sprintf( '%s<br><br>Query: %s', $e->getMessage(), $this->query );
+            throw new \Exception( $e );
+        }
+    }
+
+
+    /**
+     * Return result of query
+     *
+     * @param \PDOStatement $stmt
+     * @param string $sql
+     * @param int $count
+     * @return int|array
+     */
+    protected function result($stmt, $sql, $count )
+    {
+        if( preg_match( '/^sel/i', trim( $sql ) ) )
+        {
             return ( $count ) ? count( $stmt->fetchAll() ) : $stmt->fetchAll();
         }
 
@@ -255,24 +360,23 @@ class Database extends \PDO
      */
     protected function bind( $bind )
     {
-        if( is_null( $this->bind ) ){
-            $this->bind = array();
-        }
+        if( is_null( $this->bind ) ) $this->bind = array();
 
-        if( !empty( $bind ) ){
-            if( is_array( $bind ) ){
-                if( $this->isAssoc( $bind ) ){
-                    foreach( $bind as $key => $val ){
-                        $this->bind[$key] = $val;
-                    }
+        if( !empty( $bind ) )
+        {
+            if( is_array( $bind ) )
+            {
+                if( $this->isAssoc( $bind ) )
+                {
+                    foreach( $bind as $key => $val ) $this->bind[$key] = $val;
                 }
-                else{
-                    foreach( $bind as $key => $val ){
-                        $this->bind[] = $val;
-                    }
+                else
+                {
+                    foreach( $bind as $val ) $this->bind[] = $val;
                 }
             }
-            else{
+            else
+            {
                 $this->bind[] = $bind;
             }
         }
@@ -288,12 +392,25 @@ class Database extends \PDO
      */
     protected function isAssoc( $arr )
     {
-        foreach( array_keys( $arr ) as $key ){
+        foreach( array_keys( $arr ) as $key )
+        {
             if( !is_int( $key ) ) return true;
         }
         return false;
     }
 
+
+    /**
+     * Reset properties
+     * @return void
+     */
+    protected function resetProp()
+    {
+        $this->query = $this->where = null;
+        $this->order = $this->limit = null;
+        $this->count = $this->bind = null;
+        $this->group = null;
+    }
 
 }
 
